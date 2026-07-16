@@ -37,6 +37,12 @@
     rel="stylesheet"
     href="./dashboard-v2.css"
   >
+
+  <!-- CSS quản trị đặt cuối để ưu tiên -->
+  <link
+    rel="stylesheet"
+    href="./admin.css"
+  >
 </head>
 
 <body>
@@ -44,6 +50,7 @@
     <main class="loading-page">
       <div class="loading-box">
         <div class="spinner"></div>
+
         <p>Đang tải hệ thống...</p>
       </div>
     </main>
@@ -57,7 +64,9 @@
 
   <script src="./video-gate.js"></script>
 
-  <!-- Dashboard mới phải đặt cuối cùng -->
   <script src="./dashboard-v2.js"></script>
+
+  <!-- Admin phải được tải cuối cùng -->
+  <script src="./admin.js"></script>
 </body>
 </html>
