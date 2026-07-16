@@ -2043,4 +2043,5 @@ function escapeAttribute(value) {
   return escapeHtml(value);
 }
 
-init();
+// init() sẽ được gọi trong index.html
+// sau khi tất cả file JavaScript đã tải xong.
