@@ -299,3 +299,159 @@
     font-size: 22px;
   }
 }
+/* =========================================================
+   TÀI LIỆU PDF
+========================================================= */
+
+.pdf-learning-section {
+  margin-top: 34px;
+  padding: 26px;
+
+  border: 1px solid #dce7ee;
+  border-radius: 16px;
+
+  background: #f8fbfd;
+}
+
+.document-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.document-heading h3 {
+  margin: 5px 0 0;
+  font-size: 22px;
+}
+
+.document-label {
+  margin: 0;
+
+  color: #08749d;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.document-type {
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  color: #b42318;
+  background: #fef3f2;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pdf-viewer {
+  display: block;
+
+  width: 100%;
+  height: 720px;
+
+  border: 1px solid #cedde6;
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 14px 34px
+    rgba(17, 41, 65, 0.1);
+}
+
+.document-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 18px;
+}
+
+.document-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 46px;
+  padding: 11px 18px;
+
+  border-radius: 10px;
+
+  font-weight: 700;
+  text-decoration: none;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.document-button:hover {
+  transform: translateY(-1px);
+}
+
+.secondary-document-button {
+  border: 1px solid #087ca6;
+
+  color: #08749d;
+  background: #ffffff;
+}
+
+.secondary-document-button:hover {
+  color: #ffffff;
+  background: #087ca6;
+}
+
+.primary-document-button {
+  border: 1px solid #087ca6;
+
+  color: #ffffff;
+  background: #087ca6;
+
+  box-shadow:
+    0 6px 16px
+    rgba(8, 124, 166, 0.18);
+}
+
+.primary-document-button:hover {
+  background: #066d93;
+}
+
+.document-note {
+  margin: 14px 0 0;
+
+  color: #667085;
+  font-size: 13px;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .pdf-learning-section {
+    padding: 18px;
+  }
+
+  .pdf-viewer {
+    height: 520px;
+  }
+
+  .document-heading,
+  .document-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .document-type {
+    align-self: flex-start;
+  }
+
+  .document-button {
+    width: 100%;
+  }
+
+  .document-note {
+    text-align: left;
+  }
+}
