@@ -1760,7 +1760,6 @@ function getGoogleDriveFileId(url) {
     ? queryMatch[1]
     : null;
 }
-}
 
 /* =========================================================
    HEADER CÓ LOGO
