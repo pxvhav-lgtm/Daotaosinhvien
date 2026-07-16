@@ -1294,3 +1294,96 @@ button {
     border-radius: 14px !important;
   }
 }
+/* =========================================================
+   TINH CHỈNH LOGO + FONT DÒNG THƯƠNG HIỆU
+========================================================= */
+
+/* 1) Giảm logo còn khoảng 80% kích thước hiện tại */
+.login-logo {
+  width: min(100%, 288px) !important;   /* 80% của 360px */
+  height: 84px !important;              /* 80% của 105px */
+  padding: 8px 16px !important;
+  border-radius: 16px !important;
+  margin: 0 auto 24px !important;
+}
+
+.header-logo {
+  width: 240px !important;              /* 80% của 300px */
+  height: 69px !important;              /* 80% của 86px */
+  flex: 0 0 240px !important;
+  padding: 6px 12px !important;
+  border-radius: 14px !important;
+}
+
+/* 2) Canh cụm logo dashboard sát về bên trái hơn */
+.header {
+  padding-top: 18px !important;
+  padding-right: 28px !important;
+  padding-bottom: 18px !important;
+  padding-left: 20px !important;
+}
+
+.header-brand {
+  gap: 16px !important;
+  justify-content: flex-start !important;
+}
+
+/* 3) Làm dòng "NHÀ MÁY THỦY ĐIỆN A VƯƠNG" đẹp và đồng bộ hơn */
+.eyebrow,
+.header-title .eyebrow,
+.login-card > .eyebrow {
+  font-family: Inter, Arial, Helvetica, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.4 !important;
+  color: #08749d !important;
+  text-transform: uppercase !important;
+}
+
+/* Riêng trên dashboard cho cân đối hơn */
+.header-title .eyebrow {
+  margin: 0 0 6px !important;
+}
+
+/* Riêng ở trang đăng nhập */
+.login-card > .eyebrow {
+  margin: 0 0 10px !important;
+}
+
+/* 4) Mobile */
+@media (max-width: 900px) {
+  .header {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .header-logo {
+    width: min(100%, 220px) !important;
+    height: 64px !important;
+    flex: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-logo {
+    width: min(100%, 250px) !important;
+    height: 74px !important;
+    padding: 6px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .header-logo {
+    width: min(100%, 220px) !important;
+    height: 60px !important;
+    padding: 6px 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .eyebrow,
+  .header-title .eyebrow,
+  .login-card > .eyebrow {
+    font-size: 14px !important;
+    letter-spacing: 0.03em !important;
+  }
+}
