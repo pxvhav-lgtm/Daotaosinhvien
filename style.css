@@ -4,12 +4,18 @@
     Helvetica,
     sans-serif;
 
-  color: #1f2937;
-  background: #f3f6f9;
+  color: #172033;
+  background: #f2f5f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -27,14 +33,54 @@ button {
   cursor: pointer;
 }
 
-.loading-page,
-.message-page {
-  display: grid;
-  min-height: 100vh;
-  padding: 24px;
-  place-items: center;
-  text-align: center;
+/* =========================================================
+   NÚT
+========================================================= */
+
+.primary-button,
+.course-button,
+.lesson-button {
+  padding: 13px 18px;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #187ca5;
+  font-weight: 700;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
+
+.primary-button:hover,
+.course-button:hover,
+.lesson-button:hover {
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.course-button:disabled,
+.lesson-button:disabled {
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+.secondary-button {
+  padding: 11px 17px;
+  border: 1px solid #14769f;
+  border-radius: 10px;
+  color: #086894;
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.secondary-button:hover {
+  background: #eff8fc;
+}
+
+/* =========================================================
+   TRANG ĐĂNG NHẬP
+========================================================= */
 
 .login-page {
   display: grid;
@@ -44,19 +90,21 @@ button {
 }
 
 .login-card {
-  width: min(100%, 440px);
-  padding: 36px;
-  border-radius: 18px;
+  width: min(100%, 460px);
+  padding: 40px;
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 22px 65px
+    rgba(17, 41, 65, 0.13);
 }
 
 .eyebrow {
-  margin: 0 0 8px;
-  color: #146c94;
+  margin: 0 0 10px;
+  color: #08749d;
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .login-card h1,
@@ -64,82 +112,110 @@ button {
   margin: 0;
 }
 
+.login-card h1 {
+  font-size: clamp(
+    2rem,
+    5vw,
+    2.7rem
+  );
+  line-height: 1.1;
+}
+
 .description {
-  margin-bottom: 28px;
+  margin: 18px 0 30px;
   color: #667085;
+  font-size: 17px;
 }
 
 .login-form {
   display: grid;
-  gap: 12px;
+  gap: 13px;
 }
 
 .login-form label {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .login-form input {
   width: 100%;
-  padding: 13px 14px;
-  border: 1px solid #cfd8e3;
-  border-radius: 9px;
+  padding: 14px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   outline: none;
 }
 
 .login-form input:focus {
-  border-color: #146c94;
-  box-shadow: 0 0 0 3px rgba(20, 108, 148, 0.12);
+  border-color: #187ca5;
+  box-shadow:
+    0 0 0 3px
+    rgba(24, 124, 165, 0.13);
 }
 
-.primary-button,
-.course-button {
-  margin-top: 8px;
-  padding: 13px 16px;
-  border: none;
-  border-radius: 9px;
-  color: #ffffff;
-  background: #146c94;
-  font-weight: 700;
+.login-form .primary-button {
+  margin-top: 18px;
 }
 
-.primary-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.form-message {
-  min-height: 20px;
-  margin: 0;
-  color: #b42318;
-}
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 22px clamp(20px, 5vw, 70px);
-  border-bottom: 1px solid #e5e7eb;
+  gap: 24px;
+  padding:
+    28px
+    clamp(22px, 4vw, 66px);
+  border-bottom: 1px solid #dfe6ed;
   background: #ffffff;
+}
+
+.header h1 {
+  font-size: clamp(
+    1.55rem,
+    3vw,
+    2.35rem
+  );
+  line-height: 1.15;
 }
 
 .header-actions {
   display: flex;
+  flex-shrink: 0;
   gap: 12px;
 }
 
-.secondary-button {
-  padding: 10px 16px;
-  border: 1px solid #146c94;
-  border-radius: 9px;
-  color: #146c94;
-  background: #ffffff;
-  font-weight: 600;
+/* =========================================================
+   KHUNG CHUNG
+========================================================= */
+
+.dashboard-page,
+.quiz-page,
+.result-page {
+  width:
+    min(
+      1400px,
+      calc(100% - 40px)
+    );
+  margin: 42px auto;
 }
 
-.dashboard-page {
-  width: min(1120px, calc(100% - 40px));
-  margin: 36px auto;
+.profile-card,
+.course-section,
+.course-overview-card,
+.lesson-section,
+.lesson-detail-card,
+.quiz-information-card,
+.question-card,
+.quiz-submit-card,
+.result-card,
+.message-card {
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 34px
+    rgba(17, 41, 65, 0.07);
 }
 
 .profile-card,
@@ -147,123 +223,129 @@ button {
 .course-overview-card,
 .lesson-section,
 .lesson-detail-card {
-  padding: 28px;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  padding: 34px;
 }
 
+/* =========================================================
+   HỒ SƠ
+========================================================= */
+
 .profile-card h2 {
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
 .profile-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-top: 24px;
+  grid-template-columns:
+    repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 28px;
 }
 
 .profile-grid div {
-  padding: 16px;
-  border-radius: 10px;
-  background: #f7f9fb;
+  padding: 18px;
+  border-radius: 12px;
+  background: #f5f7fa;
 }
 
 .profile-grid span {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
   color: #667085;
   font-size: 14px;
 }
 
+/* =========================================================
+   KHÓA HỌC
+========================================================= */
+
 .course-section,
 .lesson-section {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .course-list,
 .lesson-list {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .course-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 22px;
-  border: 1px solid #e1e7ef;
-  border-radius: 12px;
+  gap: 28px;
+  padding: 26px;
+  border: 1px solid #dce5ed;
+  border-radius: 14px;
 }
 
 .course-card h3 {
-  margin: 6px 0;
+  margin: 8px 0 12px;
 }
 
 .status {
   margin: 0;
-  color: #146c94;
-  font-weight: 700;
+  color: #08749d;
+  font-weight: 800;
 }
 
-.empty-state {
-  padding: 30px;
-  border: 1px dashed #b8c4d1;
-  border-radius: 10px;
-  color: #667085;
-  text-align: center;
-}
+/* =========================================================
+   DANH SÁCH BÀI HỌC
+========================================================= */
 
 .lesson-card {
   display: grid;
-  grid-template-columns: 52px 1fr auto;
+  grid-template-columns:
+    64px 1fr auto;
   align-items: center;
-  gap: 20px;
-  padding: 22px;
-  border: 1px solid #dce4ed;
-  border-radius: 12px;
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid #dce5ed;
+  border-radius: 14px;
   background: #ffffff;
 }
 
 .lesson-card.locked {
-  opacity: 0.65;
-  background: #f6f7f9;
+  color: #7b8492;
+  background: #f7f8fa;
+  opacity: 0.72;
 }
 
 .lesson-number {
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   color: #ffffff;
-  background: #146c94;
-  font-size: 18px;
-  font-weight: 700;
+  background: #187ca5;
+  font-size: 22px;
+  font-weight: 800;
   place-items: center;
 }
 
-.lesson-card.locked .lesson-number {
-  background: #98a2b3;
+.lesson-card.locked
+.lesson-number {
+  background: #aab4c4;
 }
 
 .lesson-content h3 {
-  margin: 5px 0 8px;
+  margin: 6px 0 10px;
+  font-size: 21px;
 }
 
 .lesson-content p {
-  margin: 6px 0;
+  margin: 7px 0;
 }
 
 .lesson-status {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .lesson-status.available {
-  color: #146c94;
+  color: #08749d;
 }
 
 .lesson-status.studying {
@@ -278,39 +360,73 @@ button {
   color: #667085;
 }
 
-.lesson-button {
-  padding: 12px 16px;
-  border: none;
-  border-radius: 9px;
-  color: #ffffff;
-  background: #146c94;
-  font-weight: 700;
+.score-line {
+  color: #067647;
+}
+
+.attempt-line {
+  color: #667085;
+  font-size: 14px;
 }
 
 .lesson-button:disabled {
-  cursor: not-allowed;
-  color: #667085;
-  background: #e4e7ec;
+  color: #7b8492;
+  background: #e6e9ee;
 }
 
+/* =========================================================
+   CHI TIẾT BÀI HỌC
+========================================================= */
+
 .lesson-detail-card {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
+.lesson-detail-card h2 {
+  font-size: 30px;
+}
+
 .lesson-order {
-  color: #146c94;
-  font-weight: 700;
+  color: #08749d;
+  font-weight: 800;
 }
 
 .lesson-description {
   color: #667085;
-  font-size: 18px;
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+.lesson-result-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 22px 0;
+  padding: 18px;
+  border-radius: 12px;
+  background: #ecfdf3;
+}
+
+.lesson-result-summary span {
+  color: #067647;
+  font-weight: 700;
+}
+
+.lesson-result-summary strong {
+  color: #067647;
+  font-size: 22px;
 }
 
 .lesson-media-section,
 .lesson-text-content {
-  margin-top: 30px;
+  margin-top: 34px;
+}
+
+.lesson-text-content p {
+  font-size: 17px;
+  line-height: 1.75;
 }
 
 .video-wrapper {
@@ -318,7 +434,7 @@ button {
   overflow: hidden;
   width: 100%;
   padding-top: 56.25%;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #000000;
 }
 
@@ -332,27 +448,312 @@ button {
 
 .pdf-viewer {
   width: 100%;
-  height: 650px;
-  border: 1px solid #dce4ed;
-  border-radius: 12px;
+  height: 680px;
+  border: 1px solid #dce5ed;
+  border-radius: 14px;
 }
 
 .lesson-image {
   display: block;
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .document-link {
   display: inline-block;
-  margin-top: 12px;
-  color: #146c94;
-  font-weight: 700;
+  margin-top: 14px;
+  color: #08749d;
+  font-weight: 800;
 }
 
 .lesson-actions {
-  margin-top: 32px;
+  margin-top: 40px;
   text-align: right;
+}
+
+/* =========================================================
+   BÀI KIỂM TRA
+========================================================= */
+
+.quiz-page {
+  max-width: 1050px;
+}
+
+.quiz-information-card {
+  padding: 30px;
+}
+
+.quiz-information-card h2 {
+  margin: 7px 0 0;
+}
+
+.quiz-meta-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.quiz-meta-grid div {
+  padding: 16px;
+  border-radius: 11px;
+  background: #f5f7fa;
+}
+
+.quiz-meta-grid span {
+  display: block;
+  margin-bottom: 7px;
+  color: #667085;
+  font-size: 14px;
+}
+
+.quiz-meta-grid strong {
+  font-size: 18px;
+}
+
+.timer-warning {
+  color: #b42318;
+}
+
+.quiz-form {
+  display: grid;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.question-card {
+  padding: 28px;
+}
+
+.question-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.question-heading h3 {
+  margin: 4px 0 20px;
+  line-height: 1.5;
+}
+
+.question-number {
+  display: grid;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #187ca5;
+  font-weight: 800;
+  place-items: center;
+}
+
+.answer-list {
+  display: grid;
+  gap: 12px;
+  margin-left: 53px;
+}
+
+.answer-option {
+  display: grid;
+  grid-template-columns:
+    auto 36px 1fr;
+  align-items: center;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid #dce5ed;
+  border-radius: 11px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.answer-option:hover {
+  border-color: #187ca5;
+  background: #f3fafd;
+}
+
+.answer-option:has(
+  input:checked
+) {
+  border-color: #187ca5;
+  background: #eaf7fc;
+}
+
+.answer-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: #187ca5;
+}
+
+.answer-letter {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #edf2f6;
+  font-weight: 800;
+  place-items: center;
+}
+
+.answer-text {
+  line-height: 1.5;
+}
+
+.quiz-submit-card {
+  padding: 24px;
+  text-align: right;
+}
+
+/* =========================================================
+   KẾT QUẢ
+========================================================= */
+
+.result-page {
+  display: grid;
+  min-height: 65vh;
+  place-items: center;
+}
+
+.result-card {
+  width: min(100%, 650px);
+  padding: 44px;
+  text-align: center;
+}
+
+.result-card.passed {
+  border-top: 6px solid #12b76a;
+}
+
+.result-card.failed {
+  border-top: 6px solid #f04438;
+}
+
+.result-icon {
+  display: grid;
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 800;
+  place-items: center;
+}
+
+.result-card.passed
+.result-icon {
+  background: #12b76a;
+}
+
+.result-card.failed
+.result-icon {
+  background: #f04438;
+}
+
+.result-label {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.result-score {
+  margin: 28px 0;
+}
+
+.result-score strong {
+  font-size: 72px;
+  line-height: 1;
+}
+
+.result-score span {
+  color: #667085;
+  font-size: 24px;
+}
+
+.success-notice {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 11px;
+  color: #067647;
+  background: #ecfdf3;
+  font-weight: 700;
+}
+
+.result-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+/* =========================================================
+   THÔNG BÁO VÀ LOADING
+========================================================= */
+
+.loading-page,
+.message-page {
+  display: grid;
+  min-height: 100vh;
+  padding: 24px;
+  place-items: center;
+  text-align: center;
+}
+
+.loading-box {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #dbe5eb;
+  border-top-color: #187ca5;
+  border-radius: 50%;
+  animation:
+    spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.message-card {
+  width: min(100%, 560px);
+  padding: 36px;
+}
+
+.form-message {
+  min-height: 20px;
+  margin: 0;
+  color: #b42318;
+  text-align: left;
+}
+
+.empty-state {
+  padding: 32px;
+  border: 1px dashed #b8c4d1;
+  border-radius: 12px;
+  color: #667085;
+  text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+  .quiz-meta-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 700px) {
@@ -367,16 +768,22 @@ button {
     flex-direction: column;
   }
 
-  .profile-grid {
+  .header-actions button {
+    width: 100%;
+  }
+
+  .profile-grid,
+  .quiz-meta-grid {
     grid-template-columns: 1fr;
   }
 
   .login-card {
-    padding: 26px 22px;
+    padding: 30px 23px;
   }
 
   .lesson-card {
-    grid-template-columns: 44px 1fr;
+    grid-template-columns:
+      52px 1fr;
   }
 
   .lesson-button {
@@ -384,7 +791,28 @@ button {
     width: 100%;
   }
 
+  .answer-list {
+    margin-left: 0;
+  }
+
+  .answer-option {
+    grid-template-columns:
+      auto 32px 1fr;
+  }
+
   .pdf-viewer {
     height: 500px;
+  }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .result-actions button {
+    width: 100%;
+  }
+
+  .result-score strong {
+    font-size: 58px;
   }
 }
