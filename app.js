@@ -1676,26 +1676,90 @@ function renderVideo(url) {
 }
 
 function renderPdf(url) {
+  const fileId = getGoogleDriveFileId(url);
+
+  const previewUrl = fileId
+    ? `https://drive.google.com/file/d/${fileId}/preview`
+    : url;
+
+  const viewUrl = fileId
+    ? `https://drive.google.com/file/d/${fileId}/view`
+    : url;
+
+  const downloadUrl = fileId
+    ? `https://drive.google.com/uc?export=download&id=${fileId}`
+    : url;
+
   return `
-    <section class="lesson-media-section">
-      <h3>Tài liệu PDF</h3>
+    <section class="lesson-media-section pdf-learning-section">
+      <div class="document-heading">
+        <div>
+          <p class="document-label">
+            TÀI LIỆU HỌC TẬP
+          </p>
+
+          <h3>Tài liệu PDF của bài học</h3>
+        </div>
+
+        <span class="document-type">
+          PDF
+        </span>
+      </div>
 
       <iframe
         class="pdf-viewer"
-        src="${escapeAttribute(url)}"
-        title="Tài liệu PDF"
+        src="${escapeAttribute(previewUrl)}"
+        title="Tài liệu PDF bài học"
+        loading="lazy"
       ></iframe>
 
-      <a
-        class="document-link"
-        href="${escapeAttribute(url)}"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Mở tài liệu trong cửa sổ mới
-      </a>
+      <div class="document-actions">
+        <a
+          class="document-button secondary-document-button"
+          href="${escapeAttribute(viewUrl)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Mở toàn màn hình
+        </a>
+
+        <a
+          class="document-button primary-document-button"
+          href="${escapeAttribute(downloadUrl)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          download
+        >
+          Tải tài liệu PDF
+        </a>
+      </div>
+
+      <p class="document-note">
+        Tài liệu được lưu trên Google Drive.
+      </p>
     </section>
   `;
+}
+
+function getGoogleDriveFileId(url) {
+  const value = String(url || '');
+
+  const filePathMatch = value.match(
+    /\/file\/d\/([a-zA-Z0-9_-]+)/
+  );
+
+  if (filePathMatch) {
+    return filePathMatch[1];
+  }
+
+  const queryMatch = value.match(
+    /[?&]id=([a-zA-Z0-9_-]+)/
+  );
+
+  return queryMatch
+    ? queryMatch[1]
+    : null;
+}
 }
 
 /* =========================================================
