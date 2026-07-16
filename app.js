@@ -2,7 +2,7 @@ const SUPABASE_URL =
   'https://lzkdoyboahaucbdpdrlq.supabase.co';
 
 /*
- * Dán Publishable key hiện đang dùng của bạn vào đây.
+ * Chỉ dùng Publishable key hoặc anon public key.
  * Không dùng service_role, secret key hoặc mật khẩu database.
  */
 const SUPABASE_PUBLISHABLE_KEY =
@@ -18,7 +18,7 @@ const app = document.querySelector('#app');
 let quizTimerId = null;
 
 /* =========================================================
-   KHỞI ĐỘNG HỆ THỐNG
+   KHỞI ĐỘNG
 ========================================================= */
 
 async function init() {
@@ -29,6 +29,7 @@ async function init() {
     renderMessage(
       'Chưa cấu hình Publishable key của Supabase.'
     );
+
     return;
   }
 
@@ -64,6 +65,12 @@ function renderLogin() {
   app.innerHTML = `
     <main class="login-page">
       <section class="login-card">
+        <img
+          class="company-logo login-logo"
+          src="./Logo.png"
+          alt="Logo Nhà máy thủy điện A Vương"
+        >
+
         <p class="eyebrow">
           NHÀ MÁY THỦY ĐIỆN A VƯƠNG
         </p>
@@ -500,6 +507,7 @@ async function renderCoursePage(
 
   const course = courseResult.data;
   const lessons = lessonsResult.data ?? [];
+
   const progressList =
     progressResult.data ?? [];
 
@@ -624,10 +632,7 @@ function renderLessonCard(lesson) {
 
   return `
     <article
-      class="
-        lesson-card
-        ${isLocked ? 'locked' : ''}
-      "
+      class="lesson-card ${isLocked ? 'locked' : ''}"
     >
       <div class="lesson-number">
         ${escapeHtml(
@@ -637,10 +642,7 @@ function renderLessonCard(lesson) {
 
       <div class="lesson-content">
         <p
-          class="
-            lesson-status
-            ${escapeAttribute(status)}
-          "
+          class="lesson-status ${escapeAttribute(status)}"
         >
           ${formatLessonStatus(status)}
         </p>
@@ -690,9 +692,7 @@ function renderLessonCard(lesson) {
         class="lesson-button"
         type="button"
         data-lesson-id="${lesson.id}"
-        data-status="${escapeAttribute(
-          status
-        )}"
+        data-status="${escapeAttribute(status)}"
         ${isLocked ? 'disabled' : ''}
       >
         ${
@@ -849,9 +849,7 @@ async function renderLessonPage(
           lesson.image_url
             ? `
               <section class="lesson-media-section">
-                <h3>
-                  Hình ảnh minh họa
-                </h3>
+                <h3>Hình ảnh minh họa</h3>
 
                 <img
                   class="lesson-image"
@@ -1171,16 +1169,7 @@ async function renderQuizPage(
     Number(quiz.time_limit_minutes) * 60,
     async () => {
       alert(
-        'Đã hết thời gian. Hệ thống sẽ nộp các câu bạn đã chọn.'
-      );
-
-      await submitQuiz(
-        quiz,
-        questions,
-        lessonId,
-        courseId,
-        user,
-        true
+        'Đã hết thời gian. Vui lòng kiểm tra và nộp bài.'
       );
     }
   );
@@ -1265,8 +1254,7 @@ async function submitQuiz(
   questions,
   lessonId,
   courseId,
-  user,
-  isAutoSubmit = false
+  user
 ) {
   const submitButton =
     document.querySelector(
@@ -1306,10 +1294,7 @@ async function submitQuiz(
     })
     .filter(Boolean);
 
-  if (
-    !isAutoSubmit &&
-    answers.length !== questions.length
-  ) {
+  if (answers.length !== questions.length) {
     if (message) {
       message.textContent =
         'Bạn phải trả lời đầy đủ tất cả câu hỏi.';
@@ -1336,33 +1321,13 @@ async function submitQuiz(
     return;
   }
 
-  /*
-   * Function Supabase yêu cầu đủ tất cả câu hỏi.
-   * Nếu hết giờ nhưng còn câu chưa trả lời,
-   * không nộp dữ liệu thiếu để tránh lỗi database.
-   */
-  if (
-    isAutoSubmit &&
-    answers.length !== questions.length
-  ) {
-    clearQuizTimer();
-
-    alert(
-      'Bạn chưa trả lời đủ câu hỏi nên bài chưa được nộp. Vui lòng chọn đủ đáp án và nộp lại.'
+  const confirmed =
+    window.confirm(
+      'Bạn có chắc muốn nộp bài kiểm tra?'
     );
 
+  if (!confirmed) {
     return;
-  }
-
-  if (!isAutoSubmit) {
-    const confirmed =
-      window.confirm(
-        'Bạn có chắc muốn nộp bài kiểm tra?'
-      );
-
-    if (!confirmed) {
-      return;
-    }
   }
 
   if (submitButton) {
@@ -1420,7 +1385,7 @@ async function submitQuiz(
 }
 
 /* =========================================================
-   KẾT QUẢ BÀI KIỂM TRA
+   KẾT QUẢ KIỂM TRA
 ========================================================= */
 
 function renderQuizResultPage(
@@ -1450,10 +1415,7 @@ function renderQuizResultPage(
 
     <main class="result-page">
       <section
-        class="
-          result-card
-          ${isPassed ? 'passed' : 'failed'}
-        "
+        class="result-card ${isPassed ? 'passed' : 'failed'}"
       >
         <div class="result-icon">
           ${isPassed ? '✓' : '!'}
@@ -1564,9 +1526,7 @@ function renderQuizResultPage(
   `;
 
   document
-    .querySelector(
-      '#logout-button'
-    )
+    .querySelector('#logout-button')
     .addEventListener(
       'click',
       handleLogout
@@ -1695,7 +1655,7 @@ function renderNoAttemptsPage(
 }
 
 /* =========================================================
-   VIDEO, PDF VÀ HÌNH ẢNH
+   VIDEO VÀ PDF
 ========================================================= */
 
 function renderVideo(url) {
@@ -1739,7 +1699,7 @@ function renderPdf(url) {
 }
 
 /* =========================================================
-   HEADER
+   HEADER CÓ LOGO
 ========================================================= */
 
 function renderMainHeader(
@@ -1748,14 +1708,22 @@ function renderMainHeader(
 ) {
   return `
     <header class="header">
-      <div>
-        <p class="eyebrow">
-          NHÀ MÁY THỦY ĐIỆN A VƯƠNG
-        </p>
+      <div class="header-brand">
+        <img
+          class="company-logo header-logo"
+          src="./Logo.png"
+          alt="Logo Nhà máy thủy điện A Vương"
+        >
 
-        <h1>
-          ${escapeHtml(title)}
-        </h1>
+        <div class="header-title">
+          <p class="eyebrow">
+            NHÀ MÁY THỦY ĐIỆN A VƯƠNG
+          </p>
+
+          <h1>
+            ${escapeHtml(title)}
+          </h1>
+        </div>
       </div>
 
       <div class="header-actions">
@@ -1786,7 +1754,7 @@ function renderMainHeader(
 }
 
 /* =========================================================
-   ĐỒNG HỒ BÀI KIỂM TRA
+   ĐỒNG HỒ
 ========================================================= */
 
 function startQuizTimer(
@@ -1885,6 +1853,12 @@ function renderMessage(message) {
   app.innerHTML = `
     <main class="message-page">
       <section class="message-card">
+        <img
+          class="company-logo message-logo"
+          src="./Logo.png"
+          alt="Logo Nhà máy thủy điện A Vương"
+        >
+
         <h1>Không tải được hệ thống</h1>
 
         <p>
