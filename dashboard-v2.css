@@ -1,0 +1,690 @@
+/* =========================================================
+   DASHBOARD LỘ TRÌNH ĐÀO TẠO
+========================================================= */
+
+.training-dashboard {
+  width:
+    min(
+      1420px,
+      calc(100% - 40px)
+    );
+
+  margin: 36px auto 60px;
+}
+
+.section-label {
+  margin: 0 0 7px;
+
+  color: #08749d;
+  font-family:
+    Inter,
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* =========================================================
+   THÔNG TIN SINH VIÊN
+========================================================= */
+
+.student-welcome-card {
+  padding: 30px;
+
+  border: 1px solid #dce7ee;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f1f9fc 100%
+    );
+
+  box-shadow:
+    0 12px 34px
+    rgba(17, 41, 65, 0.08);
+}
+
+.welcome-main h2 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.welcome-main > p:last-child {
+  margin: 10px 0 0;
+  color: #667085;
+}
+
+.student-information-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.student-information-grid > div {
+  padding: 16px;
+
+  border: 1px solid #e1e9ef;
+  border-radius: 11px;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.85
+  );
+}
+
+.student-information-grid span {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #667085;
+  font-size: 13px;
+}
+
+/* =========================================================
+   TỔNG QUAN TIẾN ĐỘ
+========================================================= */
+
+.progress-overview-card {
+  margin-top: 22px;
+  padding: 28px;
+
+  border: 1px solid #dce7ee;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 34px
+    rgba(17, 41, 65, 0.07);
+}
+
+.progress-overview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.progress-overview-heading h2 {
+  margin: 0;
+}
+
+.progress-circle {
+  display: grid;
+
+  width: 76px;
+  height: 76px;
+
+  border: 8px solid #dff3fa;
+  border-radius: 50%;
+
+  color: #08749d;
+  background: #ffffff;
+
+  font-size: 19px;
+
+  place-items: center;
+}
+
+.main-progress-track {
+  overflow: hidden;
+
+  width: 100%;
+  height: 13px;
+
+  margin-top: 22px;
+
+  border-radius: 999px;
+  background: #e9eef2;
+}
+
+.main-progress-value {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #087ca6,
+      #13a3c7
+    );
+
+  transition: width 0.4s ease;
+}
+
+.progress-statistics {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.progress-statistics > div {
+  padding: 15px;
+
+  border-radius: 11px;
+  background: #f7f9fb;
+}
+
+.progress-statistics span {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #667085;
+  font-size: 13px;
+}
+
+.progress-statistics strong {
+  color: #172033;
+  font-size: 18px;
+}
+
+/* =========================================================
+   BÀI TIẾP THEO
+========================================================= */
+
+.next-lesson-card {
+  display: grid;
+  grid-template-columns:
+    72px 1fr auto;
+
+  align-items: center;
+  gap: 22px;
+
+  margin-top: 22px;
+  padding: 26px;
+
+  border: 1px solid #9ddced;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #edfafd,
+      #ffffff
+    );
+
+  box-shadow:
+    0 12px 34px
+    rgba(8, 124, 166, 0.1);
+}
+
+.next-lesson-number {
+  display: grid;
+
+  width: 66px;
+  height: 66px;
+
+  border-radius: 17px;
+
+  color: #ffffff;
+  background: #087ca6;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.next-lesson-content h2 {
+  margin: 0;
+  font-size: 23px;
+}
+
+.next-lesson-content > p:last-child {
+  margin: 8px 0 0;
+  color: #667085;
+}
+
+/* =========================================================
+   LỘ TRÌNH
+========================================================= */
+
+.training-roadmap-section {
+  margin-top: 28px;
+  padding: 30px;
+
+  border: 1px solid #dce7ee;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 34px
+    rgba(17, 41, 65, 0.07);
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.section-heading > div:first-child > p:last-child {
+  margin: 9px 0 0;
+  color: #667085;
+}
+
+.roadmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.legend-item {
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.legend-item.passed {
+  color: #067647;
+  background: #ecfdf3;
+}
+
+.legend-item.available {
+  color: #08749d;
+  background: #eaf7fc;
+}
+
+.legend-item.locked {
+  color: #667085;
+  background: #f0f2f5;
+}
+
+/* =========================================================
+   CHUYÊN ĐỀ
+========================================================= */
+
+.module-list {
+  display: grid;
+  gap: 20px;
+  margin-top: 28px;
+}
+
+.training-module-card {
+  overflow: hidden;
+
+  border: 1px solid #dce6ed;
+  border-radius: 15px;
+
+  background: #ffffff;
+}
+
+.module-header {
+  display: grid;
+  grid-template-columns:
+    58px 1fr auto;
+
+  align-items: center;
+  gap: 17px;
+
+  padding: 20px 22px;
+  background: #f7fafc;
+}
+
+.module-index {
+  display: grid;
+
+  width: 52px;
+  height: 52px;
+
+  border-radius: 14px;
+
+  color: #08749d;
+  background: #dff3fa;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.module-title > p {
+  margin: 0;
+
+  color: #08749d;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.module-title h3 {
+  margin: 4px 0;
+  font-size: 20px;
+}
+
+.module-title span {
+  color: #667085;
+  font-size: 14px;
+}
+
+.module-progress-summary {
+  text-align: right;
+}
+
+.module-progress-summary strong {
+  display: block;
+  color: #08749d;
+  font-size: 19px;
+}
+
+.module-progress-summary span {
+  color: #667085;
+  font-size: 12px;
+}
+
+.module-progress-track {
+  height: 5px;
+  background: #e9eef2;
+}
+
+.module-progress-value {
+  height: 100%;
+  background: #12a4c7;
+}
+
+.module-lessons {
+  display: grid;
+}
+
+/* =========================================================
+   TỪNG BÀI
+========================================================= */
+
+.roadmap-lesson-item {
+  display: grid;
+  grid-template-columns:
+    38px 65px 1fr 150px;
+
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px 22px;
+
+  border-top: 1px solid #edf1f4;
+}
+
+.roadmap-lesson-item:first-child {
+  border-top: 0;
+}
+
+.roadmap-lesson-item.locked {
+  background: #fafbfc;
+  opacity: 0.72;
+}
+
+.roadmap-status-icon {
+  display: grid;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.roadmap-lesson-item.passed
+.roadmap-status-icon {
+  color: #ffffff;
+  background: #12b76a;
+}
+
+.roadmap-lesson-item.available
+.roadmap-status-icon,
+.roadmap-lesson-item.studying
+.roadmap-status-icon {
+  color: #ffffff;
+  background: #087ca6;
+}
+
+.roadmap-lesson-item.locked
+.roadmap-status-icon {
+  color: #667085;
+  background: #e4e7ec;
+}
+
+.roadmap-lesson-number {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.roadmap-lesson-information h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.roadmap-lesson-information > p {
+  margin: 6px 0 0;
+
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.lesson-resource-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.resource-tag {
+  padding: 5px 8px;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.resource-tag.video {
+  color: #08749d;
+  background: #eaf7fc;
+}
+
+.resource-tag.pdf {
+  color: #b42318;
+  background: #fef3f2;
+}
+
+.resource-tag.score {
+  color: #067647;
+  background: #ecfdf3;
+}
+
+.resource-tag.preparing {
+  color: #667085;
+  background: #f0f2f5;
+}
+
+.roadmap-lesson-action {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.roadmap-status-text {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.roadmap-status-text.passed {
+  color: #067647;
+}
+
+.roadmap-status-text.available,
+.roadmap-status-text.studying {
+  color: #08749d;
+}
+
+.roadmap-status-text.locked {
+  color: #667085;
+}
+
+.dashboard-lesson-button {
+  min-width: 130px;
+  min-height: 40px;
+
+  padding: 9px 13px;
+
+  border: 1px solid #087ca6;
+  border-radius: 9px;
+
+  color: #08749d;
+  background: #ffffff;
+
+  font-weight: 700;
+}
+
+.dashboard-lesson-button:hover:not(
+  :disabled
+) {
+  color: #ffffff;
+  background: #087ca6;
+}
+
+.dashboard-lesson-button:disabled {
+  cursor: not-allowed;
+
+  border-color: #d0d5dd;
+
+  color: #98a2b3;
+  background: #f2f4f7;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+  .progress-statistics {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .roadmap-lesson-item {
+    grid-template-columns:
+      38px 55px 1fr;
+  }
+
+  .roadmap-lesson-action {
+    grid-column: 3;
+    justify-items: start;
+  }
+}
+
+@media (max-width: 700px) {
+  .training-dashboard {
+    width:
+      min(
+        100% - 24px,
+        1420px
+      );
+
+    margin-top: 18px;
+  }
+
+  .student-information-grid,
+  .progress-statistics {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-overview-heading,
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .roadmap-legend {
+    justify-content: flex-start;
+  }
+
+  .next-lesson-card {
+    grid-template-columns:
+      56px 1fr;
+  }
+
+  .next-lesson-number {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .next-lesson-card
+  .dashboard-lesson-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .training-roadmap-section,
+  .student-welcome-card,
+  .progress-overview-card {
+    padding: 20px;
+  }
+
+  .module-header {
+    grid-template-columns:
+      48px 1fr;
+  }
+
+  .module-index {
+    width: 44px;
+    height: 44px;
+  }
+
+  .module-progress-summary {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .roadmap-lesson-item {
+    grid-template-columns:
+      35px 1fr;
+
+    padding: 16px;
+  }
+
+  .roadmap-lesson-number {
+    grid-column: 2;
+  }
+
+  .roadmap-lesson-information,
+  .roadmap-lesson-action {
+    grid-column: 2;
+  }
+
+  .roadmap-lesson-action {
+    justify-items: stretch;
+  }
+
+  .dashboard-lesson-button {
+    width: 100%;
+  }
+}
