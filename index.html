@@ -38,7 +38,6 @@
     href="./dashboard-v2.css"
   >
 
-  <!-- CSS quản trị đặt cuối để ưu tiên -->
   <link
     rel="stylesheet"
     href="./admin.css"
@@ -56,17 +55,57 @@
     </main>
   </div>
 
+  <!-- Thư viện Supabase tải trước -->
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
+  <!-- Mã nền tảng -->
   <script src="./app.js"></script>
 
+  <!-- Chức năng học video -->
   <script src="./video-gate.js"></script>
 
+  <!-- Dashboard sinh viên -->
   <script src="./dashboard-v2.js"></script>
 
-  <!-- Admin phải được tải cuối cùng -->
+  <!-- Dashboard quản trị phải tải cuối -->
   <script src="./admin.js"></script>
+
+  <!-- Chỉ khởi động sau khi tất cả file đã tải -->
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await init();
+      } catch (error) {
+        console.error('Lỗi khởi động hệ thống:', error);
+
+        const appElement = document.querySelector('#app');
+
+        if (appElement) {
+          appElement.innerHTML = `
+            <main class="message-page">
+              <section class="message-card">
+                <h1>Không thể khởi động hệ thống</h1>
+
+                <p>
+                  Đã xảy ra lỗi khi tải dữ liệu.
+                  Vui lòng mở bảng Console để kiểm tra chi tiết.
+                </p>
+
+                <button
+                  class="primary-button"
+                  type="button"
+                  onclick="window.location.reload()"
+                >
+                  Tải lại trang
+                </button>
+              </section>
+            </main>
+          `;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
