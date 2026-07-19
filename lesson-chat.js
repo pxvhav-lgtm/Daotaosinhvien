@@ -1,11 +1,14 @@
 /**
  * Chatbox hỏi đáp tài liệu cho từng bài học.
  *
- * Bài 1:
- * .../exec?lesson=1
- *
- * Bài 15:
- * .../exec?lesson=15
+ * Chatbox chỉ xuất hiện trong trang chi tiết bài học,
+ * không xuất hiện tại:
+ * - Trang đăng nhập
+ * - Dashboard
+ * - Danh sách bài học
+ * - Trang quản trị
+ * - Trang kiểm tra
+ * - Trang kết quả
  */
 
 const LESSON_CHAT_APP_URL =
@@ -15,8 +18,8 @@ const LESSON_CHAT_APP_URL =
 /**
  * Những bài hiện đã có STORE trong Apps Script.
  *
- * Khi tạo thêm STORE_2, STORE_3...
- * chỉ cần thêm số bài vào đây.
+ * Bài 23 là bài kiểm tra tổng kết nên
+ * không được thêm vào danh sách này.
  */
 const CONFIGURED_CHAT_LESSONS = [
   1,
@@ -40,14 +43,22 @@ const CONFIGURED_CHAT_LESSONS = [
   19,
   20,
   21,
-  22 
+  22
 ];
 
+
+/* =========================================================
+   KHỞI TẠO CHATBOX
+========================================================= */
 
 (function initializeLessonChat() {
   const originalRenderLessonPage =
     window.renderLessonPage;
 
+  /*
+   * Bọc hàm renderLessonPage để chèn chatbox
+   * sau khi nội dung bài học đã được hiển thị.
+   */
   if (
     typeof originalRenderLessonPage ===
     'function'
@@ -56,66 +67,123 @@ const CONFIGURED_CHAT_LESSONS = [
       async function (...args) {
         const result =
           await originalRenderLessonPage
-            .apply(this, args);
+            .apply(
+              this,
+              args
+            );
 
         window.setTimeout(
           function () {
             injectLessonChat(args);
           },
-          100
+          150
         );
 
         return result;
       };
+
+    /*
+     * Cập nhật lại biến toàn cục để các file khác
+     * gọi đúng phiên bản renderLessonPage mới.
+     */
+    try {
+      renderLessonPage =
+        window.renderLessonPage;
+    } catch (error) {
+      console.warn(
+        'Không thể cập nhật renderLessonPage:',
+        error
+      );
+    }
   }
 
   /*
-   * Dự phòng khi trang bài học được render
-   * bởi một file JavaScript khác.
+   * MutationObserver dùng làm phương án dự phòng
+   * khi giao diện được render bởi file khác.
    */
   const appElement =
-    document.querySelector('#app');
+    document.querySelector(
+      '#app'
+    );
 
-  if (appElement) {
-    const observer =
-      new MutationObserver(
-        function () {
+  if (!appElement) {
+    return;
+  }
+
+  let observerTimer = null;
+
+  const observer =
+    new MutationObserver(
+      function () {
+        if (observerTimer) {
+          window.clearTimeout(
+            observerTimer
+          );
+        }
+
+        observerTimer =
           window.setTimeout(
             function () {
               injectLessonChat([]);
             },
-            100
+            180
           );
-        }
-      );
-
-    observer.observe(
-      appElement,
-      {
-        childList: true,
-        subtree: true
       }
     );
-  }
+
+  observer.observe(
+    appElement,
+    {
+      childList: true,
+      subtree: true
+    }
+  );
 })();
 
 
+/* =========================================================
+   CHÈN CHATBOX VÀO TRANG BÀI HỌC
+========================================================= */
+
 /**
- * Chèn khung chat vào trang bài học.
+ * Chèn khung chat vào đúng trang chi tiết bài học.
  */
 function injectLessonChat(
   renderArguments
 ) {
   const appElement =
-    document.querySelector('#app');
+    document.querySelector(
+      '#app'
+    );
 
   if (!appElement) {
     return;
   }
 
   /*
-   * Không chèn chat vào trang đăng nhập,
-   * dashboard hoặc trang quản trị.
+   * Điều kiện quan trọng:
+   *
+   * Trang chi tiết bài học trong app.js có:
+   * <article class="lesson-detail-card">
+   *
+   * Trang danh sách bài học không có class này.
+   * Vì vậy chatbox không được chèn ở dashboard.
+   */
+  const lessonDetailCard =
+    appElement.querySelector(
+      '.lesson-detail-card'
+    );
+
+  if (!lessonDetailCard) {
+    removeLessonChat();
+    return;
+  }
+
+  /*
+   * Kiểm tra thêm để tránh chèn vào:
+   * - Trang quản trị
+   * - Trang kiểm tra
+   * - Trang kết quả
    */
   if (
     !isLessonPageVisible(
@@ -129,10 +197,29 @@ function injectLessonChat(
   const lessonNumber =
     detectLessonNumber(
       renderArguments,
-      appElement
+      lessonDetailCard
     );
 
   if (!lessonNumber) {
+    removeLessonChat();
+    return;
+  }
+
+  /*
+   * Bài chưa có STORE thì không hiển thị
+   * bất kỳ khung chat nào.
+   *
+   * Điều này cũng đảm bảo Bài 23 không xuất hiện chatbox.
+   */
+  const isConfigured =
+    CONFIGURED_CHAT_LESSONS.includes(
+      Number(
+        lessonNumber
+      )
+    );
+
+  if (!isConfigured) {
+    removeLessonChat();
     return;
   }
 
@@ -141,10 +228,15 @@ function injectLessonChat(
       '#lessonAiChatSection'
     );
 
+  /*
+   * Chatbox đúng bài đã tồn tại thì không tạo lại.
+   */
   if (
     existingChat &&
     existingChat.dataset.lesson ===
-      String(lessonNumber)
+      String(
+        lessonNumber
+      )
   ) {
     return;
   }
@@ -163,72 +255,84 @@ function injectLessonChat(
     'lesson-ai-chat';
 
   section.dataset.lesson =
-    String(lessonNumber);
-
-  const isConfigured =
-    CONFIGURED_CHAT_LESSONS.includes(
-      Number(lessonNumber)
+    String(
+      lessonNumber
     );
 
-  if (!isConfigured) {
-    section.innerHTML =
-      renderUnavailableChat(
-        lessonNumber
-      );
-  } else {
-    section.innerHTML =
-      renderAvailableChat(
-        lessonNumber
-      );
-  }
+  section.innerHTML =
+    renderAvailableChat(
+      lessonNumber
+    );
 
   const target =
     findLessonChatTarget(
       appElement
     );
 
-  target.appendChild(section);
+  target.appendChild(
+    section
+  );
 
   bindLessonChatEvents(
-    section,
-    lessonNumber,
-    isConfigured
+    section
   );
 }
 
 
+/* =========================================================
+   KIỂM TRA TRANG HIỆN TẠI
+========================================================= */
+
 /**
- * Kiểm tra giao diện hiện tại có phải
- * trang nội dung bài học hay không.
+ * Chỉ xác nhận trang chi tiết nội dung bài học.
  */
 function isLessonPageVisible(
   appElement
 ) {
+  const lessonDetailCard =
+    appElement.querySelector(
+      '.lesson-detail-card'
+    );
+
+  if (!lessonDetailCard) {
+    return false;
+  }
+
   const text =
     String(
       appElement.innerText || ''
     ).toLowerCase();
 
-  const hasLessonHeading =
-    /\bbài\s*\d+\b/i.test(
-      appElement.innerText || ''
+  const isQuizPage =
+    Boolean(
+      appElement.querySelector(
+        '.quiz-page'
+      )
+    ) ||
+    Boolean(
+      appElement.querySelector(
+        '#quiz-form'
+      )
+    ) ||
+    Boolean(
+      appElement.querySelector(
+        '#final-quiz-form'
+      )
     );
 
-  const hasLessonContent =
-    text.includes(
-      'nội dung bài học'
-    ) ||
-    text.includes(
-      'tài liệu bài học'
-    ) ||
-    text.includes(
-      'bài kiểm tra'
-    ) ||
-    text.includes(
-      'xem video'
+  const isResultPage =
+    Boolean(
+      appElement.querySelector(
+        '.result-page'
+      )
     );
 
   const isAdminPage =
+    Boolean(
+      appElement.querySelector(
+        '.admin-page'
+      )
+    ) ||
     text.includes(
       'cấu hình kiểm tra'
     ) ||
@@ -239,25 +343,46 @@ function isLessonPageVisible(
       'nhập json từ notebooklm'
     );
 
+  const isLoginPage =
+    Boolean(
+      appElement.querySelector(
+        '.login-page'
+      )
+    );
+
+  const isDashboardPageOnly =
+    Boolean(
+      appElement.querySelector(
+        '.lesson-list'
+      )
+    ) &&
+    !lessonDetailCard;
+
   return (
-    hasLessonHeading &&
-    hasLessonContent &&
-    !isAdminPage
+    !isQuizPage &&
+    !isResultPage &&
+    !isAdminPage &&
+    !isLoginPage &&
+    !isDashboardPageOnly
   );
 }
 
 
+/* =========================================================
+   XÁC ĐỊNH SỐ BÀI
+========================================================= */
+
 /**
- * Xác định số bài.
+ * Xác định số bài hiện tại.
  *
  * Ưu tiên:
  * 1. Dữ liệu truyền vào renderLessonPage.
- * 2. Biến toàn cục hiện tại.
- * 3. Đọc chữ "Bài X" trên giao diện.
+ * 2. Biến toàn cục.
+ * 3. Nội dung trong lesson-detail-card.
  */
 function detectLessonNumber(
   renderArguments,
-  appElement
+  lessonDetailCard
 ) {
   const fromArguments =
     findLessonNumberInValue(
@@ -288,15 +413,42 @@ function detectLessonNumber(
     }
   }
 
+  /*
+   * Chỉ đọc nội dung trong lesson-detail-card.
+   *
+   * Không đọc toàn bộ #app để tránh lấy nhầm
+   * chữ Bài 23 trong danh sách bài học.
+   */
   const pageText =
     String(
-      appElement.innerText || ''
+      lessonDetailCard.innerText || ''
     );
 
+  const lessonOrderElement =
+    lessonDetailCard.querySelector(
+      '.lesson-order'
+    );
+
+  if (lessonOrderElement) {
+    const orderText =
+      String(
+        lessonOrderElement.textContent ||
+        ''
+      );
+
+    const orderMatch =
+      orderText.match(
+        /\bBài\s*(\d+)\b/i
+      );
+
+    if (orderMatch) {
+      return normalizeLessonNumber(
+        orderMatch[1]
+      );
+    }
+  }
+
   const match =
-    pageText.match(
-      /\bBÀI\s*(\d+)\b/i
-    ) ||
     pageText.match(
       /\bBài\s*(\d+)\b/i
     );
@@ -327,6 +479,11 @@ function findLessonNumberInValue(
     return null;
   }
 
+  /*
+   * Không coi lessonId là số thứ tự bài.
+   * Trong app.js, renderLessonPage nhận lessonId,
+   * không phải order_number.
+   */
   if (
     typeof value === 'number' ||
     typeof value === 'string'
@@ -335,7 +492,9 @@ function findLessonNumberInValue(
   }
 
   if (
-    Array.isArray(value)
+    Array.isArray(
+      value
+    )
   ) {
     for (
       const item of value
@@ -373,7 +532,10 @@ function findLessonNumberInValue(
     if (
       Object.prototype
         .hasOwnProperty
-        .call(value, key)
+        .call(
+          value,
+          key
+        )
     ) {
       const normalized =
         normalizeLessonNumber(
@@ -399,7 +561,10 @@ function findLessonNumberInValue(
     if (
       Object.prototype
         .hasOwnProperty
-        .call(value, key)
+        .call(
+          value,
+          key
+        )
     ) {
       const nestedResult =
         findLessonNumberInValue(
@@ -424,11 +589,12 @@ function normalizeLessonNumber(
   value
 ) {
   const digits =
-    String(value || '')
-      .replace(
-        /[^0-9]/g,
-        ''
-      );
+    String(
+      value || ''
+    ).replace(
+      /[^0-9]/g,
+      ''
+    );
 
   if (!digits) {
     return null;
@@ -441,7 +607,9 @@ function normalizeLessonNumber(
     );
 
   if (
-    !Number.isInteger(parsed) ||
+    !Number.isInteger(
+      parsed
+    ) ||
     parsed < 1
   ) {
     return null;
@@ -451,12 +619,30 @@ function normalizeLessonNumber(
 }
 
 
+/* =========================================================
+   VỊ TRÍ CHÈN CHATBOX
+========================================================= */
+
 /**
  * Chọn vị trí đặt khung chat.
+ *
+ * Ưu tiên đặt ngay sau lesson-detail-card.
  */
 function findLessonChatTarget(
   appElement
 ) {
+  const lessonDetailCard =
+    appElement.querySelector(
+      '.lesson-detail-card'
+    );
+
+  if (
+    lessonDetailCard &&
+    lessonDetailCard.parentElement
+  ) {
+    return lessonDetailCard.parentElement;
+  }
+
   const possibleTargets = [
     '.lesson-page',
     '.lesson-detail',
@@ -483,8 +669,12 @@ function findLessonChatTarget(
 }
 
 
+/* =========================================================
+   GIAO DIỆN CHATBOX
+========================================================= */
+
 /**
- * Giao diện khi bài đã có STORE.
+ * Giao diện bài đã có STORE.
  */
 function renderAvailableChat(
   lessonNumber
@@ -502,7 +692,7 @@ function renderAvailableChat(
         </p>
 
         <h2>
-          Hỏi đáp tài liệu Bài ${escapeHtml(
+          Hỏi đáp tài liệu Bài ${escapeLessonChatHtml(
             lessonNumber
           )}
         </h2>
@@ -524,7 +714,9 @@ function renderAvailableChat(
 
         <a
           class="lesson-ai-chat__open"
-          href="${escapeHtml(chatUrl)}"
+          href="${escapeLessonChatHtml(
+            chatUrl
+          )}"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -540,10 +732,12 @@ function renderAvailableChat(
 
       <iframe
         class="lesson-ai-chat__iframe"
-        title="Hỏi đáp tài liệu Bài ${escapeHtml(
+        title="Hỏi đáp tài liệu Bài ${escapeLessonChatHtml(
           lessonNumber
         )}"
-        src="${escapeHtml(chatUrl)}"
+        src="${escapeLessonChatHtml(
+          chatUrl
+        )}"
         loading="lazy"
         allow="clipboard-write"
         referrerpolicy="strict-origin-when-cross-origin"
@@ -553,51 +747,9 @@ function renderAvailableChat(
 }
 
 
-/**
- * Giao diện bài chưa tạo STORE.
- */
-function renderUnavailableChat(
-  lessonNumber
-) {
-  return `
-    <div class="lesson-ai-chat__header">
-      <div>
-        <p class="lesson-ai-chat__eyebrow">
-          TRỢ LÝ HỌC TẬP AI
-        </p>
-
-        <h2>
-          Hỏi đáp tài liệu Bài ${escapeHtml(
-            lessonNumber
-          )}
-        </h2>
-
-        <p>
-          Chatbox của bài học này chưa được
-          cấu hình tài liệu.
-        </p>
-      </div>
-    </div>
-
-    <div class="lesson-ai-chat__unavailable">
-      <strong>
-        Chưa có STORE_${escapeHtml(
-          lessonNumber
-        )}
-      </strong>
-
-      <p>
-        Sau khi tạo kho tài liệu trong Apps Script,
-        hãy thêm số ${escapeHtml(
-          lessonNumber
-        )} vào mảng
-        <code>CONFIGURED_CHAT_LESSONS</code>
-        trong file <code>lesson-chat.js</code>.
-      </p>
-    </div>
-  `;
-}
-
+/* =========================================================
+   URL CHAT
+========================================================= */
 
 /**
  * Tạo URL chat theo số bài.
@@ -624,18 +776,16 @@ function buildLessonChatUrl(
 }
 
 
+/* =========================================================
+   SỰ KIỆN CHATBOX
+========================================================= */
+
 /**
- * Gắn sự kiện cho khung chat.
+ * Gắn sự kiện cho iframe và nút thu gọn.
  */
 function bindLessonChatEvents(
-  section,
-  lessonNumber,
-  isConfigured
+  section
 ) {
-  if (!isConfigured) {
-    return;
-  }
-
   const iframe =
     section.querySelector(
       '.lesson-ai-chat__iframe'
@@ -664,6 +814,7 @@ function bindLessonChatEvents(
       'load',
       function () {
         loading.hidden = true;
+
         iframe.classList.add(
           'is-loaded'
         );
@@ -703,28 +854,40 @@ function bindLessonChatEvents(
 }
 
 
+/* =========================================================
+   XÓA CHATBOX
+========================================================= */
+
 /**
- * Xóa khung chat cũ.
+ * Xóa mọi chatbox cũ còn tồn tại.
  */
 function removeLessonChat() {
-  const existing =
-    document.querySelector(
+  document
+    .querySelectorAll(
       '#lessonAiChatSection'
+    )
+    .forEach(
+      function (element) {
+        element.remove();
+      }
     );
-
-  if (existing) {
-    existing.remove();
-  }
 }
 
 
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
 /**
- * Escape dữ liệu HTML.
+ * Đặt tên riêng để không ghi đè hàm escapeHtml
+ * đã có trong app.js.
  */
-function escapeHtml(
+function escapeLessonChatHtml(
   value
 ) {
-  return String(value ?? '')
+  return String(
+    value ?? ''
+  )
     .replace(
       /&/g,
       '&amp;'
