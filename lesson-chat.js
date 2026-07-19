@@ -20,6 +20,7 @@ const LESSON_CHAT_APP_URL =
  */
 const CONFIGURED_CHAT_LESSONS = [
   1,
+  2,
   15
 ];
 
