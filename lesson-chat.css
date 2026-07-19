@@ -1,0 +1,181 @@
+.lesson-ai-chat {
+  width: min(100%, 1500px);
+  margin: 28px auto 40px;
+  overflow: hidden;
+  border: 1px solid #cfe0e9;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 16px 40px
+    rgba(17, 67, 91, 0.1);
+}
+
+.lesson-ai-chat__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 24px;
+  border-bottom: 1px solid #d8e5eb;
+  background:
+    linear-gradient(
+      135deg,
+      #f1fbff,
+      #ffffff
+    );
+}
+
+.lesson-ai-chat__eyebrow {
+  margin: 0 0 7px;
+  color: #087fa8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.lesson-ai-chat__header h2 {
+  margin: 0 0 7px;
+  color: #162033;
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.lesson-ai-chat__header p {
+  margin: 0;
+  color: #687488;
+  line-height: 1.55;
+}
+
+.lesson-ai-chat__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.lesson-ai-chat__toggle,
+.lesson-ai-chat__open {
+  min-height: 42px;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lesson-ai-chat__toggle {
+  border: 1px solid #98c9db;
+  background: #ffffff;
+  color: #087fa8;
+}
+
+.lesson-ai-chat__open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #087fa8;
+  background: #087fa8;
+  color: #ffffff;
+}
+
+.lesson-ai-chat__toggle:hover,
+.lesson-ai-chat__open:hover {
+  filter: brightness(0.96);
+}
+
+.lesson-ai-chat__body {
+  position: relative;
+  min-height: 680px;
+  background: #f4f8fb;
+}
+
+.lesson-ai-chat__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  color: #667387;
+  background: #f4f8fb;
+  font-weight: 700;
+}
+
+.lesson-ai-chat__loading[hidden] {
+  display: none;
+}
+
+.lesson-ai-chat__iframe {
+  display: block;
+  width: 100%;
+  height: 680px;
+  border: 0;
+  opacity: 0;
+  background: #f4f8fb;
+  transition: opacity 0.2s ease;
+}
+
+.lesson-ai-chat__iframe.is-loaded {
+  opacity: 1;
+}
+
+.lesson-ai-chat__unavailable {
+  padding: 28px 24px;
+  color: #6a4b00;
+  background: #fff9e8;
+}
+
+.lesson-ai-chat__unavailable strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #8a5b00;
+  font-size: 18px;
+}
+
+.lesson-ai-chat__unavailable p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.lesson-ai-chat__unavailable code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: rgba(130, 90, 0, 0.1);
+}
+
+.lesson-ai-chat.is-collapsed {
+  margin-bottom: 28px;
+}
+
+@media (max-width: 800px) {
+  .lesson-ai-chat {
+    margin: 20px auto 28px;
+    border-radius: 14px;
+  }
+
+  .lesson-ai-chat__header {
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .lesson-ai-chat__header h2 {
+    font-size: 20px;
+  }
+
+  .lesson-ai-chat__actions {
+    width: 100%;
+  }
+
+  .lesson-ai-chat__toggle,
+  .lesson-ai-chat__open {
+    flex: 1;
+  }
+
+  .lesson-ai-chat__body {
+    min-height: 600px;
+  }
+
+  .lesson-ai-chat__iframe {
+    height: 600px;
+  }
+}
