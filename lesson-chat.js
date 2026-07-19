@@ -9,7 +9,7 @@
  */
 
 const LESSON_CHAT_APP_URL =
-  'https://script.google.com/macros/s/AKfycbzR3MLfocfCrRhix3MAXAWG50AJKEmIkjjmbjHMh4F83OGFRLSxwIUkgQlUkzrmHSAb/exec';
+  'https://script.google.com/macros/s/AKfycbwJrBuDX7ChFZllSH3-1RRR1BKchGDcoQ3rVSPgP1aWbr9rUg5ByyVXpibehHzba4T0/exec';
 
 
 /**
