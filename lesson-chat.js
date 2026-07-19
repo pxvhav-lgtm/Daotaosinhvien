@@ -40,8 +40,7 @@ const CONFIGURED_CHAT_LESSONS = [
   19,
   20,
   21,
-  22,
-  23  
+  22 
 ];
 
 
