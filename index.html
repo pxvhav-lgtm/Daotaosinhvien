@@ -26,37 +26,43 @@
   <!-- CSS nền tảng -->
   <link
     rel="stylesheet"
-    href="./style.css?v=20260719-1"
+    href="./style.css?v=20260719-50"
   >
 
   <!-- CSS học video và tài liệu -->
   <link
     rel="stylesheet"
-    href="./video-gate.css?v=20260719-1"
+    href="./video-gate.css?v=20260719-50"
   >
 
   <!-- CSS Dashboard sinh viên -->
   <link
     rel="stylesheet"
-    href="./dashboard-v2.css?v=20260719-1"
+    href="./dashboard-v2.css?v=20260719-50"
   >
 
   <!-- CSS Dashboard quản trị -->
   <link
     rel="stylesheet"
-    href="./admin.css?v=20260719-1"
+    href="./admin.css?v=20260719-50"
   >
 
   <!-- CSS nhập JSON từ NotebookLM -->
   <link
     rel="stylesheet"
-    href="./nblm-import.css?v=20260719-1"
+    href="./nblm-import.css?v=20260719-50"
+  >
+
+  <!-- CSS bài kiểm tra tổng kết Bài 23 -->
+  <link
+    rel="stylesheet"
+    href="./final-quiz.css?v=20260719-50"
   >
 
   <!-- CSS khung chat hỏi đáp tài liệu -->
   <link
     rel="stylesheet"
-    href="./lesson-chat.css?v=20260719-1"
+    href="./lesson-chat.css?v=20260719-50"
   >
 </head>
 
@@ -66,7 +72,9 @@
       <div class="loading-box">
         <div class="spinner"></div>
 
-        <p>Đang tải hệ thống...</p>
+        <p>
+          Đang tải hệ thống...
+        </p>
       </div>
     </main>
   </div>
@@ -78,27 +86,41 @@
 
   <!-- Mã nguồn nền tảng -->
   <script
-    src="./app.js?v=20260719-1"
+    src="./app.js?v=20260719-50"
   ></script>
 
   <!-- Chức năng xem video Google Drive -->
   <script
-    src="./video-gate.js?v=20260719-1"
+    src="./video-gate.js?v=20260719-50"
   ></script>
 
   <!-- Dashboard sinh viên -->
   <script
-    src="./dashboard-v2.js?v=20260719-1"
+    src="./dashboard-v2.js?v=20260719-50"
   ></script>
 
   <!-- Dashboard quản trị -->
   <script
-    src="./admin.js?v=20260719-1"
+    src="./admin.js?v=20260719-50"
   ></script>
 
   <!-- Nhập JSON từ NotebookLM, phải tải sau admin.js -->
   <script
-    src="./nblm-import.js?v=20260719-1"
+    src="./nblm-import.js?v=20260719-50"
+  ></script>
+
+  <!--
+    Bài kiểm tra tổng kết Bài 23.
+
+    File này phải tải sau:
+    - app.js
+    - video-gate.js
+    - dashboard-v2.js
+    - admin.js
+    - nblm-import.js
+  -->
+  <script
+    src="./final-quiz.js?v=20260719-50"
   ></script>
 
   <!--
@@ -109,8 +131,11 @@
     - video-gate.js
     - dashboard-v2.js
     - admin.js
+    - final-quiz.js
   -->
- <script src="./lesson-chat.js?v=20260719-41"></script>
+  <script
+    src="./lesson-chat.js?v=20260719-50"
+  ></script>
 
   <!-- Khởi động hệ thống sau khi mọi file đã tải -->
   <script>
