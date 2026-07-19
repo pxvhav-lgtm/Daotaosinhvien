@@ -26,31 +26,37 @@
   <!-- CSS nền tảng -->
   <link
     rel="stylesheet"
-    href="./style.css?v=20260716-1"
+    href="./style.css?v=20260719-1"
   >
 
   <!-- CSS học video và tài liệu -->
   <link
     rel="stylesheet"
-    href="./video-gate.css?v=20260716-1"
+    href="./video-gate.css?v=20260719-1"
   >
 
   <!-- CSS Dashboard sinh viên -->
   <link
     rel="stylesheet"
-    href="./dashboard-v2.css?v=20260716-1"
+    href="./dashboard-v2.css?v=20260719-1"
   >
 
   <!-- CSS Dashboard quản trị -->
   <link
     rel="stylesheet"
-    href="./admin.css?v=20260716-1"
+    href="./admin.css?v=20260719-1"
   >
 
   <!-- CSS nhập JSON từ NotebookLM -->
   <link
     rel="stylesheet"
-    href="./nblm-import.css?v=20260716-1"
+    href="./nblm-import.css?v=20260719-1"
+  >
+
+  <!-- CSS khung chat hỏi đáp tài liệu -->
+  <link
+    rel="stylesheet"
+    href="./lesson-chat.css?v=20260719-1"
   >
 </head>
 
@@ -71,74 +77,105 @@
   ></script>
 
   <!-- Mã nguồn nền tảng -->
-  <script src="./app.js?v=20260716-1"></script>
+  <script
+    src="./app.js?v=20260719-1"
+  ></script>
 
   <!-- Chức năng xem video Google Drive -->
-  <script src="./video-gate.js?v=20260716-1"></script>
+  <script
+    src="./video-gate.js?v=20260719-1"
+  ></script>
 
   <!-- Dashboard sinh viên -->
-  <script src="./dashboard-v2.js?v=20260716-1"></script>
+  <script
+    src="./dashboard-v2.js?v=20260719-1"
+  ></script>
 
   <!-- Dashboard quản trị -->
-  <script src="./admin.js?v=20260716-1"></script>
+  <script
+    src="./admin.js?v=20260719-1"
+  ></script>
 
   <!-- Nhập JSON từ NotebookLM, phải tải sau admin.js -->
-  <script src="./nblm-import.js?v=20260716-1"></script>
+  <script
+    src="./nblm-import.js?v=20260719-1"
+  ></script>
+
+  <!--
+    Khung chat hỏi đáp tài liệu.
+
+    File này phải tải sau:
+    - app.js
+    - video-gate.js
+    - dashboard-v2.js
+    - admin.js
+  -->
+  <script
+    src="./lesson-chat.js?v=20260719-1"
+  ></script>
 
   <!-- Khởi động hệ thống sau khi mọi file đã tải -->
   <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        if (typeof init !== 'function') {
-          throw new Error(
-            'Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.'
+    window.addEventListener(
+      'DOMContentLoaded',
+      async () => {
+        try {
+          if (
+            typeof init !==
+            'function'
+          ) {
+            throw new Error(
+              'Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.'
+            );
+          }
+
+          await init();
+        } catch (error) {
+          console.error(
+            'Lỗi khởi động hệ thống:',
+            error
           );
+
+          const appElement =
+            document.querySelector(
+              '#app'
+            );
+
+          if (!appElement) {
+            return;
+          }
+
+          appElement.innerHTML = `
+            <main class="message-page">
+              <section class="message-card">
+                <img
+                  class="company-logo message-logo"
+                  src="./Logo.png"
+                  alt="Logo Công ty Cổ phần Thủy điện A Vương"
+                >
+
+                <h1>
+                  Không thể khởi động hệ thống
+                </h1>
+
+                <p>
+                  Đã xảy ra lỗi khi tải dữ liệu.
+                  Vui lòng mở bảng Console để kiểm tra chi tiết.
+                </p>
+
+                <button
+                  class="primary-button"
+                  type="button"
+                  onclick="window.location.reload()"
+                >
+                  Tải lại trang
+                </button>
+              </section>
+            </main>
+          `;
         }
-
-        await init();
-      } catch (error) {
-        console.error(
-          'Lỗi khởi động hệ thống:',
-          error
-        );
-
-        const appElement =
-          document.querySelector('#app');
-
-        if (!appElement) {
-          return;
-        }
-
-        appElement.innerHTML = `
-          <main class="message-page">
-            <section class="message-card">
-              <img
-                class="company-logo message-logo"
-                src="./Logo.png"
-                alt="Logo Công ty Cổ phần Thủy điện A Vương"
-              >
-
-              <h1>
-                Không thể khởi động hệ thống
-              </h1>
-
-              <p>
-                Đã xảy ra lỗi khi tải dữ liệu.
-                Vui lòng mở bảng Console để kiểm tra chi tiết.
-              </p>
-
-              <button
-                class="primary-button"
-                type="button"
-                onclick="window.location.reload()"
-              >
-                Tải lại trang
-              </button>
-            </section>
-          </main>
-        `;
       }
-    });
+    );
   </script>
 </body>
 </html>
