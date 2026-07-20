@@ -31,8 +31,11 @@
 
   margin: 0 auto;
 
+  /*
+   * Tăng khoảng trắng phía trên.
+   */
   padding:
-    8mm 11mm 8mm;
+    16mm 11mm 8mm;
 
   color: #000000;
 
@@ -63,11 +66,6 @@
    ĐẦU TRANG 3 CỘT
 ========================================================= */
 
-/*
- * Cột 1: Logo
- * Cột 2: Tên đơn vị
- * Cột 3: Quốc hiệu và tiêu ngữ
- */
 .admin-print-document-header {
   display: grid;
 
@@ -92,11 +90,6 @@
   padding: 0;
 }
 
-
-/*
- * Đưa logo và tên đơn vị thành hai ô trực tiếp
- * trong grid đầu trang.
- */
 .print-header-organization {
   display: contents;
 }
@@ -148,10 +141,6 @@
   text-align: center;
 }
 
-
-/*
- * Dòng tên Công ty không có gạch chân.
- */
 .print-organization-lines strong {
   display: block;
 
@@ -174,10 +163,6 @@
   border: 0;
 }
 
-
-/*
- * Dòng PHÂN XƯỞNG VẬN HÀNH.
- */
 .print-organization-lines div {
   display: block;
 
@@ -206,14 +191,7 @@
 
 
 /*
- * Chỉ gạch chân dòng đứng sau tên Công ty.
- *
- * Mẫu Bài 1 đến Bài 22:
- * strong = Công ty
- * div    = Phân xưởng vận hành
- *
- * Vì vậy gạch chân sẽ nằm đúng dưới
- * PHÂN XƯỞNG VẬN HÀNH.
+ * Gạch chân dưới PHÂN XƯỞNG VẬN HÀNH.
  */
 .print-organization-lines
 strong:first-child + div {
@@ -223,12 +201,9 @@ strong:first-child + div {
 
 
 /*
- * Mẫu kiểm tra cuối khóa:
- *
- * div    = Tổng Công ty Phát điện 2
- * strong = Công ty CP Thủy điện A Vương
- *
- * Không tự gạch chân dòng Tổng Công ty.
+ * Mẫu cuối khóa:
+ * TỔNG CÔNG TY PHÁT ĐIỆN 2
+ * CÔNG TY CP THỦY ĐIỆN A VƯƠNG
  */
 .print-organization-lines
 div:first-child + strong {
@@ -306,11 +281,11 @@ div:first-child + strong {
 ========================================================= */
 
 /*
- * Giảm khoảng cách phía trên để nội dung
- * được đưa sát lên đầu trang hơn.
+ * Giữ khoảng cách hợp lý giữa header
+ * và tiêu đề.
  */
 .admin-print-title {
-  margin-top: 3.5mm;
+  margin-top: 8mm;
 
   text-align: center;
 }
@@ -650,7 +625,8 @@ div + div {
 
 
 /*
- * Bản sao xuất PDF dùng kích thước pixel cố định.
+ * Bản sao xuất PDF:
+ * tăng padding trên để tạo khoảng trắng.
  */
 .admin-print-document-export {
   box-sizing: border-box !important;
@@ -668,7 +644,7 @@ div + div {
   margin: 0 !important;
 
   padding:
-    30px 42px !important;
+    60px 42px 30px !important;
 
   overflow: visible !important;
 
@@ -679,10 +655,6 @@ div + div {
   transform: none !important;
 }
 
-
-/*
- * Bảo đảm tất cả khối nằm trong chiều rộng A4.
- */
 .admin-print-document-export
 .admin-print-document-header,
 .admin-print-document-export
@@ -772,7 +744,7 @@ div + div {
     margin: 0;
 
     padding:
-      8mm 11mm 8mm;
+      16mm 11mm 8mm;
 
     box-shadow: none;
 
