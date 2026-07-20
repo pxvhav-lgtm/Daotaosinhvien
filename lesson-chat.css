@@ -1,168 +1,462 @@
+/* =========================================================
+   CHATBOX AI TRONG TRANG BÀI HỌC
+========================================================= */
+
 .lesson-ai-chat {
-  width: min(100%, 1500px);
-  margin: 28px auto 40px;
   overflow: hidden;
-  border: 1px solid #cfe0e9;
-  border-radius: 20px;
+
+  width: 100%;
+
+  margin-top: 24px;
+
+  border:
+    1px solid #c8e0e9;
+
+  border-radius: 22px;
+
   background: #ffffff;
+
   box-shadow:
-    0 16px 40px
-    rgba(17, 67, 91, 0.1);
+    0 16px 38px
+    rgba(23, 52, 75, 0.08);
 }
 
 .lesson-ai-chat__header {
   display: flex;
+
   align-items: flex-start;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
+
   gap: 24px;
-  padding: 22px 24px;
-  border-bottom: 1px solid #d8e5eb;
+
+  padding: 24px;
+
+  border-bottom:
+    1px solid #dce8ee;
+
   background:
     linear-gradient(
       135deg,
-      #f1fbff,
-      #ffffff
+      #ffffff,
+      #ecf8fb
     );
 }
 
 .lesson-ai-chat__eyebrow {
-  margin: 0 0 7px;
-  color: #087fa8;
-  font-size: 12px;
+  margin: 0 0 6px;
+
+  color: #087ca6;
+
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+
+  letter-spacing:
+    0.08em;
 }
 
 .lesson-ai-chat__header h2 {
-  margin: 0 0 7px;
-  color: #162033;
-  font-size: 24px;
-  line-height: 1.3;
+  margin: 0;
+
+  color: #18233a;
+
+  font-size:
+    clamp(
+      21px,
+      3vw,
+      28px
+    );
+
+  font-weight: 750;
+
+  line-height: 1.25;
 }
 
-.lesson-ai-chat__header p {
-  margin: 0;
-  color: #687488;
+.lesson-ai-chat__header p:last-child {
+  margin: 8px 0 0;
+
+  color: #667085;
+
+  font-size: 14px;
+
   line-height: 1.55;
 }
 
 .lesson-ai-chat__actions {
   display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 10px;
+
+  flex-wrap: wrap;
+
+  justify-content:
+    flex-end;
+
+  gap: 9px;
 }
 
 .lesson-ai-chat__toggle,
 .lesson-ai-chat__open {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
   min-height: 42px;
-  border-radius: 10px;
-  padding: 10px 15px;
-  font: inherit;
+
+  padding: 8px 14px;
+
+  border:
+    1px solid #a9d2e1;
+
+  border-radius: 11px;
+
+  color: #075f82;
+
+  background: #ffffff;
+
+  font-size: 12px;
   font-weight: 700;
+
   text-decoration: none;
+
   cursor: pointer;
 }
 
-.lesson-ai-chat__toggle {
-  border: 1px solid #98c9db;
-  background: #ffffff;
-  color: #087fa8;
-}
-
 .lesson-ai-chat__open {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #087fa8;
-  background: #087fa8;
   color: #ffffff;
-}
 
-.lesson-ai-chat__toggle:hover,
-.lesson-ai-chat__open:hover {
-  filter: brightness(0.96);
+  border-color: #087ca6;
+
+  background: #087ca6;
 }
 
 .lesson-ai-chat__body {
   position: relative;
-  min-height: 680px;
-  background: #f4f8fb;
-}
 
-.lesson-ai-chat__loading {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  color: #667387;
-  background: #f4f8fb;
-  font-weight: 700;
-}
+  min-height: 620px;
 
-.lesson-ai-chat__loading[hidden] {
-  display: none;
+  background: #ffffff;
 }
 
 .lesson-ai-chat__iframe {
   display: block;
+
   width: 100%;
-  height: 680px;
+  min-height: 620px;
+
   border: 0;
+
+  background: #ffffff;
+
   opacity: 0;
-  background: #f4f8fb;
-  transition: opacity 0.2s ease;
+
+  transition:
+    opacity 0.2s ease;
 }
 
 .lesson-ai-chat__iframe.is-loaded {
   opacity: 1;
 }
 
-.lesson-ai-chat__unavailable {
-  padding: 28px 24px;
-  color: #6a4b00;
-  background: #fff9e8;
+.lesson-ai-chat.is-collapsed {
+  box-shadow: none;
 }
 
-.lesson-ai-chat__unavailable strong {
+/* =========================================================
+   TAB AI ĐỘC LẬP
+========================================================= */
+
+.standalone-lesson-chat {
+  overflow: hidden;
+
+  width: 100%;
+
+  background: #ffffff;
+}
+
+.standalone-lesson-chat__status {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 18px;
+
+  padding: 14px 20px;
+
+  border-bottom:
+    1px solid #dce8ee;
+
+  background: #eaf7fb;
+}
+
+.standalone-lesson-chat__status span,
+.standalone-lesson-chat__status strong {
   display: block;
-  margin-bottom: 8px;
-  color: #8a5b00;
-  font-size: 18px;
 }
 
-.lesson-ai-chat__unavailable p {
-  margin: 0;
+.standalone-lesson-chat__status span {
+  color: #087ca6;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.standalone-lesson-chat__status strong {
+  margin-top: 3px;
+
+  color: #18233a;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.standalone-lesson-chat__status a {
+  color: #075f82;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.standalone-lesson-chat__body {
+  position: relative;
+
+  min-height: 620px;
+
+  background: #ffffff;
+}
+
+.standalone-lesson-chat__iframe {
+  display: block;
+
+  width: 100%;
+  min-height: 620px;
+
+  border: 0;
+
+  background: #ffffff;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+.standalone-lesson-chat__iframe.is-loaded {
+  opacity: 1;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.lesson-chat-loading {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding: 30px;
+
+  color: #667085;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  z-index: 5;
+}
+
+.lesson-chat-loading[hidden] {
+  display: none !important;
+}
+
+.lesson-chat-loading strong {
+  color: #344054;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.lesson-chat-loading span {
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.lesson-chat-loading__spinner {
+  width: 36px;
+  height: 36px;
+
+  border:
+    4px solid #dcecf2;
+
+  border-top-color:
+    #087ca6;
+
+  border-radius: 50%;
+
+  animation:
+    lesson-chat-spin
+    0.8s linear infinite;
+}
+
+@keyframes lesson-chat-spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+/* =========================================================
+   THÔNG BÁO LỖI
+========================================================= */
+
+.lesson-chat-load-error {
+  width:
+    min(
+      440px,
+      100%
+    );
+
+  padding: 26px;
+
+  border:
+    1px solid #d2e1e8;
+
+  border-radius: 18px;
+
+  color: #18233a;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 14px 36px
+    rgba(23, 52, 75, 0.09);
+}
+
+.lesson-chat-load-error__icon {
+  display: grid;
+
+  width: 50px;
+  height: 50px;
+
+  margin:
+    0 auto 14px;
+
+  border-radius: 50%;
+
+  color: #ffffff;
+
+  background: #e9902f;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.lesson-chat-load-error strong {
+  display: block;
+
+  color: #18233a;
+
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.lesson-chat-load-error p {
+  margin:
+    10px 0 18px;
+
+  color: #667085;
+
+  font-size: 13px;
+
   line-height: 1.6;
 }
 
-.lesson-ai-chat__unavailable code {
-  padding: 2px 5px;
-  border-radius: 5px;
-  background: rgba(130, 90, 0, 0.1);
+.lesson-chat-load-error a {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 42px;
+
+  padding: 8px 16px;
+
+  border-radius: 11px;
+
+  color: #ffffff;
+
+  background: #087ca6;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-decoration: none;
 }
 
-.lesson-ai-chat.is-collapsed {
-  margin-bottom: 28px;
+.standalone-chat-unavailable {
+  padding: 42px;
+
+  border:
+    1px dashed #c9d8e0;
+
+  border-radius: 16px;
+
+  color: #667085;
+
+  background: #ffffff;
+
+  text-align: center;
 }
 
-@media (max-width: 800px) {
-  .lesson-ai-chat {
-    margin: 20px auto 28px;
-    border-radius: 14px;
-  }
+.standalone-chat-unavailable strong {
+  display: block;
 
+  margin-bottom: 6px;
+
+  color: #18233a;
+
+  font-size: 17px;
+}
+
+.standalone-chat-unavailable p {
+  margin: 0;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 760px) {
   .lesson-ai-chat__header {
     flex-direction: column;
-    padding: 18px;
-  }
 
-  .lesson-ai-chat__header h2 {
-    font-size: 20px;
+    padding: 20px;
   }
 
   .lesson-ai-chat__actions {
+    justify-content: stretch;
+
     width: 100%;
   }
 
@@ -171,11 +465,16 @@
     flex: 1;
   }
 
-  .lesson-ai-chat__body {
-    min-height: 600px;
+  .lesson-ai-chat__body,
+  .lesson-ai-chat__iframe,
+  .standalone-lesson-chat__body,
+  .standalone-lesson-chat__iframe {
+    min-height: 680px;
   }
 
-  .lesson-ai-chat__iframe {
-    height: 600px;
+  .standalone-lesson-chat__status {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 }
