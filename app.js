@@ -8,12 +8,14 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   'sb_publishable_gfl2uPclIdwKz2R1I84LxA_tURJONRG';
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-const app = document.querySelector('#app');
+const app =
+  document.querySelector('#app');
 
 let quizTimerId = null;
 
@@ -24,7 +26,9 @@ let quizTimerId = null;
 async function init() {
   if (
     !SUPABASE_PUBLISHABLE_KEY ||
-    SUPABASE_PUBLISHABLE_KEY.includes('DAN_')
+    SUPABASE_PUBLISHABLE_KEY.includes(
+      'DAN_'
+    )
   ) {
     renderMessage(
       'Chưa cấu hình Publishable key của Supabase.'
@@ -34,12 +38,18 @@ async function init() {
   }
 
   const {
-    data: { session },
+    data: {
+      session
+    },
     error,
-  } = await supabaseClient.auth.getSession();
+  } =
+    await supabaseClient.auth.getSession();
 
   if (error) {
-    console.error('Lỗi kiểm tra phiên:', error);
+    console.error(
+      'Lỗi kiểm tra phiên:',
+      error
+    );
 
     renderMessage(
       'Không thể kiểm tra phiên đăng nhập.'
@@ -49,7 +59,9 @@ async function init() {
   }
 
   if (session) {
-    await renderDashboard(session.user);
+    await renderDashboard(
+      session.user
+    );
   } else {
     renderLogin();
   }
@@ -75,7 +87,9 @@ function renderLogin() {
           NHÀ MÁY THỦY ĐIỆN A VƯƠNG
         </p>
 
-        <h1>Đào tạo sinh viên thực tập</h1>
+        <h1>
+          Đào tạo sinh viên thực tập
+        </h1>
 
         <p class="description">
           Đăng nhập để học bài và làm bài kiểm tra.
@@ -128,53 +142,88 @@ function renderLogin() {
   `;
 
   document
-    .querySelector('#login-form')
-    .addEventListener('submit', handleLogin);
+    .querySelector(
+      '#login-form'
+    )
+    .addEventListener(
+      'submit',
+      handleLogin
+    );
 }
 
-async function handleLogin(event) {
+async function handleLogin(
+  event
+) {
   event.preventDefault();
 
   const button =
-    document.querySelector('#login-button');
+    document.querySelector(
+      '#login-button'
+    );
 
   const message =
-    document.querySelector('#login-message');
+    document.querySelector(
+      '#login-message'
+    );
 
   const formData =
-    new FormData(event.currentTarget);
+    new FormData(
+      event.currentTarget
+    );
 
   const email =
-    String(formData.get('email') || '')
+    String(
+      formData.get(
+        'email'
+      ) || ''
+    )
       .trim()
       .toLowerCase();
 
   const password =
-    String(formData.get('password') || '');
+    String(
+      formData.get(
+        'password'
+      ) || ''
+    );
 
   button.disabled = true;
-  button.textContent = 'Đang đăng nhập...';
+
+  button.textContent =
+    'Đang đăng nhập...';
+
   message.textContent = '';
 
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth
+      .signInWithPassword({
+        email,
+        password,
+      });
 
   if (error) {
-    console.error('Lỗi đăng nhập:', error);
+    console.error(
+      'Lỗi đăng nhập:',
+      error
+    );
 
     message.textContent =
       'Email hoặc mật khẩu không chính xác.';
 
     button.disabled = false;
-    button.textContent = 'Đăng nhập';
+
+    button.textContent =
+      'Đăng nhập';
 
     return;
   }
 
-  await renderDashboard(data.user);
+  await renderDashboard(
+    data.user
+  );
 }
 
 /* =========================================================
@@ -184,25 +233,42 @@ async function handleLogin(event) {
 async function handleLogout() {
   clearQuizTimer();
 
-  const { error } =
-    await supabaseClient.auth.signOut();
+  const {
+    error
+  } =
+    await supabaseClient.auth
+      .signOut();
 
   if (error) {
-    console.error('Lỗi đăng xuất:', error);
+    console.error(
+      'Lỗi đăng xuất:',
+      error
+    );
   }
+
+  window.location.hash = '';
 
   renderLogin();
 }
 
 /* =========================================================
-   DASHBOARD
+   DASHBOARD CŨ DỰ PHÒNG
+   dashboard-v2.js sẽ ghi đè hàm này.
 ========================================================= */
 
-async function renderDashboard(user) {
+async function renderDashboard(
+  user
+) {
   clearQuizTimer();
-  renderLoading('Đang tải dữ liệu...');
 
-  const [profileResult, enrollmentResult] =
+  renderLoading(
+    'Đang tải dữ liệu...'
+  );
+
+  const [
+    profileResult,
+    enrollmentResult,
+  ] =
     await Promise.all([
       supabaseClient
         .from('profiles')
@@ -213,11 +279,16 @@ async function renderDashboard(user) {
           university,
           major
         `)
-        .eq('id', user.id)
+        .eq(
+          'id',
+          user.id
+        )
         .single(),
 
       supabaseClient
-        .from('course_enrollments')
+        .from(
+          'course_enrollments'
+        )
         .select(`
           id,
           status,
@@ -228,10 +299,15 @@ async function renderDashboard(user) {
             passing_score
           )
         `)
-        .eq('student_id', user.id),
+        .eq(
+          'student_id',
+          user.id
+        ),
     ]);
 
-  if (profileResult.error) {
+  if (
+    profileResult.error
+  ) {
     console.error(
       'Lỗi tải hồ sơ:',
       profileResult.error
@@ -244,7 +320,9 @@ async function renderDashboard(user) {
     return;
   }
 
-  if (enrollmentResult.error) {
+  if (
+    enrollmentResult.error
+  ) {
     console.error(
       'Lỗi tải khóa học:',
       enrollmentResult.error
@@ -257,10 +335,12 @@ async function renderDashboard(user) {
     return;
   }
 
-  const profile = profileResult.data;
+  const profile =
+    profileResult.data;
 
   const enrollments =
-    enrollmentResult.data ?? [];
+    enrollmentResult.data ??
+    [];
 
   app.innerHTML = `
     ${renderMainHeader(
@@ -270,15 +350,21 @@ async function renderDashboard(user) {
 
     <main class="dashboard-page">
       <section class="profile-card">
-        <p>Xin chào,</p>
+        <p>
+          Xin chào,
+        </p>
 
         <h2>
-          ${escapeHtml(profile.full_name)}
+          ${escapeHtml(
+            profile.full_name
+          )}
         </h2>
 
         <div class="profile-grid">
           <div>
-            <span>Mã sinh viên</span>
+            <span>
+              Mã sinh viên
+            </span>
 
             <strong>
               ${escapeHtml(
@@ -289,7 +375,9 @@ async function renderDashboard(user) {
           </div>
 
           <div>
-            <span>Trường</span>
+            <span>
+              Trường
+            </span>
 
             <strong>
               ${escapeHtml(
@@ -300,7 +388,9 @@ async function renderDashboard(user) {
           </div>
 
           <div>
-            <span>Chuyên ngành</span>
+            <span>
+              Chuyên ngành
+            </span>
 
             <strong>
               ${escapeHtml(
@@ -313,13 +403,18 @@ async function renderDashboard(user) {
       </section>
 
       <section class="course-section">
-        <h2>Khóa học của bạn</h2>
+        <h2>
+          Khóa học của bạn
+        </h2>
 
         <div class="course-list">
           ${
-            enrollments.length > 0
+            enrollments.length >
+            0
               ? enrollments
-                  .map(renderCourseCard)
+                  .map(
+                    renderCourseCard
+                  )
                   .join('')
               : `
                 <div class="empty-state">
@@ -333,40 +428,52 @@ async function renderDashboard(user) {
   `;
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       handleLogout
     );
 
   document
-    .querySelectorAll('.course-button')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        async () => {
-          const courseId =
-            Number(button.dataset.courseId);
+    .querySelectorAll(
+      '.course-button'
+    )
+    .forEach(
+      (button) => {
+        button.addEventListener(
+          'click',
+          async () => {
+            const courseId =
+              Number(
+                button.dataset
+                  .courseId
+              );
 
-          if (!courseId) {
-            alert(
-              'Không xác định được khóa học.'
+            if (!courseId) {
+              alert(
+                'Không xác định được khóa học.'
+              );
+
+              return;
+            }
+
+            await renderCoursePage(
+              courseId,
+              user
             );
-
-            return;
           }
-
-          await renderCoursePage(
-            courseId,
-            user
-          );
-        }
-      );
-    });
+        );
+      }
+    );
 }
 
-function renderCourseCard(enrollment) {
-  const course = enrollment.courses;
+function renderCourseCard(
+  enrollment
+) {
+  const course =
+    enrollment.courses;
 
   if (!course) {
     return '';
@@ -382,12 +489,15 @@ function renderCourseCard(enrollment) {
         </p>
 
         <h3>
-          ${escapeHtml(course.title)}
+          ${escapeHtml(
+            course.title
+          )}
         </h3>
 
         <p>
           ${escapeHtml(
-            course.description || ''
+            course.description ||
+            ''
           )}
         </p>
 
@@ -421,52 +531,71 @@ async function renderCoursePage(
   user
 ) {
   clearQuizTimer();
-  renderLoading('Đang tải khóa học...');
+
+  renderLoading(
+    'Đang tải khóa học...'
+  );
 
   const [
     courseResult,
     lessonsResult,
     progressResult,
-  ] = await Promise.all([
-    supabaseClient
-      .from('courses')
-      .select(`
-        id,
-        title,
-        description,
-        passing_score
-      `)
-      .eq('id', courseId)
-      .single(),
+  ] =
+    await Promise.all([
+      supabaseClient
+        .from('courses')
+        .select(`
+          id,
+          title,
+          description,
+          passing_score
+        `)
+        .eq(
+          'id',
+          courseId
+        )
+        .single(),
 
-    supabaseClient
-      .from('lessons')
-      .select(`
-        id,
-        course_id,
-        title,
-        description,
-        order_number,
-        passing_score
-      `)
-      .eq('course_id', courseId)
-      .order(
-        'order_number',
-        { ascending: true }
-      ),
+      supabaseClient
+        .from('lessons')
+        .select(`
+          id,
+          course_id,
+          title,
+          description,
+          order_number,
+          passing_score
+        `)
+        .eq(
+          'course_id',
+          courseId
+        )
+        .order(
+          'order_number',
+          {
+            ascending: true
+          }
+        ),
 
-    supabaseClient
-      .from('lesson_progress')
-      .select(`
-        lesson_id,
-        status,
-        best_score,
-        attempt_count
-      `)
-      .eq('student_id', user.id),
-  ]);
+      supabaseClient
+        .from(
+          'lesson_progress'
+        )
+        .select(`
+          lesson_id,
+          status,
+          best_score,
+          attempt_count
+        `)
+        .eq(
+          'student_id',
+          user.id
+        ),
+    ]);
 
-  if (courseResult.error) {
+  if (
+    courseResult.error
+  ) {
     console.error(
       'Lỗi tải khóa học:',
       courseResult.error
@@ -479,7 +608,9 @@ async function renderCoursePage(
     return;
   }
 
-  if (lessonsResult.error) {
+  if (
+    lessonsResult.error
+  ) {
     console.error(
       'Lỗi tải bài học:',
       lessonsResult.error
@@ -492,7 +623,9 @@ async function renderCoursePage(
     return;
   }
 
-  if (progressResult.error) {
+  if (
+    progressResult.error
+  ) {
     console.error(
       'Lỗi tải tiến độ:',
       progressResult.error
@@ -505,32 +638,48 @@ async function renderCoursePage(
     return;
   }
 
-  const course = courseResult.data;
-  const lessons = lessonsResult.data ?? [];
+  const course =
+    courseResult.data;
+
+  const lessons =
+    lessonsResult.data ??
+    [];
 
   const progressList =
-    progressResult.data ?? [];
+    progressResult.data ??
+    [];
 
   const lessonsWithProgress =
-    lessons.map((lesson) => {
-      const progress =
-        progressList.find(
-          (item) =>
-            Number(item.lesson_id) ===
-            Number(lesson.id)
-        );
+    lessons.map(
+      (lesson) => {
+        const progress =
+          progressList.find(
+            (item) =>
+              Number(
+                item.lesson_id
+              ) ===
+              Number(
+                lesson.id
+              )
+          );
 
-      return {
-        ...lesson,
+        return {
+          ...lesson,
 
-        progress:
-          progress || {
-            status: 'locked',
-            best_score: null,
-            attempt_count: 0,
-          },
-      };
-    });
+          progress:
+            progress || {
+              status:
+                'locked',
+
+              best_score:
+                null,
+
+              attempt_count:
+                0,
+            },
+        };
+      }
+    );
 
   app.innerHTML = `
     ${renderMainHeader(
@@ -540,11 +689,14 @@ async function renderCoursePage(
 
     <main class="dashboard-page">
       <section class="course-overview-card">
-        <h2>Thông tin khóa học</h2>
+        <h2>
+          Thông tin khóa học
+        </h2>
 
         <p>
           ${escapeHtml(
-            course.description || ''
+            course.description ||
+            ''
           )}
         </p>
 
@@ -559,13 +711,18 @@ async function renderCoursePage(
       </section>
 
       <section class="lesson-section">
-        <h2>Danh sách bài học</h2>
+        <h2>
+          Danh sách bài học
+        </h2>
 
         <div class="lesson-list">
           ${
-            lessonsWithProgress.length > 0
+            lessonsWithProgress
+              .length > 0
               ? lessonsWithProgress
-                  .map(renderLessonCard)
+                  .map(
+                    renderLessonCard
+                  )
                   .join('')
               : `
                 <div class="empty-state">
@@ -579,51 +736,68 @@ async function renderCoursePage(
   `;
 
   document
-    .querySelector('#back-button')
-    .addEventListener(
+    .querySelector(
+      '#back-button'
+    )
+    ?.addEventListener(
       'click',
       async () => {
-        await renderDashboard(user);
+        await renderDashboard(
+          user
+        );
       }
     );
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       handleLogout
     );
 
   document
-    .querySelectorAll('.lesson-button')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        async () => {
-          const lessonId =
-            Number(button.dataset.lessonId);
+    .querySelectorAll(
+      '.lesson-button'
+    )
+    .forEach(
+      (button) => {
+        button.addEventListener(
+          'click',
+          async () => {
+            const lessonId =
+              Number(
+                button.dataset
+                  .lessonId
+              );
 
-          const status =
-            button.dataset.status;
+            const status =
+              button.dataset
+                .status;
 
-          if (
-            !lessonId ||
-            status === 'locked'
-          ) {
-            return;
+            if (
+              !lessonId ||
+              status ===
+                'locked'
+            ) {
+              return;
+            }
+
+            await renderLessonPage(
+              lessonId,
+              courseId,
+              user
+            );
           }
-
-          await renderLessonPage(
-            lessonId,
-            courseId,
-            user
-          );
-        }
-      );
-    });
+        );
+      }
+    );
 }
 
-function renderLessonCard(lesson) {
+function renderLessonCard(
+  lesson
+) {
   const status =
     lesson.progress.status;
 
@@ -632,7 +806,14 @@ function renderLessonCard(lesson) {
 
   return `
     <article
-      class="lesson-card ${isLocked ? 'locked' : ''}"
+      class="
+        lesson-card
+        ${
+          isLocked
+            ? 'locked'
+            : ''
+        }
+      "
     >
       <div class="lesson-number">
         ${escapeHtml(
@@ -642,29 +823,43 @@ function renderLessonCard(lesson) {
 
       <div class="lesson-content">
         <p
-          class="lesson-status ${escapeAttribute(status)}"
+          class="
+            lesson-status
+            ${escapeAttribute(
+              status
+            )}
+          "
         >
-          ${formatLessonStatus(status)}
+          ${formatLessonStatus(
+            status
+          )}
         </p>
 
         <h3>
-          ${escapeHtml(lesson.title)}
+          ${escapeHtml(
+            lesson.title
+          )}
         </h3>
 
         <p>
           ${escapeHtml(
-            lesson.description || ''
+            lesson.description ||
+            ''
           )}
         </p>
 
         ${
-          lesson.progress.best_score !== null
+          lesson.progress
+            .best_score !==
+          null
             ? `
               <p class="score-line">
                 Điểm cao nhất:
                 <strong>
                   ${escapeHtml(
-                    lesson.progress.best_score
+                    lesson
+                      .progress
+                      .best_score
                   )}
                 </strong>
               </p>
@@ -673,13 +868,17 @@ function renderLessonCard(lesson) {
         }
 
         ${
-          lesson.progress.attempt_count > 0
+          lesson.progress
+            .attempt_count >
+          0
             ? `
               <p class="attempt-line">
                 Số lần đã làm:
                 <strong>
                   ${escapeHtml(
-                    lesson.progress.attempt_count
+                    lesson
+                      .progress
+                      .attempt_count
                   )}
                 </strong>
               </p>
@@ -692,13 +891,20 @@ function renderLessonCard(lesson) {
         class="lesson-button"
         type="button"
         data-lesson-id="${lesson.id}"
-        data-status="${escapeAttribute(status)}"
-        ${isLocked ? 'disabled' : ''}
+        data-status="${escapeAttribute(
+          status
+        )}"
+        ${
+          isLocked
+            ? 'disabled'
+            : ''
+        }
       >
         ${
           isLocked
             ? 'Chưa mở khóa'
-            : status === 'passed'
+            : status ===
+                'passed'
               ? 'Xem lại bài'
               : 'Học bài'
         }
@@ -717,9 +923,15 @@ async function renderLessonPage(
   user
 ) {
   clearQuizTimer();
-  renderLoading('Đang tải bài học...');
 
-  const [lessonResult, progressResult] =
+  renderLoading(
+    'Đang tải bài học...'
+  );
+
+  const [
+    lessonResult,
+    progressResult,
+  ] =
     await Promise.all([
       supabaseClient
         .from('lessons')
@@ -735,22 +947,35 @@ async function renderLessonPage(
           order_number,
           passing_score
         `)
-        .eq('id', lessonId)
+        .eq(
+          'id',
+          lessonId
+        )
         .single(),
 
       supabaseClient
-        .from('lesson_progress')
+        .from(
+          'lesson_progress'
+        )
         .select(`
           status,
           best_score,
           attempt_count
         `)
-        .eq('student_id', user.id)
-        .eq('lesson_id', lessonId)
+        .eq(
+          'student_id',
+          user.id
+        )
+        .eq(
+          'lesson_id',
+          lessonId
+        )
         .single(),
     ]);
 
-  if (lessonResult.error) {
+  if (
+    lessonResult.error
+  ) {
     console.error(
       'Lỗi tải bài học:',
       lessonResult.error
@@ -763,7 +988,9 @@ async function renderLessonPage(
     return;
   }
 
-  if (progressResult.error) {
+  if (
+    progressResult.error
+  ) {
     console.error(
       'Lỗi tải tiến độ bài học:',
       progressResult.error
@@ -776,10 +1003,16 @@ async function renderLessonPage(
     return;
   }
 
-  const lesson = lessonResult.data;
-  const progress = progressResult.data;
+  const lesson =
+    lessonResult.data;
 
-  if (progress.status === 'locked') {
+  const progress =
+    progressResult.data;
+
+  if (
+    progress.status ===
+    'locked'
+  ) {
     renderMessage(
       'Bài học này chưa được mở khóa.'
     );
@@ -796,23 +1029,28 @@ async function renderLessonPage(
     <main class="dashboard-page">
       <article class="lesson-detail-card">
         <p class="lesson-order">
-          Bài ${escapeHtml(
+          Bài
+          ${escapeHtml(
             lesson.order_number
           )}
         </p>
 
         <h2>
-          ${escapeHtml(lesson.title)}
+          ${escapeHtml(
+            lesson.title
+          )}
         </h2>
 
         <p class="lesson-description">
           ${escapeHtml(
-            lesson.description || ''
+            lesson.description ||
+            ''
           )}
         </p>
 
         ${
-          progress.best_score !== null
+          progress.best_score !==
+          null
             ? `
               <div class="lesson-result-summary">
                 <span>
@@ -849,7 +1087,9 @@ async function renderLessonPage(
           lesson.image_url
             ? `
               <section class="lesson-media-section">
-                <h3>Hình ảnh minh họa</h3>
+                <h3>
+                  Hình ảnh minh họa
+                </h3>
 
                 <img
                   class="lesson-image"
@@ -867,7 +1107,9 @@ async function renderLessonPage(
           lesson.content
             ? `
               <section class="lesson-text-content">
-                <h3>Nội dung bài học</h3>
+                <h3>
+                  Nội dung bài học
+                </h3>
 
                 <p>
                   ${escapeHtml(
@@ -886,7 +1128,8 @@ async function renderLessonPage(
             type="button"
           >
             ${
-              progress.status === 'passed'
+              progress.status ===
+              'passed'
                 ? 'Làm lại bài kiểm tra'
                 : 'Làm bài kiểm tra'
             }
@@ -897,8 +1140,10 @@ async function renderLessonPage(
   `;
 
   document
-    .querySelector('#back-button')
-    .addEventListener(
+    .querySelector(
+      '#back-button'
+    )
+    ?.addEventListener(
       'click',
       async () => {
         await renderCoursePage(
@@ -909,15 +1154,19 @@ async function renderLessonPage(
     );
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       handleLogout
     );
 
   document
-    .querySelector('#quiz-button')
-    .addEventListener(
+    .querySelector(
+      '#quiz-button'
+    )
+    ?.addEventListener(
       'click',
       async () => {
         await renderQuizPage(
@@ -939,13 +1188,20 @@ async function renderQuizPage(
   user
 ) {
   clearQuizTimer();
-  renderLoading('Đang tải bài kiểm tra...');
 
-  const { data, error } =
+  renderLoading(
+    'Đang tải bài kiểm tra...'
+  );
+
+  const {
+    data,
+    error
+  } =
     await supabaseClient.rpc(
       'get_quiz_for_student',
       {
-        p_lesson_id: lessonId,
+        p_lesson_id:
+          lessonId,
       }
     );
 
@@ -976,14 +1232,22 @@ async function renderQuizPage(
   }
 
   const questions =
-    Array.isArray(quiz.questions)
+    Array.isArray(
+      quiz.questions
+    )
       ? quiz.questions
       : [];
 
   const remainingAttempts =
-    Number(quiz.remaining_attempts ?? 0);
+    Number(
+      quiz.remaining_attempts ??
+      0
+    );
 
-  if (remainingAttempts <= 0) {
+  if (
+    remainingAttempts <=
+    0
+  ) {
     renderNoAttemptsPage(
       quiz,
       lessonId,
@@ -1008,13 +1272,17 @@ async function renderQuizPage(
           </p>
 
           <h2>
-            ${escapeHtml(quiz.title)}
+            ${escapeHtml(
+              quiz.title
+            )}
           </h2>
         </div>
 
         <div class="quiz-meta-grid">
           <div>
-            <span>Điểm đạt</span>
+            <span>
+              Điểm đạt
+            </span>
 
             <strong>
               ${escapeHtml(
@@ -1024,7 +1292,9 @@ async function renderQuizPage(
           </div>
 
           <div>
-            <span>Số câu hỏi</span>
+            <span>
+              Số câu hỏi
+            </span>
 
             <strong>
               ${questions.length}
@@ -1032,7 +1302,9 @@ async function renderQuizPage(
           </div>
 
           <div>
-            <span>Lần còn lại</span>
+            <span>
+              Lần còn lại
+            </span>
 
             <strong>
               ${remainingAttempts}
@@ -1040,7 +1312,9 @@ async function renderQuizPage(
           </div>
 
           <div>
-            <span>Thời gian</span>
+            <span>
+              Thời gian
+            </span>
 
             <strong id="quiz-timer">
               ${formatSeconds(
@@ -1058,7 +1332,8 @@ async function renderQuizPage(
         class="quiz-form"
       >
         ${
-          questions.length > 0
+          questions.length >
+          0
             ? questions
                 .map(
                   (
@@ -1079,7 +1354,8 @@ async function renderQuizPage(
         }
 
         ${
-          questions.length > 0
+          questions.length >
+          0
             ? `
               <section class="quiz-submit-card">
                 <p
@@ -1104,8 +1380,10 @@ async function renderQuizPage(
   `;
 
   document
-    .querySelector('#back-button')
-    .addEventListener(
+    .querySelector(
+      '#back-button'
+    )
+    ?.addEventListener(
       'click',
       async () => {
         const shouldLeave =
@@ -1128,8 +1406,10 @@ async function renderQuizPage(
     );
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       async () => {
         const shouldLogout =
@@ -1146,7 +1426,9 @@ async function renderQuizPage(
     );
 
   const form =
-    document.querySelector('#quiz-form');
+    document.querySelector(
+      '#quiz-form'
+    );
 
   if (form) {
     form.addEventListener(
@@ -1166,7 +1448,9 @@ async function renderQuizPage(
   }
 
   startQuizTimer(
-    Number(quiz.time_limit_minutes) * 60,
+    Number(
+      quiz.time_limit_minutes
+    ) * 60,
     async () => {
       alert(
         'Đã hết thời gian. Vui lòng kiểm tra và nộp bài.'
@@ -1180,7 +1464,9 @@ function renderQuizQuestion(
   questionIndex
 ) {
   const options =
-    Array.isArray(question.options)
+    Array.isArray(
+      question.options
+    )
       ? question.options
       : [];
 
@@ -1203,16 +1489,15 @@ function renderQuizQuestion(
 
       <div class="answer-list">
         ${
-          options.length > 0
+          options.length >
+          0
             ? options
                 .map(
                   (
                     option,
                     optionIndex
                   ) => `
-                    <label
-                      class="answer-option"
-                    >
+                    <label class="answer-option">
                       <input
                         type="radio"
                         name="question-${question.id}"
@@ -1273,48 +1558,66 @@ async function submitQuiz(
     return;
   }
 
-  const answers = questions
-    .map((question) => {
-      const selected =
-        document.querySelector(
-          `input[name="question-${question.id}"]:checked`
-        );
+  const answers =
+    questions
+      .map(
+        (question) => {
+          const selected =
+            document.querySelector(
+              `input[name="question-${question.id}"]:checked`
+            );
 
-      if (!selected) {
-        return null;
-      }
+          if (!selected) {
+            return null;
+          }
 
-      return {
-        question_id:
-          Number(question.id),
+          return {
+            question_id:
+              Number(
+                question.id
+              ),
 
-        option_id:
-          Number(selected.value),
-      };
-    })
-    .filter(Boolean);
+            option_id:
+              Number(
+                selected.value
+              ),
+          };
+        }
+      )
+      .filter(Boolean);
 
-  if (answers.length !== questions.length) {
+  if (
+    answers.length !==
+    questions.length
+  ) {
     if (message) {
       message.textContent =
         'Bạn phải trả lời đầy đủ tất cả câu hỏi.';
     }
 
     const firstUnanswered =
-      questions.find((question) => {
-        return !document.querySelector(
-          `input[name="question-${question.id}"]:checked`
-        );
-      });
+      questions.find(
+        (question) => {
+          return !document
+            .querySelector(
+              `input[name="question-${question.id}"]:checked`
+            );
+        }
+      );
 
-    if (firstUnanswered) {
+    if (
+      firstUnanswered
+    ) {
       document
         .querySelector(
           `[data-question-id="${firstUnanswered.id}"]`
         )
         ?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
+          behavior:
+            'smooth',
+
+          block:
+            'center',
         });
     }
 
@@ -1331,7 +1634,9 @@ async function submitQuiz(
   }
 
   if (submitButton) {
-    submitButton.disabled = true;
+    submitButton.disabled =
+      true;
+
     submitButton.textContent =
       'Đang chấm bài...';
   }
@@ -1342,14 +1647,20 @@ async function submitQuiz(
 
   clearQuizTimer();
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient.rpc(
       'submit_quiz_attempt',
       {
         p_quiz_id:
-          Number(quiz.quiz_id),
+          Number(
+            quiz.quiz_id
+          ),
 
-        p_answers: answers,
+        p_answers:
+          answers,
       }
     );
 
@@ -1368,7 +1679,9 @@ async function submitQuiz(
     }
 
     if (submitButton) {
-      submitButton.disabled = false;
+      submitButton.disabled =
+        false;
+
       submitButton.textContent =
         'Nộp bài';
     }
@@ -1397,14 +1710,20 @@ function renderQuizResultPage(
   clearQuizTimer();
 
   const isPassed =
-    Boolean(result.is_passed);
+    Boolean(
+      result.is_passed
+    );
 
   const score =
-    Number(result.score ?? 0);
+    Number(
+      result.score ??
+      0
+    );
 
   const remainingAttempts =
     Number(
-      result.remaining_attempts ?? 0
+      result.remaining_attempts ??
+      0
     );
 
   app.innerHTML = `
@@ -1415,10 +1734,21 @@ function renderQuizResultPage(
 
     <main class="result-page">
       <section
-        class="result-card ${isPassed ? 'passed' : 'failed'}"
+        class="
+          result-card
+          ${
+            isPassed
+              ? 'passed'
+              : 'failed'
+          }
+        "
       >
         <div class="result-icon">
-          ${isPassed ? '✓' : '!'}
+          ${
+            isPassed
+              ? '✓'
+              : '!'
+          }
         </div>
 
         <p class="result-label">
@@ -1439,10 +1769,14 @@ function renderQuizResultPage(
 
         <div class="result-score">
           <strong>
-            ${escapeHtml(score)}
+            ${escapeHtml(
+              score
+            )}
           </strong>
 
-          <span>/100</span>
+          <span>
+            /100
+          </span>
         </div>
 
         <p>
@@ -1508,7 +1842,8 @@ function renderQuizResultPage(
 
           ${
             !isPassed &&
-            remainingAttempts > 0
+            remainingAttempts >
+              0
               ? `
                 <button
                   id="retry-quiz-button"
@@ -1526,8 +1861,10 @@ function renderQuizResultPage(
   `;
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       handleLogout
     );
@@ -1536,7 +1873,7 @@ function renderQuizResultPage(
     .querySelector(
       '#back-course-result-button'
     )
-    .addEventListener(
+    ?.addEventListener(
       'click',
       async () => {
         await renderCoursePage(
@@ -1552,16 +1889,17 @@ function renderQuizResultPage(
     );
 
   if (retryButton) {
-    retryButton.addEventListener(
-      'click',
-      async () => {
-        await renderQuizPage(
-          lessonId,
-          courseId,
-          user
-        );
-      }
-    );
+    retryButton
+      .addEventListener(
+        'click',
+        async () => {
+          await renderQuizPage(
+            lessonId,
+            courseId,
+            user
+          );
+        }
+      );
   }
 }
 
@@ -1581,7 +1919,9 @@ function renderNoAttemptsPage(
 
     <main class="result-page">
       <section class="result-card failed">
-        <div class="result-icon">!</div>
+        <div class="result-icon">
+          !
+        </div>
 
         <p class="result-label">
           HẾT LƯỢT LÀM BÀI
@@ -1618,22 +1958,29 @@ function renderNoAttemptsPage(
     </main>
   `;
 
+  const goBack =
+    async () => {
+      await renderLessonPage(
+        lessonId,
+        courseId,
+        user
+      );
+    };
+
   document
-    .querySelector('#back-button')
-    .addEventListener(
+    .querySelector(
+      '#back-button'
+    )
+    ?.addEventListener(
       'click',
-      async () => {
-        await renderLessonPage(
-          lessonId,
-          courseId,
-          user
-        );
-      }
+      goBack
     );
 
   document
-    .querySelector('#logout-button')
-    .addEventListener(
+    .querySelector(
+      '#logout-button'
+    )
+    ?.addEventListener(
       'click',
       handleLogout
     );
@@ -1642,15 +1989,9 @@ function renderNoAttemptsPage(
     .querySelector(
       '#back-lesson-button'
     )
-    .addEventListener(
+    ?.addEventListener(
       'click',
-      async () => {
-        await renderLessonPage(
-          lessonId,
-          courseId,
-          user
-        );
-      }
+      goBack
     );
 }
 
@@ -1658,14 +1999,20 @@ function renderNoAttemptsPage(
    VIDEO VÀ PDF
 ========================================================= */
 
-function renderVideo(url) {
+function renderVideo(
+  url
+) {
   return `
     <section class="lesson-media-section">
-      <h3>Video bài học</h3>
+      <h3>
+        Video bài học
+      </h3>
 
       <div class="video-wrapper">
         <iframe
-          src="${escapeAttribute(url)}"
+          src="${escapeAttribute(
+            url
+          )}"
           title="Video bài học"
           allow="autoplay; fullscreen"
           allowfullscreen
@@ -1675,20 +2022,28 @@ function renderVideo(url) {
   `;
 }
 
-function renderPdf(url) {
-  const fileId = getGoogleDriveFileId(url);
+function renderPdf(
+  url
+) {
+  const fileId =
+    getGoogleDriveFileId(
+      url
+    );
 
-  const previewUrl = fileId
-    ? `https://drive.google.com/file/d/${fileId}/preview`
-    : url;
+  const previewUrl =
+    fileId
+      ? `https://drive.google.com/file/d/${fileId}/preview`
+      : url;
 
-  const viewUrl = fileId
-    ? `https://drive.google.com/file/d/${fileId}/view`
-    : url;
+  const viewUrl =
+    fileId
+      ? `https://drive.google.com/file/d/${fileId}/view`
+      : url;
 
-  const downloadUrl = fileId
-    ? `https://drive.google.com/uc?export=download&id=${fileId}`
-    : url;
+  const downloadUrl =
+    fileId
+      ? `https://drive.google.com/uc?export=download&id=${fileId}`
+      : url;
 
   return `
     <section class="lesson-media-section pdf-learning-section">
@@ -1698,7 +2053,9 @@ function renderPdf(url) {
             TÀI LIỆU HỌC TẬP
           </p>
 
-          <h3>Tài liệu PDF của bài học</h3>
+          <h3>
+            Tài liệu PDF của bài học
+          </h3>
         </div>
 
         <span class="document-type">
@@ -1708,7 +2065,9 @@ function renderPdf(url) {
 
       <iframe
         class="pdf-viewer"
-        src="${escapeAttribute(previewUrl)}"
+        src="${escapeAttribute(
+          previewUrl
+        )}"
         title="Tài liệu PDF bài học"
         loading="lazy"
       ></iframe>
@@ -1716,7 +2075,9 @@ function renderPdf(url) {
       <div class="document-actions">
         <a
           class="document-button secondary-document-button"
-          href="${escapeAttribute(viewUrl)}"
+          href="${escapeAttribute(
+            viewUrl
+          )}"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -1725,7 +2086,9 @@ function renderPdf(url) {
 
         <a
           class="document-button primary-document-button"
-          href="${escapeAttribute(downloadUrl)}"
+          href="${escapeAttribute(
+            downloadUrl
+          )}"
           target="_blank"
           rel="noopener noreferrer"
           download
@@ -1741,20 +2104,29 @@ function renderPdf(url) {
   `;
 }
 
-function getGoogleDriveFileId(url) {
-  const value = String(url || '');
+function getGoogleDriveFileId(
+  url
+) {
+  const value =
+    String(
+      url || ''
+    );
 
-  const filePathMatch = value.match(
-    /\/file\/d\/([a-zA-Z0-9_-]+)/
-  );
+  const filePathMatch =
+    value.match(
+      /\/file\/d\/([a-zA-Z0-9_-]+)/
+    );
 
-  if (filePathMatch) {
+  if (
+    filePathMatch
+  ) {
     return filePathMatch[1];
   }
 
-  const queryMatch = value.match(
-    /[?&]id=([a-zA-Z0-9_-]+)/
-  );
+  const queryMatch =
+    value.match(
+      /[?&]id=([a-zA-Z0-9_-]+)/
+    );
 
   return queryMatch
     ? queryMatch[1]
@@ -1762,7 +2134,7 @@ function getGoogleDriveFileId(url) {
 }
 
 /* =========================================================
-   HEADER CÓ LOGO
+   HEADER
 ========================================================= */
 
 function renderMainHeader(
@@ -1784,7 +2156,9 @@ function renderMainHeader(
           </p>
 
           <h1>
-            ${escapeHtml(title)}
+            ${escapeHtml(
+              title
+            )}
           </h1>
         </div>
       </div>
@@ -1798,11 +2172,19 @@ function renderMainHeader(
                 class="secondary-button"
                 type="button"
               >
-                Quay lại
+                ← Quay lại
               </button>
             `
             : ''
         }
+
+        <button
+          id="home-button"
+          class="secondary-button"
+          type="button"
+        >
+          Home
+        </button>
 
         <button
           id="logout-button"
@@ -1827,7 +2209,10 @@ function startQuizTimer(
   clearQuizTimer();
 
   let remainingSeconds =
-    Math.max(totalSeconds, 0);
+    Math.max(
+      totalSeconds,
+      0
+    );
 
   const timerElement =
     document.querySelector(
@@ -1839,54 +2224,88 @@ function startQuizTimer(
   }
 
   timerElement.textContent =
-    formatSeconds(remainingSeconds);
+    formatSeconds(
+      remainingSeconds
+    );
 
   quizTimerId =
-    window.setInterval(async () => {
-      remainingSeconds -= 1;
+    window.setInterval(
+      async () => {
+        remainingSeconds -=
+          1;
 
-      timerElement.textContent =
-        formatSeconds(
-          Math.max(remainingSeconds, 0)
-        );
+        timerElement.textContent =
+          formatSeconds(
+            Math.max(
+              remainingSeconds,
+              0
+            )
+          );
 
-      if (remainingSeconds <= 60) {
-        timerElement.classList.add(
-          'timer-warning'
-        );
-      }
+        if (
+          remainingSeconds <=
+          60
+        ) {
+          timerElement
+            .classList.add(
+              'timer-warning'
+            );
+        }
 
-      if (remainingSeconds <= 0) {
-        clearQuizTimer();
-        await onTimeUp();
-      }
-    }, 1000);
+        if (
+          remainingSeconds <=
+          0
+        ) {
+          clearQuizTimer();
+
+          await onTimeUp();
+        }
+      },
+      1000
+    );
 }
 
 function clearQuizTimer() {
-  if (quizTimerId !== null) {
+  if (
+    quizTimerId !==
+    null
+  ) {
     window.clearInterval(
       quizTimerId
     );
 
-    quizTimerId = null;
+    quizTimerId =
+      null;
   }
 }
 
-function formatSeconds(seconds) {
+function formatSeconds(
+  seconds
+) {
   const safeSeconds =
-    Math.max(Number(seconds) || 0, 0);
+    Math.max(
+      Number(
+        seconds
+      ) || 0,
+      0
+    );
 
   const minutes =
-    Math.floor(safeSeconds / 60);
+    Math.floor(
+      safeSeconds / 60
+    );
 
   const remaining =
     safeSeconds % 60;
 
-  return `${String(minutes).padStart(
+  return `${String(
+    minutes
+  ).padStart(
     2,
     '0'
-  )}:${String(remaining).padStart(
+  )}:${String(
+    remaining
+  ).padStart(
     2,
     '0'
   )}`;
@@ -1896,21 +2315,27 @@ function formatSeconds(seconds) {
    TIỆN ÍCH
 ========================================================= */
 
-function renderLoading(message) {
+function renderLoading(
+  message
+) {
   app.innerHTML = `
     <main class="loading-page">
       <div class="loading-box">
         <div class="spinner"></div>
 
         <p>
-          ${escapeHtml(message)}
+          ${escapeHtml(
+            message
+          )}
         </p>
       </div>
     </main>
   `;
 }
 
-function renderMessage(message) {
+function renderMessage(
+  message
+) {
   clearQuizTimer();
 
   app.innerHTML = `
@@ -1922,10 +2347,14 @@ function renderMessage(message) {
           alt="Logo Nhà máy thủy điện A Vương"
         >
 
-        <h1>Không tải được hệ thống</h1>
+        <h1>
+          Không tải được hệ thống
+        </h1>
 
         <p>
-          ${escapeHtml(message)}
+          ${escapeHtml(
+            message
+          )}
         </p>
 
         <button
@@ -1940,8 +2369,10 @@ function renderMessage(message) {
   `;
 
   document
-    .querySelector('#reload-button')
-    .addEventListener(
+    .querySelector(
+      '#reload-button'
+    )
+    ?.addEventListener(
       'click',
       () => {
         window.location.reload();
@@ -1949,28 +2380,52 @@ function renderMessage(message) {
     );
 }
 
-function formatCourseStatus(status) {
+function formatCourseStatus(
+  status
+) {
   const labels = {
-    assigned: 'Đã phân công',
-    in_progress: 'Đang học',
-    completed: 'Đã hoàn thành',
+    assigned:
+      'Đã phân công',
+
+    in_progress:
+      'Đang học',
+
+    completed:
+      'Đã hoàn thành',
   };
 
-  return labels[status] || status;
+  return (
+    labels[status] ||
+    status
+  );
 }
 
-function formatLessonStatus(status) {
+function formatLessonStatus(
+  status
+) {
   const labels = {
-    available: 'Có thể học',
-    studying: 'Đang học',
-    passed: 'Đã hoàn thành',
-    locked: 'Chưa mở khóa',
+    available:
+      'Có thể học',
+
+    studying:
+      'Đang học',
+
+    passed:
+      'Đã hoàn thành',
+
+    locked:
+      'Chưa mở khóa',
   };
 
-  return labels[status] || status;
+  return (
+    labels[status] ||
+    status
+  );
 }
 
-function getAnswerLetter(index) {
+function getAnswerLetter(
+  index
+) {
   return String.fromCharCode(
     65 + index
   );
@@ -1981,7 +2436,10 @@ function getFriendlyRpcError(
   fallbackMessage
 ) {
   const message =
-    String(error?.message || '');
+    String(
+      error?.message ||
+      ''
+    );
 
   if (
     message.includes(
@@ -2029,18 +2487,43 @@ function getFriendlyRpcError(
   return fallbackMessage;
 }
 
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+function escapeHtml(
+  value
+) {
+  return String(
+    value ?? ''
+  )
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
 }
 
-function escapeAttribute(value) {
-  return escapeHtml(value);
+function escapeAttribute(
+  value
+) {
+  return escapeHtml(
+    value
+  );
 }
 
-// init() sẽ được gọi trong index.html
-// sau khi tất cả file JavaScript đã tải xong.
+/*
+ * init() được gọi trong index.html
+ * sau khi tất cả file JavaScript tải xong.
+ */
