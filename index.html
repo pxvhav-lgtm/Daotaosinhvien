@@ -28,39 +28,72 @@
     href="./Logo.png"
   >
 
+  <!-- Font Inter dùng chung -->
   <link
-    rel="stylesheet"
-    href="./style.css?v=20260720-90"
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
   >
 
   <link
-    rel="stylesheet"
-    href="./video-gate.css?v=20260720-90"
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
   >
 
   <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
-    href="./dashboard-v2.css?v=20260720-90"
   >
 
+  <!-- CSS nền tảng -->
   <link
     rel="stylesheet"
-    href="./admin.css?v=20260720-90"
+    href="./style.css?v=20260720-100"
   >
 
+  <!-- CSS học video và tài liệu -->
   <link
     rel="stylesheet"
-    href="./nblm-import.css?v=20260720-90"
+    href="./video-gate.css?v=20260720-100"
   >
 
+  <!-- CSS Dashboard sinh viên -->
   <link
     rel="stylesheet"
-    href="./final-quiz.css?v=20260720-90"
+    href="./dashboard-v2.css?v=20260720-100"
   >
 
+  <!-- CSS Dashboard quản trị -->
   <link
     rel="stylesheet"
-    href="./lesson-chat.css?v=20260720-90"
+    href="./admin.css?v=20260720-100"
+  >
+
+  <!-- CSS nhập JSON từ NotebookLM -->
+  <link
+    rel="stylesheet"
+    href="./nblm-import.css?v=20260720-100"
+  >
+
+  <!-- CSS bài kiểm tra tổng kết -->
+  <link
+    rel="stylesheet"
+    href="./final-quiz.css?v=20260720-100"
+  >
+
+  <!-- CSS Chatbox AI -->
+  <link
+    rel="stylesheet"
+    href="./lesson-chat.css?v=20260720-100"
+  >
+
+  <!--
+    Luôn tải cuối cùng.
+    File này đồng bộ font trên toàn bộ website.
+  -->
+  <link
+    rel="stylesheet"
+    href="./font-system.css?v=20260720-100"
   >
 </head>
 
@@ -77,36 +110,38 @@
     </main>
   </div>
 
+  <!-- Supabase phải tải trước app.js -->
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
   <script
-    src="./app.js?v=20260720-92"
+    src="./app.js?v=20260720-100"
   ></script>
 
   <script
-    src="./video-gate.js?v=20260720-90"
+    src="./video-gate.js?v=20260720-100"
   ></script>
 
   <script
-    src="./dashboard-v2.js?v=20260720-92"
+    src="./dashboard-v2.js?v=20260720-100"
   ></script>
 
   <script
-    src="./admin.js?v=20260720-90"
+    src="./admin.js?v=20260720-100"
   ></script>
 
   <script
-    src="./nblm-import.js?v=20260720-90"
+    src="./nblm-import.js?v=20260720-100"
   ></script>
 
   <script
-    src="./final-quiz.js?v=20260720-90"
+    src="./final-quiz.js?v=20260720-100"
   ></script>
 
+  <!-- Chatbox tải cuối -->
   <script
-    src="./lesson-chat.js?v=20260720-90"
+    src="./lesson-chat.js?v=20260720-100"
   ></script>
 
   <script>
@@ -119,7 +154,7 @@
             'function'
           ) {
             throw new Error(
-              'Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.'
+              'Không tìm thấy hàm init(). Vui lòng kiểm tra app.js.'
             );
           }
 
