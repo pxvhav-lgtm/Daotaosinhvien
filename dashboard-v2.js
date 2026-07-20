@@ -1,74 +1,103 @@
 /*
  * Dashboard sinh viên dạng nhiều màn hình.
  *
- * Các màn hình:
+ * Các tab:
  * - Tổng quan
  * - Khóa học
  * - Bài kiểm tra
  * - Tài liệu
  * - Trợ lý AI
  *
- * Điều hướng bằng hash:
- * #home
- * #courses
- * #quizzes
- * #documents
- * #ai
+ * Điều hướng:
+ * - Nút Home trên Header luôn về Dashboard Tổng quan.
+ * - Nút Quay lại chỉ xuất hiện trong nội dung bài học hoặc quiz.
+ * - Quay lại từ bài học trở về đúng tab đã mở bài.
+ * - Quay lại từ quiz mở trực tiếp ở tab Bài kiểm tra
+ *   sẽ trở về tab Bài kiểm tra.
  */
 
 const TRAINING_MODULES = [
   {
     id: 1,
+
     title:
       'Tổng quan và sơ đồ điện',
+
     description:
       'Kiến thức nền tảng về nhà máy và sơ đồ điện chính.',
+
     from: 1,
+
     to: 2,
   },
+
   {
     id: 2,
+
     title:
       'Các hệ thống phụ trợ',
+
     description:
       'Các hệ thống phục vụ vận hành an toàn và liên tục.',
+
     from: 3,
+
     to: 8,
   },
+
   {
     id: 3,
+
     title:
       'Thiết bị điện và cơ khí chính',
+
     description:
       'Máy biến áp, thiết bị đầu cực, van và tổ máy.',
+
     from: 9,
+
     to: 13,
   },
+
   {
     id: 4,
+
     title:
       'Điều khiển và bảo vệ',
+
     description:
       'Các hệ thống điều khiển, bảo vệ, điều tốc và kích từ.',
+
     from: 14,
+
     to: 17,
   },
+
   {
     id: 5,
+
     title:
       'Thị trường điện và thiết bị trạm 220 kV',
+
     description:
       'Thị trường điện và thiết bị nhất thứ ngoài trời.',
+
     from: 18,
+
     to: 21,
   },
+
   {
     id: 6,
+
     title:
       'Đập tràn và đánh giá cuối khóa',
+
     description:
       'Thiết bị tại Đập tràn và bài đánh giá tổng hợp.',
+
     from: 22,
+
     to: 23,
   },
 ];
@@ -81,10 +110,30 @@ const DASHBOARD_VIEWS = [
   'ai',
 ];
 
-const MAX_QUIZ_ATTEMPTS = 3;
+const MAX_QUIZ_ATTEMPTS =
+  3;
 
-let dashboardState = null;
+let dashboardState =
+  null;
+
 let dashboardHashListenerBound =
+  false;
+
+let dashboardHeaderNavigationBound =
+  false;
+
+/*
+ * Tab cần quay lại sau khi sinh viên
+ * mở bài học hoặc quiz.
+ */
+let dashboardReturnView =
+  'home';
+
+/*
+ * true khi quiz được mở trực tiếp
+ * từ tab Bài kiểm tra.
+ */
+let dashboardDirectQuiz =
   false;
 
 /* =========================================================
@@ -92,7 +141,9 @@ let dashboardHashListenerBound =
 ========================================================= */
 
 window.renderDashboard =
-  async function (user) {
+  async function (
+    user
+  ) {
     clearQuizTimer();
 
     if (
@@ -111,81 +162,105 @@ window.renderDashboard =
       enrollmentResult,
       lessonsResult,
       progressResult,
-    ] = await Promise.all([
-      supabaseClient
-        .from('profiles')
-        .select(`
-          full_name,
-          email,
-          student_code,
-          university,
-          major,
-          internship_start,
-          internship_end
-        `)
-        .eq('id', user.id)
-        .single(),
+    ] =
+      await Promise.all([
+        supabaseClient
+          .from(
+            'profiles'
+          )
+          .select(`
+            full_name,
+            email,
+            student_code,
+            university,
+            major,
+            internship_start,
+            internship_end
+          `)
+          .eq(
+            'id',
+            user.id
+          )
+          .single(),
 
-      supabaseClient
-        .from('course_enrollments')
-        .select(`
-          id,
-          course_id,
-          status,
-          assigned_at,
-          started_at,
-          completed_at,
-          courses (
+        supabaseClient
+          .from(
+            'course_enrollments'
+          )
+          .select(`
             id,
+            course_id,
+            status,
+            assigned_at,
+            started_at,
+            completed_at,
+            courses (
+              id,
+              title,
+              description,
+              passing_score
+            )
+          `)
+          .eq(
+            'student_id',
+            user.id
+          )
+          .limit(1)
+          .maybeSingle(),
+
+        supabaseClient
+          .from(
+            'lessons'
+          )
+          .select(`
+            id,
+            course_id,
             title,
             description,
-            passing_score
+            content,
+            video_url,
+            pdf_url,
+            image_url,
+            order_number,
+            passing_score,
+            is_published
+          `)
+          .eq(
+            'course_id',
+            1
           )
-        `)
-        .eq('student_id', user.id)
-        .limit(1)
-        .maybeSingle(),
+          .eq(
+            'is_published',
+            true
+          )
+          .order(
+            'order_number',
+            {
+              ascending:
+                true,
+            }
+          ),
 
-      supabaseClient
-        .from('lessons')
-        .select(`
-          id,
-          course_id,
-          title,
-          description,
-          content,
-          video_url,
-          pdf_url,
-          image_url,
-          order_number,
-          passing_score,
-          is_published
-        `)
-        .eq('course_id', 1)
-        .eq('is_published', true)
-        .order(
-          'order_number',
-          {
-            ascending: true,
-          }
-        ),
+        supabaseClient
+          .from(
+            'lesson_progress'
+          )
+          .select(`
+            lesson_id,
+            status,
+            best_score,
+            attempt_count,
+            video_completed
+          `)
+          .eq(
+            'student_id',
+            user.id
+          ),
+      ]);
 
-      supabaseClient
-        .from('lesson_progress')
-        .select(`
-          lesson_id,
-          status,
-          best_score,
-          attempt_count,
-          video_completed
-        `)
-        .eq(
-          'student_id',
-          user.id
-        ),
-    ]);
-
-    if (profileResult.error) {
+    if (
+      profileResult.error
+    ) {
       console.error(
         'Lỗi tải hồ sơ:',
         profileResult.error
@@ -198,7 +273,9 @@ window.renderDashboard =
       return;
     }
 
-    if (enrollmentResult.error) {
+    if (
+      enrollmentResult.error
+    ) {
       console.error(
         'Lỗi tải khóa học:',
         enrollmentResult.error
@@ -211,7 +288,9 @@ window.renderDashboard =
       return;
     }
 
-    if (lessonsResult.error) {
+    if (
+      lessonsResult.error
+    ) {
       console.error(
         'Lỗi tải bài học:',
         lessonsResult.error
@@ -224,7 +303,9 @@ window.renderDashboard =
       return;
     }
 
-    if (progressResult.error) {
+    if (
+      progressResult.error
+    ) {
       console.error(
         'Lỗi tải tiến độ:',
         progressResult.error
@@ -238,25 +319,34 @@ window.renderDashboard =
     }
 
     const profile =
-      profileResult.data || {};
+      profileResult.data ||
+      {};
 
     const enrollment =
       enrollmentResult.data;
 
     const course =
-      enrollment?.courses || {
+      enrollment?.courses ||
+      {
         id: 1,
+
         title:
           'Đào tạo sinh viên thực tập tại Nhà máy thủy điện A Vương',
-        description: '',
-        passing_score: 70,
+
+        description:
+          '',
+
+        passing_score:
+          70,
       };
 
     const lessons =
-      lessonsResult.data || [];
+      lessonsResult.data ||
+      [];
 
     const progressList =
-      progressResult.data || [];
+      progressResult.data ||
+      [];
 
     const lessonsWithProgress =
       lessons.map(
@@ -276,13 +366,17 @@ window.renderDashboard =
             ...lesson,
 
             progress:
-              progress || {
+              progress ||
+              {
                 status:
                   'locked',
+
                 best_score:
                   null,
+
                 attempt_count:
                   0,
+
                 video_completed:
                   false,
               },
@@ -296,7 +390,8 @@ window.renderDashboard =
     const passedLessons =
       lessonsWithProgress.filter(
         (lesson) =>
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
           'passed'
       ).length;
 
@@ -307,7 +402,8 @@ window.renderDashboard =
             'available',
             'studying',
           ].includes(
-            lesson.progress.status
+            lesson.progress
+              .status
           )
       ).length;
 
@@ -323,7 +419,8 @@ window.renderDashboard =
       );
 
     const averageScore =
-      scoredLessons.length > 0
+      scoredLessons.length >
+      0
         ? Math.round(
             scoredLessons.reduce(
               (
@@ -335,7 +432,7 @@ window.renderDashboard =
                   lesson
                     .progress
                     .best_score ||
-                    0
+                  0
                 ),
               0
             ) /
@@ -356,28 +453,41 @@ window.renderDashboard =
     const nextLesson =
       lessonsWithProgress.find(
         (lesson) =>
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
           'studying'
       ) ||
       lessonsWithProgress.find(
         (lesson) =>
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
           'available'
       );
 
     dashboardState = {
       user,
+
       profile,
+
       enrollment,
+
       course,
+
       lessons:
         lessonsWithProgress,
+
       totalLessons,
+
       passedLessons,
+
       availableLessons,
+
       averageScore,
+
       progressPercent,
+
       nextLesson,
+
       selectedAiLessonNumber:
         getDefaultAiLessonNumber(
           lessonsWithProgress
@@ -387,6 +497,8 @@ window.renderDashboard =
     renderDashboardShell();
 
     bindDashboardHashListener();
+
+    bindDashboardHeaderNavigation();
 
     const currentView =
       getDashboardViewFromHash();
@@ -407,7 +519,8 @@ function renderDashboardShell() {
     totalLessons,
     passedLessons,
     progressPercent,
-  } = dashboardState;
+  } =
+    dashboardState;
 
   app.innerHTML = `
     ${renderMainHeader(
@@ -539,9 +652,7 @@ function renderDashboardShell() {
         </div>
       </aside>
 
-      <section
-        class="dashboard-main-content"
-      >
+      <section class="dashboard-main-content">
         <div
           id="dashboard-view"
           class="dashboard-view"
@@ -564,9 +675,7 @@ function renderDashboardNavButton(
       type="button"
       data-dashboard-view="${view}"
     >
-      <span
-        class="dashboard-nav-icon"
-      >
+      <span class="dashboard-nav-icon">
         ${icon}
       </span>
 
@@ -578,7 +687,7 @@ function renderDashboardNavButton(
 }
 
 /* =========================================================
-   ĐIỀU HƯỚNG
+   ĐIỀU HƯỚNG SIDEBAR
 ========================================================= */
 
 function bindDashboardShellEvents() {
@@ -587,10 +696,11 @@ function bindDashboardShellEvents() {
       '#logout-button'
     );
 
-  logoutButton?.addEventListener(
-    'click',
-    handleLogout
-  );
+  logoutButton
+    ?.addEventListener(
+      'click',
+      handleLogout
+    );
 
   const sidebar =
     document.querySelector(
@@ -607,49 +717,64 @@ function bindDashboardShellEvents() {
       '#dashboard-menu-toggle'
     );
 
-  const closeSidebar = () => {
-    sidebar?.classList.remove(
-      'open'
-    );
-
-    overlay?.classList.remove(
-      'visible'
-    );
-
-    menuButton?.setAttribute(
-      'aria-expanded',
-      'false'
-    );
-  };
-
-  menuButton?.addEventListener(
-    'click',
+  const closeSidebar =
     () => {
-      const isOpen =
-        sidebar?.classList.toggle(
+      sidebar
+        ?.classList.remove(
           'open'
         );
 
-      overlay?.classList.toggle(
-        'visible',
-        Boolean(isOpen)
-      );
+      overlay
+        ?.classList.remove(
+          'visible'
+        );
 
-      menuButton.setAttribute(
-        'aria-expanded',
-        String(Boolean(isOpen))
-      );
-    }
-  );
+      menuButton
+        ?.setAttribute(
+          'aria-expanded',
+          'false'
+        );
+    };
 
-  overlay?.addEventListener(
-    'click',
-    closeSidebar
-  );
+  menuButton
+    ?.addEventListener(
+      'click',
+      () => {
+        const isOpen =
+          sidebar
+            ?.classList.toggle(
+              'open'
+            );
+
+        overlay
+          ?.classList.toggle(
+            'visible',
+            Boolean(
+              isOpen
+            )
+          );
+
+        menuButton
+          .setAttribute(
+            'aria-expanded',
+            String(
+              Boolean(
+                isOpen
+              )
+            )
+          );
+      }
+    );
+
+  overlay
+    ?.addEventListener(
+      'click',
+      closeSidebar
+    );
 
   document
     .querySelectorAll(
-      '[data-dashboard-view]'
+      '.dashboard-nav-item'
     )
     .forEach(
       (button) => {
@@ -671,6 +796,200 @@ function bindDashboardShellEvents() {
     );
 }
 
+/* =========================================================
+   NÚT HOME VÀ QUAY LẠI TRÊN HEADER
+========================================================= */
+
+function bindDashboardHeaderNavigation() {
+  if (
+    dashboardHeaderNavigationBound
+  ) {
+    return;
+  }
+
+  dashboardHeaderNavigationBound =
+    true;
+
+  /*
+   * Capture = true để xử lý trước
+   * các listener cũ gắn trực tiếp vào nút.
+   */
+  document.addEventListener(
+    'click',
+    async (
+      event
+    ) => {
+      const homeButton =
+        event.target.closest(
+          '#home-button'
+        );
+
+      if (homeButton) {
+        event.preventDefault();
+
+        event.stopImmediatePropagation();
+
+        await goToDashboardHome();
+
+        return;
+      }
+
+      const backButton =
+        event.target.closest(
+          '#back-button'
+        );
+
+      if (!backButton) {
+        return;
+      }
+
+      const appElement =
+        document.querySelector(
+          '#app'
+        );
+
+      if (!appElement) {
+        return;
+      }
+
+      const isQuizPage =
+        Boolean(
+          appElement.querySelector(
+            '.quiz-page'
+          )
+        );
+
+      const isResultPage =
+        Boolean(
+          appElement.querySelector(
+            '.result-page'
+          )
+        );
+
+      const isLessonDetailPage =
+        Boolean(
+          appElement.querySelector(
+            '.lesson-detail-card'
+          )
+        ) &&
+        !isQuizPage &&
+        !isResultPage;
+
+      /*
+       * Bài học được mở từ tab nào
+       * thì Quay lại đúng tab đó.
+       */
+      if (
+        isLessonDetailPage
+      ) {
+        event.preventDefault();
+
+        event.stopImmediatePropagation();
+
+        await goBackToDashboardView();
+
+        return;
+      }
+
+      /*
+       * Quiz mở trực tiếp từ tab Bài kiểm tra.
+       */
+      if (
+        isQuizPage &&
+        dashboardDirectQuiz
+      ) {
+        event.preventDefault();
+
+        event.stopImmediatePropagation();
+
+        dashboardDirectQuiz =
+          false;
+
+        await goBackToDashboardView();
+      }
+    },
+    true
+  );
+}
+
+async function goToDashboardHome() {
+  clearQuizTimer();
+
+  dashboardReturnView =
+    'home';
+
+  dashboardDirectQuiz =
+    false;
+
+  window.location.hash =
+    '#home';
+
+  if (
+    dashboardState?.user
+  ) {
+    await renderDashboard(
+      dashboardState.user
+    );
+
+    return;
+  }
+
+  const {
+    data: {
+      session
+    },
+    error,
+  } =
+    await supabaseClient.auth
+      .getSession();
+
+  if (
+    error ||
+    !session?.user
+  ) {
+    renderLogin();
+
+    return;
+  }
+
+  await renderDashboard(
+    session.user
+  );
+}
+
+async function goBackToDashboardView() {
+  clearQuizTimer();
+
+  if (
+    !dashboardState?.user
+  ) {
+    await goToDashboardHome();
+
+    return;
+  }
+
+  const targetView =
+    DASHBOARD_VIEWS.includes(
+      dashboardReturnView
+    )
+      ? dashboardReturnView
+      : 'home';
+
+  dashboardDirectQuiz =
+    false;
+
+  window.location.hash =
+    `#${targetView}`;
+
+  await renderDashboard(
+    dashboardState.user
+  );
+}
+
+/* =========================================================
+   HASH ROUTER
+========================================================= */
+
 function bindDashboardHashListener() {
   if (
     dashboardHashListenerBound
@@ -684,7 +1003,20 @@ function bindDashboardHashListener() {
   window.addEventListener(
     'hashchange',
     () => {
-      if (!dashboardState) {
+      if (
+        !dashboardState
+      ) {
+        return;
+      }
+
+      const dashboardView =
+        document.querySelector(
+          '#dashboard-view'
+        );
+
+      if (
+        !dashboardView
+      ) {
         return;
       }
 
@@ -702,7 +1034,10 @@ function getDashboardViewFromHash() {
       window.location.hash ||
       ''
     )
-      .replace('#', '')
+      .replace(
+        '#',
+        ''
+      )
       .trim()
       .toLowerCase();
 
@@ -726,7 +1061,8 @@ function showDashboardView(
       view
     )
   ) {
-    view = 'home';
+    view =
+      'home';
   }
 
   if (
@@ -753,7 +1089,14 @@ function showDashboardView(
     return;
   }
 
-  removeStandaloneLessonChat();
+  if (
+    typeof window
+      .removeStandaloneLessonChat ===
+    'function'
+  ) {
+    window
+      .removeStandaloneLessonChat();
+  }
 
   switch (view) {
     case 'courses':
@@ -790,7 +1133,9 @@ function showDashboardView(
 
   window.scrollTo({
     top: 0,
-    behavior: 'smooth',
+
+    behavior:
+      'smooth',
   });
 }
 
@@ -803,63 +1148,55 @@ function setActiveDashboardNav(
     )
     .forEach(
       (button) => {
-        button.classList.toggle(
-          'active',
-          button.dataset
-            .dashboardView ===
-            view
-        );
+        button.classList
+          .toggle(
+            'active',
+            button.dataset
+              .dashboardView ===
+              view
+          );
       }
     );
 }
 
 /* =========================================================
-   HEADER TRANG CON
+   HEADER CỦA TỪNG TAB
+   Không có nút Quay về Tổng quan.
 ========================================================= */
 
 function renderDashboardViewHeader({
   eyebrow,
   title,
   description,
-  showBackButton = true,
 }) {
   return `
     <section class="dashboard-view-header">
       <div>
         <p class="dashboard-eyebrow">
-          ${escapeHtml(eyebrow)}
+          ${escapeHtml(
+            eyebrow
+          )}
         </p>
 
         <h1>
-          ${escapeHtml(title)}
+          ${escapeHtml(
+            title
+          )}
         </h1>
 
         <p>
           ${escapeHtml(
-            description || ''
+            description ||
+            ''
           )}
         </p>
       </div>
-
-      ${
-        showBackButton
-          ? `
-            <button
-              class="dashboard-back-home-button"
-              type="button"
-              data-dashboard-view="home"
-            >
-              ← Quay về Tổng quan
-            </button>
-          `
-          : ''
-      }
     </section>
   `;
 }
 
 /* =========================================================
-   TRANG TỔNG QUAN
+   TAB TỔNG QUAN
 ========================================================= */
 
 function renderHomeView(
@@ -876,7 +1213,8 @@ function renderHomeView(
     nextLesson,
     enrollment,
     lessons,
-  } = dashboardState;
+  } =
+    dashboardState;
 
   const attemptedLessons =
     lessons.filter(
@@ -884,7 +1222,7 @@ function renderHomeView(
         Number(
           lesson.progress
             .attempt_count ||
-            0
+          0
         ) > 0
     ).length;
 
@@ -935,9 +1273,7 @@ function renderHomeView(
         ${
           currentModule
             ? `
-              <div
-                class="dashboard-current-module"
-              >
+              <div class="dashboard-current-module">
                 <span>
                   Chuyên đề hiện tại
                 </span>
@@ -953,9 +1289,7 @@ function renderHomeView(
         }
       </div>
 
-      <div
-        class="dashboard-hero-actions"
-      >
+      <div class="dashboard-hero-actions">
         <button
           class="dashboard-outline-button"
           type="button"
@@ -988,9 +1322,7 @@ function renderHomeView(
       </div>
     </section>
 
-    <section
-      class="dashboard-statistics"
-    >
+    <section class="dashboard-statistics">
       ${renderStatisticCard(
         '▦',
         totalLessons,
@@ -1014,7 +1346,8 @@ function renderHomeView(
 
       ${renderStatisticCard(
         '★',
-        averageScore > 0
+        averageScore >
+        0
           ? averageScore
           : '--',
         'Điểm trung bình',
@@ -1024,16 +1357,10 @@ function renderHomeView(
 
     <div class="dashboard-content-grid">
       <div class="dashboard-primary-column">
-        <section
-          class="dashboard-panel"
-        >
-          <div
-            class="dashboard-panel-heading"
-          >
+        <section class="dashboard-panel">
+          <div class="dashboard-panel-heading">
             <div>
-              <p
-                class="dashboard-eyebrow"
-              >
+              <p class="dashboard-eyebrow">
                 TIẾN ĐỘ HỌC TẬP
               </p>
 
@@ -1086,9 +1413,7 @@ function renderHomeView(
             </div>
           </div>
 
-          <div
-            class="main-progress-track"
-          >
+          <div class="main-progress-track">
             <div
               class="main-progress-value"
               style="
@@ -1131,9 +1456,7 @@ function renderHomeView(
             : renderCompletedHomeCard()
         }
 
-        <section
-          class="dashboard-quick-links"
-        >
+        <section class="dashboard-quick-links">
           ${renderQuickLinkCard(
             'courses',
             '▤',
@@ -1164,19 +1487,11 @@ function renderHomeView(
         </section>
       </div>
 
-      <aside
-        class="dashboard-secondary-column"
-      >
-        <section
-          class="dashboard-side-card"
-        >
-          <div
-            class="dashboard-side-card-heading"
-          >
+      <aside class="dashboard-secondary-column">
+        <section class="dashboard-side-card">
+          <div class="dashboard-side-card-heading">
             <div>
-              <p
-                class="dashboard-eyebrow"
-              >
+              <p class="dashboard-eyebrow">
                 TỔNG QUAN
               </p>
 
@@ -1185,16 +1500,12 @@ function renderHomeView(
               </h3>
             </div>
 
-            <span
-              class="side-card-badge"
-            >
+            <span class="side-card-badge">
               ${progressPercent}%
             </span>
           </div>
 
-          <div
-            class="learning-summary-list"
-          >
+          <div class="learning-summary-list">
             <div>
               <span>
                 Đã làm quiz
@@ -1222,7 +1533,8 @@ function renderHomeView(
 
               <strong>
                 ${
-                  averageScore > 0
+                  averageScore >
+                  0
                     ? averageScore
                     : '--'
                 }
@@ -1286,19 +1598,21 @@ function renderStatisticCard(
         ${theme}
       "
     >
-      <div
-        class="dashboard-stat-icon"
-      >
+      <div class="dashboard-stat-icon">
         ${icon}
       </div>
 
       <div>
         <strong>
-          ${escapeHtml(value)}
+          ${escapeHtml(
+            value
+          )}
         </strong>
 
         <span>
-          ${escapeHtml(label)}
+          ${escapeHtml(
+            label
+          )}
         </span>
       </div>
     </article>
@@ -1347,7 +1661,9 @@ function renderNextLessonHomeCard(
               : ''
           }
 
-          <span>Quiz</span>
+          <span>
+            Quiz
+          </span>
 
           ${
             Number(
@@ -1371,7 +1687,8 @@ function renderNextLessonHomeCard(
         )}"
       >
         ${
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
           'studying'
             ? 'Tiếp tục học'
             : 'Bắt đầu học'
@@ -1418,51 +1735,54 @@ function renderQuickLinkCard(
       type="button"
       data-dashboard-view="${view}"
     >
-      <span
-        class="dashboard-quick-link-icon"
-      >
+      <span class="dashboard-quick-link-icon">
         ${icon}
       </span>
 
       <strong>
-        ${escapeHtml(title)}
+        ${escapeHtml(
+          title
+        )}
       </strong>
 
       <span>
-        ${escapeHtml(description)}
+        ${escapeHtml(
+          description
+        )}
       </span>
     </button>
   `;
 }
 
 /* =========================================================
-   TRANG KHÓA HỌC
+   TAB KHÓA HỌC
 ========================================================= */
 
 function renderCoursesView(
   container
 ) {
   const {
-    lessons,
-  } = dashboardState;
+    lessons
+  } =
+    dashboardState;
 
   container.innerHTML = `
     ${renderDashboardViewHeader({
       eyebrow:
         'LỘ TRÌNH ĐÀO TẠO',
+
       title:
         'Danh sách khóa học',
+
       description:
         'Theo dõi trạng thái và mở từng bài học trong chương trình.',
     })}
 
-    <section
-      class="dashboard-toolbar"
-    >
-      <label
-        class="dashboard-search-box"
-      >
-        <span>⌕</span>
+    <section class="dashboard-toolbar">
+      <label class="dashboard-search-box">
+        <span>
+          ⌕
+        </span>
 
         <input
           id="course-search-input"
@@ -1471,9 +1791,7 @@ function renderCoursesView(
         >
       </label>
 
-      <div
-        class="dashboard-filter-buttons"
-      >
+      <div class="dashboard-filter-buttons">
         <button
           class="dashboard-filter-button active"
           type="button"
@@ -1531,7 +1849,9 @@ function renderCourseModules(
   keyword
 ) {
   const normalizedKeyword =
-    String(keyword || '')
+    String(
+      keyword || ''
+    )
       .trim()
       .toLowerCase();
 
@@ -1539,19 +1859,24 @@ function renderCourseModules(
     lessons.filter(
       (lesson) => {
         const status =
-          lesson.progress.status;
+          lesson.progress
+            .status;
 
         const matchesFilter =
-          filter === 'all' ||
+          filter ===
+            'all' ||
           (
             filter ===
               'available' &&
             [
               'available',
               'studying',
-            ].includes(status)
+            ].includes(
+              status
+            )
           ) ||
-          status === filter;
+          status ===
+            filter;
 
         const searchableText =
           `
@@ -1574,7 +1899,8 @@ function renderCourseModules(
     );
 
   if (
-    filteredLessons.length === 0
+    filteredLessons.length ===
+    0
   ) {
     return `
       <div class="dashboard-empty-state">
@@ -1583,31 +1909,36 @@ function renderCourseModules(
     `;
   }
 
-  return TRAINING_MODULES.map(
-    (module) => {
-      const moduleLessons =
-        filteredLessons.filter(
-          (lesson) =>
-            Number(
-              lesson.order_number
-            ) >= module.from &&
-            Number(
-              lesson.order_number
-            ) <= module.to
+  return TRAINING_MODULES
+    .map(
+      (module) => {
+        const moduleLessons =
+          filteredLessons.filter(
+            (lesson) =>
+              Number(
+                lesson.order_number
+              ) >=
+                module.from &&
+              Number(
+                lesson.order_number
+              ) <=
+                module.to
+          );
+
+        if (
+          moduleLessons.length ===
+          0
+        ) {
+          return '';
+        }
+
+        return renderTrainingModule(
+          module,
+          moduleLessons
         );
-
-      if (
-        moduleLessons.length === 0
-      ) {
-        return '';
       }
-
-      return renderTrainingModule(
-        module,
-        moduleLessons
-      );
-    }
-  ).join('');
+    )
+    .join('');
 }
 
 function renderTrainingModule(
@@ -1617,12 +1948,14 @@ function renderTrainingModule(
   const completedCount =
     moduleLessons.filter(
       (lesson) =>
-        lesson.progress.status ===
+        lesson.progress
+          .status ===
         'passed'
     ).length;
 
   const modulePercent =
-    moduleLessons.length > 0
+    moduleLessons.length >
+    0
       ? Math.round(
           (
             completedCount /
@@ -1632,14 +1965,15 @@ function renderTrainingModule(
       : 0;
 
   return `
-    <article
-      class="training-module-card"
-    >
+    <article class="training-module-card">
       <header class="module-header">
         <div class="module-index">
           ${String(
             module.id
-          ).padStart(2, '0')}
+          ).padStart(
+            2,
+            '0'
+          )}
         </div>
 
         <div class="module-title">
@@ -1661,9 +1995,7 @@ function renderTrainingModule(
           </span>
         </div>
 
-        <div
-          class="module-progress-summary"
-        >
+        <div class="module-progress-summary">
           <strong>
             ${completedCount}/${
               moduleLessons.length
@@ -1676,9 +2008,7 @@ function renderTrainingModule(
         </div>
       </header>
 
-      <div
-        class="module-progress-track"
-      >
+      <div class="module-progress-track">
         <div
           class="module-progress-value"
           style="
@@ -1706,7 +2036,8 @@ function renderDashboardLessonItem(
     lesson.progress.status;
 
   const isLocked =
-    status === 'locked';
+    status ===
+    'locked';
 
   const hasContent =
     Boolean(
@@ -1724,29 +2055,25 @@ function renderDashboardLessonItem(
     <div
       class="
         roadmap-lesson-item
-        ${escapeAttribute(status)}
+        ${escapeAttribute(
+          status
+        )}
       "
     >
-      <div
-        class="roadmap-status-icon"
-      >
+      <div class="roadmap-status-icon">
         ${getLessonStatusIcon(
           status
         )}
       </div>
 
-      <div
-        class="roadmap-lesson-number"
-      >
+      <div class="roadmap-lesson-number">
         Bài
         ${escapeHtml(
           lesson.order_number
         )}
       </div>
 
-      <div
-        class="roadmap-lesson-information"
-      >
+      <div class="roadmap-lesson-information">
         <h4>
           ${escapeHtml(
             lesson.title
@@ -1760,15 +2087,11 @@ function renderDashboardLessonItem(
           )}
         </p>
 
-        <div
-          class="lesson-resource-tags"
-        >
+        <div class="lesson-resource-tags">
           ${
             lesson.video_url
               ? `
-                <span
-                  class="resource-tag video"
-                >
+                <span class="resource-tag video">
                   Video
                 </span>
               `
@@ -1778,9 +2101,7 @@ function renderDashboardLessonItem(
           ${
             lesson.pdf_url
               ? `
-                <span
-                  class="resource-tag pdf"
-                >
+                <span class="resource-tag pdf">
                   PDF
                 </span>
               `
@@ -1792,9 +2113,7 @@ function renderDashboardLessonItem(
               lesson.order_number
             ) <= 22
               ? `
-                <span
-                  class="resource-tag ai"
-                >
+                <span class="resource-tag ai">
                   AI
                 </span>
               `
@@ -1806,9 +2125,7 @@ function renderDashboardLessonItem(
               .best_score !==
             null
               ? `
-                <span
-                  class="resource-tag score"
-                >
+                <span class="resource-tag score">
                   Điểm:
                   ${escapeHtml(
                     lesson
@@ -1823,9 +2140,7 @@ function renderDashboardLessonItem(
           ${
             !hasContent
               ? `
-                <span
-                  class="resource-tag preparing"
-                >
+                <span class="resource-tag preparing">
                   Đang cập nhật
                 </span>
               `
@@ -1834,13 +2149,13 @@ function renderDashboardLessonItem(
         </div>
       </div>
 
-      <div
-        class="roadmap-lesson-action"
-      >
+      <div class="roadmap-lesson-action">
         <span
           class="
             roadmap-status-text
-            ${escapeAttribute(status)}
+            ${escapeAttribute(
+              status
+            )}
           "
         >
           ${formatLessonStatus(
@@ -1885,31 +2200,33 @@ function bindCourseFilterEvents() {
   let activeFilter =
     'all';
 
-  const updateList = () => {
-    const list =
-      document.querySelector(
-        '#course-module-list'
-      );
+  const updateList =
+    () => {
+      const list =
+        document.querySelector(
+          '#course-module-list'
+        );
 
-    if (!list) {
-      return;
-    }
+      if (!list) {
+        return;
+      }
 
-    list.innerHTML =
-      renderCourseModules(
-        dashboardState.lessons,
-        activeFilter,
-        searchInput?.value ||
+      list.innerHTML =
+        renderCourseModules(
+          dashboardState.lessons,
+          activeFilter,
+          searchInput?.value ||
           ''
-      );
+        );
 
-    bindCurrentViewEvents();
-  };
+      bindCurrentViewEvents();
+    };
 
-  searchInput?.addEventListener(
-    'input',
-    updateList
-  );
+  searchInput
+    ?.addEventListener(
+      'input',
+      updateList
+    );
 
   filterButtons.forEach(
     (button) => {
@@ -1922,10 +2239,12 @@ function bindCourseFilterEvents() {
 
           filterButtons.forEach(
             (item) => {
-              item.classList.toggle(
-                'active',
-                item === button
-              );
+              item.classList
+                .toggle(
+                  'active',
+                  item ===
+                    button
+                );
             }
           );
 
@@ -1937,33 +2256,34 @@ function bindCourseFilterEvents() {
 }
 
 /* =========================================================
-   TRANG BÀI KIỂM TRA
+   TAB BÀI KIỂM TRA
 ========================================================= */
 
 function renderQuizzesView(
   container
 ) {
   const {
-    lessons,
-  } = dashboardState;
+    lessons
+  } =
+    dashboardState;
 
   container.innerHTML = `
     ${renderDashboardViewHeader({
       eyebrow:
         'BÀI KIỂM TRA',
+
       title:
         'Danh sách bài kiểm tra',
+
       description:
         'Xem điểm, số lượt đã sử dụng và số lượt còn lại của từng bài.',
     })}
 
-    <section
-      class="dashboard-toolbar"
-    >
-      <label
-        class="dashboard-search-box"
-      >
-        <span>⌕</span>
+    <section class="dashboard-toolbar">
+      <label class="dashboard-search-box">
+        <span>
+          ⌕
+        </span>
 
         <input
           id="quiz-search-input"
@@ -1972,9 +2292,7 @@ function renderQuizzesView(
         >
       </label>
 
-      <div
-        class="dashboard-filter-buttons"
-      >
+      <div class="dashboard-filter-buttons">
         <button
           class="dashboard-filter-button active"
           type="button"
@@ -2032,7 +2350,9 @@ function renderQuizCards(
   keyword
 ) {
   const normalizedKeyword =
-    String(keyword || '')
+    String(
+      keyword || ''
+    )
       .trim()
       .toLowerCase();
 
@@ -2043,7 +2363,7 @@ function renderQuizCards(
           Number(
             lesson.progress
               .attempt_count ||
-              0
+            0
           );
 
         const remainingAttempts =
@@ -2054,16 +2374,18 @@ function renderQuizCards(
           );
 
         const isLocked =
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
           'locked';
 
         const isPassed =
-          lesson.progress.status ===
+          lesson.progress
+            .status ===
             'passed' ||
           Number(
             lesson.progress
               .best_score ||
-              0
+            0
           ) >=
             Number(
               lesson.passing_score ||
@@ -2074,26 +2396,31 @@ function renderQuizCards(
           true;
 
         if (
-          filter === 'available'
+          filter ===
+          'available'
         ) {
           matchesFilter =
             !isLocked &&
-            remainingAttempts > 0;
+            remainingAttempts >
+              0;
         }
 
         if (
-          filter === 'passed'
+          filter ===
+          'passed'
         ) {
           matchesFilter =
             isPassed;
         }
 
         if (
-          filter === 'exhausted'
+          filter ===
+          'exhausted'
         ) {
           matchesFilter =
             !isLocked &&
-            remainingAttempts <= 0;
+            remainingAttempts <=
+              0;
         }
 
         const searchableText =
@@ -2116,7 +2443,8 @@ function renderQuizCards(
     );
 
   if (
-    filtered.length === 0
+    filtered.length ===
+    0
   ) {
     return `
       <div class="dashboard-empty-state">
@@ -2139,13 +2467,14 @@ function renderQuizDashboardCard(
     lesson.progress.status;
 
   const isLocked =
-    status === 'locked';
+    status ===
+    'locked';
 
   const attemptCount =
     Number(
       lesson.progress
         .attempt_count ||
-        0
+      0
     );
 
   const remainingAttempts =
@@ -2166,15 +2495,18 @@ function renderQuizDashboardCard(
     );
 
   const isPassed =
-    status === 'passed' ||
+    status ===
+      'passed' ||
     Number(
       bestScore ||
       0
-    ) >= passingScore;
+    ) >=
+      passingScore;
 
   const exhausted =
     !isLocked &&
-    remainingAttempts <= 0;
+    remainingAttempts <=
+      0;
 
   let statusText =
     'Chưa làm bài';
@@ -2201,7 +2533,8 @@ function renderQuizDashboardCard(
     statusClass =
       'exhausted';
   } else if (
-    attemptCount > 0
+    attemptCount >
+    0
   ) {
     statusText =
       'Chưa đạt';
@@ -2221,23 +2554,15 @@ function renderQuizDashboardCard(
     exhausted;
 
   return `
-    <article
-      class="quiz-dashboard-card"
-    >
-      <div
-        class="quiz-dashboard-number"
-      >
+    <article class="quiz-dashboard-card">
+      <div class="quiz-dashboard-number">
         ${escapeHtml(
           lesson.order_number
         )}
       </div>
 
-      <div
-        class="quiz-dashboard-content"
-      >
-        <div
-          class="quiz-dashboard-heading"
-        >
+      <div class="quiz-dashboard-content">
+        <div class="quiz-dashboard-heading">
           <div>
             <p>
               Bài
@@ -2263,9 +2588,7 @@ function renderQuizDashboardCard(
           </span>
         </div>
 
-        <div
-          class="quiz-dashboard-metrics"
-        >
+        <div class="quiz-dashboard-metrics">
           <div>
             <span>
               Điểm cao nhất
@@ -2337,7 +2660,8 @@ function renderQuizDashboardCard(
             ? 'Chưa mở khóa'
             : exhausted
               ? 'Hết lượt'
-              : attemptCount > 0
+              : attemptCount >
+                  0
                 ? 'Làm lại'
                 : 'Bắt đầu'
         }
@@ -2360,31 +2684,33 @@ function bindQuizFilterEvents() {
   let activeFilter =
     'all';
 
-  const updateList = () => {
-    const list =
-      document.querySelector(
-        '#quiz-list'
-      );
+  const updateList =
+    () => {
+      const list =
+        document.querySelector(
+          '#quiz-list'
+        );
 
-    if (!list) {
-      return;
-    }
+      if (!list) {
+        return;
+      }
 
-    list.innerHTML =
-      renderQuizCards(
-        dashboardState.lessons,
-        activeFilter,
-        searchInput?.value ||
+      list.innerHTML =
+        renderQuizCards(
+          dashboardState.lessons,
+          activeFilter,
+          searchInput?.value ||
           ''
-      );
+        );
 
-    bindCurrentViewEvents();
-  };
+      bindCurrentViewEvents();
+    };
 
-  searchInput?.addEventListener(
-    'input',
-    updateList
-  );
+  searchInput
+    ?.addEventListener(
+      'input',
+      updateList
+    );
 
   filterButtons.forEach(
     (button) => {
@@ -2397,10 +2723,12 @@ function bindQuizFilterEvents() {
 
           filterButtons.forEach(
             (item) => {
-              item.classList.toggle(
-                'active',
-                item === button
-              );
+              item.classList
+                .toggle(
+                  'active',
+                  item ===
+                    button
+                );
             }
           );
 
@@ -2412,33 +2740,34 @@ function bindQuizFilterEvents() {
 }
 
 /* =========================================================
-   TRANG TÀI LIỆU
+   TAB TÀI LIỆU
 ========================================================= */
 
 function renderDocumentsView(
   container
 ) {
   const {
-    lessons,
-  } = dashboardState;
+    lessons
+  } =
+    dashboardState;
 
   container.innerHTML = `
     ${renderDashboardViewHeader({
       eyebrow:
         'KHO TÀI LIỆU',
+
       title:
         'Tài liệu đào tạo',
+
       description:
         'Tra cứu video, PDF và nội dung học tập theo từng bài.',
     })}
 
-    <section
-      class="dashboard-toolbar"
-    >
-      <label
-        class="dashboard-search-box"
-      >
-        <span>⌕</span>
+    <section class="dashboard-toolbar">
+      <label class="dashboard-search-box">
+        <span>
+          ⌕
+        </span>
 
         <input
           id="document-search-input"
@@ -2447,9 +2776,7 @@ function renderDocumentsView(
         >
       </label>
 
-      <div
-        class="dashboard-filter-buttons"
-      >
+      <div class="dashboard-filter-buttons">
         <button
           class="dashboard-filter-button active"
           type="button"
@@ -2507,7 +2834,9 @@ function renderDocumentCards(
   keyword
 ) {
   const normalizedKeyword =
-    String(keyword || '')
+    String(
+      keyword || ''
+    )
       .trim()
       .toLowerCase();
 
@@ -2534,21 +2863,24 @@ function renderDocumentCards(
           true;
 
         if (
-          filter === 'video'
+          filter ===
+          'video'
         ) {
           matchesFilter =
             hasVideo;
         }
 
         if (
-          filter === 'pdf'
+          filter ===
+          'pdf'
         ) {
           matchesFilter =
             hasPdf;
         }
 
         if (
-          filter === 'content'
+          filter ===
+          'content'
         ) {
           matchesFilter =
             hasContent;
@@ -2575,7 +2907,8 @@ function renderDocumentCards(
     );
 
   if (
-    filtered.length === 0
+    filtered.length ===
+    0
   ) {
     return `
       <div class="dashboard-empty-state">
@@ -2625,12 +2958,8 @@ function renderDocumentDashboardCard(
         }
       "
     >
-      <div
-        class="document-dashboard-top"
-      >
-        <span
-          class="document-dashboard-number"
-        >
+      <div class="document-dashboard-top">
+        <span class="document-dashboard-number">
           Bài
           ${escapeHtml(
             lesson.order_number
@@ -2668,9 +2997,7 @@ function renderDocumentDashboardCard(
         )}
       </p>
 
-      <div
-        class="document-type-list"
-      >
+      <div class="document-type-list">
         ${
           hasVideo
             ? '<span class="video">Video</span>'
@@ -2727,31 +3054,33 @@ function bindDocumentFilterEvents() {
   let activeFilter =
     'all';
 
-  const updateList = () => {
-    const list =
-      document.querySelector(
-        '#document-list'
-      );
+  const updateList =
+    () => {
+      const list =
+        document.querySelector(
+          '#document-list'
+        );
 
-    if (!list) {
-      return;
-    }
+      if (!list) {
+        return;
+      }
 
-    list.innerHTML =
-      renderDocumentCards(
-        dashboardState.lessons,
-        activeFilter,
-        searchInput?.value ||
+      list.innerHTML =
+        renderDocumentCards(
+          dashboardState.lessons,
+          activeFilter,
+          searchInput?.value ||
           ''
-      );
+        );
 
-    bindCurrentViewEvents();
-  };
+      bindCurrentViewEvents();
+    };
 
-  searchInput?.addEventListener(
-    'input',
-    updateList
-  );
+  searchInput
+    ?.addEventListener(
+      'input',
+      updateList
+    );
 
   filterButtons.forEach(
     (button) => {
@@ -2764,10 +3093,12 @@ function bindDocumentFilterEvents() {
 
           filterButtons.forEach(
             (item) => {
-              item.classList.toggle(
-                'active',
-                item === button
-              );
+              item.classList
+                .toggle(
+                  'active',
+                  item ===
+                    button
+                );
             }
           );
 
@@ -2779,7 +3110,7 @@ function bindDocumentFilterEvents() {
 }
 
 /* =========================================================
-   TRANG TRỢ LÝ AI
+   TAB TRỢ LÝ AI
 ========================================================= */
 
 function renderAiView(
@@ -2794,19 +3125,23 @@ function renderAiView(
         Number(
           lesson.order_number
         ) <= 22 &&
-        lesson.progress.status !==
+        lesson.progress
+          .status !==
           'locked'
     );
 
   if (
-    configuredLessons.length === 0
+    configuredLessons.length ===
+    0
   ) {
     container.innerHTML = `
       ${renderDashboardViewHeader({
         eyebrow:
           'TRỢ LÝ AI',
+
         title:
           'Hỏi đáp theo bài học',
+
         description:
           'Chatbox AI chỉ trả lời theo tài liệu của bài được chọn.',
       })}
@@ -2816,8 +3151,6 @@ function renderAiView(
         để sử dụng Trợ lý AI.
       </div>
     `;
-
-    bindCurrentViewEvents();
 
     return;
   }
@@ -2838,26 +3171,25 @@ function renderAiView(
   dashboardState
     .selectedAiLessonNumber =
     Number(
-      selectedLesson.order_number
+      selectedLesson
+        .order_number
     );
 
   container.innerHTML = `
     ${renderDashboardViewHeader({
       eyebrow:
         'TRỢ LÝ AI',
+
       title:
         'Hỏi đáp theo bài học',
+
       description:
         'Chọn bài học ở cột bên trái và đặt câu hỏi cho Trợ lý AI.',
     })}
 
     <section class="standalone-ai-layout">
-      <aside
-        class="standalone-ai-lessons"
-      >
-        <div
-          class="standalone-ai-sidebar-heading"
-        >
+      <aside class="standalone-ai-lessons">
+        <div class="standalone-ai-sidebar-heading">
           <h2>
             Chọn bài học
           </h2>
@@ -2867,9 +3199,7 @@ function renderAiView(
           </p>
         </div>
 
-        <div
-          class="standalone-ai-lesson-list"
-        >
+        <div class="standalone-ai-lesson-list">
           ${configuredLessons
             .map(
               (lesson) => `
@@ -2889,9 +3219,7 @@ function renderAiView(
                     }
                   "
                   type="button"
-                  data-ai-lesson-number="${
-                    lesson.order_number
-                  }"
+                  data-ai-lesson-number="${lesson.order_number}"
                 >
                   <span>
                     ${escapeHtml(
@@ -2911,12 +3239,8 @@ function renderAiView(
         </div>
       </aside>
 
-      <div
-        class="standalone-ai-main"
-      >
-        <div
-          class="standalone-ai-heading"
-        >
+      <div class="standalone-ai-main">
+        <div class="standalone-ai-heading">
           <div>
             <p>
               ĐANG HỎI VỀ
@@ -2940,9 +3264,7 @@ function renderAiView(
           </span>
         </div>
 
-        <div
-          class="standalone-ai-suggestions"
-        >
+        <div class="standalone-ai-suggestions">
           <button
             type="button"
             data-ai-suggestion="Tóm tắt nội dung bài học này."
@@ -2980,19 +3302,28 @@ function renderAiView(
     </section>
   `;
 
-  bindCurrentViewEvents();
-
   bindAiViewEvents(
     configuredLessons
   );
 
-  renderStandaloneLessonChat(
-    selectedLesson.order_number,
-    selectedLesson.title,
-    document.querySelector(
-      '#standalone-ai-chat-container'
-    )
-  );
+  if (
+    typeof window
+      .renderStandaloneLessonChat ===
+    'function'
+  ) {
+    window
+      .renderStandaloneLessonChat(
+        selectedLesson
+          .order_number,
+
+        selectedLesson
+          .title,
+
+        document.querySelector(
+          '#standalone-ai-chat-container'
+        )
+      );
+  }
 }
 
 function bindAiViewEvents(
@@ -3017,13 +3348,14 @@ function bindAiViewEvents(
               configuredLessons.find(
                 (lesson) =>
                   Number(
-                    lesson
-                      .order_number
+                    lesson.order_number
                   ) ===
                   lessonNumber
               );
 
-            if (!selectedLesson) {
+            if (
+              !selectedLesson
+            ) {
               return;
             }
 
@@ -3052,12 +3384,12 @@ function bindAiViewEvents(
       (button) => {
         button.addEventListener(
           'click',
-          () => {
+          async () => {
             const suggestion =
               button.dataset
                 .aiSuggestion;
 
-            copyTextToClipboard(
+            await copyTextToClipboard(
               suggestion
             );
 
@@ -3072,25 +3404,32 @@ function bindAiViewEvents(
 }
 
 /* =========================================================
-   SỰ KIỆN CHUNG CỦA TỪNG VIEW
+   SỰ KIỆN CỦA VIEW
 ========================================================= */
 
 function bindCurrentViewEvents() {
+  /*
+   * Nút chuyển tab nằm trong nội dung Dashboard.
+   */
   document
     .querySelectorAll(
-      '[data-dashboard-view]'
+      '#dashboard-view [data-dashboard-view]'
     )
     .forEach(
       (button) => {
-        button.onclick = () => {
-          showDashboardView(
-            button.dataset
-              .dashboardView
-          );
-        };
+        button.onclick =
+          () => {
+            showDashboardView(
+              button.dataset
+                .dashboardView
+            );
+          };
       }
     );
 
+  /*
+   * Mở bài học.
+   */
   document
     .querySelectorAll(
       '.dashboard-open-lesson-button'
@@ -3123,6 +3462,15 @@ function bindCurrentViewEvents() {
               return;
             }
 
+            /*
+             * Ghi nhớ tab hiện tại.
+             */
+            dashboardReturnView =
+              getDashboardViewFromHash();
+
+            dashboardDirectQuiz =
+              false;
+
             await renderLessonPage(
               lessonId,
               dashboardState
@@ -3133,6 +3481,9 @@ function bindCurrentViewEvents() {
       }
     );
 
+  /*
+   * Mở quiz trực tiếp từ tab Bài kiểm tra.
+   */
   document
     .querySelectorAll(
       '.dashboard-open-quiz-button'
@@ -3165,6 +3516,12 @@ function bindCurrentViewEvents() {
               return;
             }
 
+            dashboardReturnView =
+              'quizzes';
+
+            dashboardDirectQuiz =
+              true;
+
             await renderQuizPage(
               lessonId,
               dashboardState
@@ -3177,17 +3534,24 @@ function bindCurrentViewEvents() {
 }
 
 /* =========================================================
-   HÀM PHỤ
+   HÀM HỖ TRỢ
 ========================================================= */
 
 function getLessonStatusIcon(
   status
 ) {
   const icons = {
-    passed: '✓',
-    available: '▶',
-    studying: '▶',
-    locked: '⌁',
+    passed:
+      '✓',
+
+    available:
+      '▶',
+
+    studying:
+      '▶',
+
+    locked:
+      '⌁',
   };
 
   return (
@@ -3205,19 +3569,22 @@ function getLessonButtonText(
   }
 
   if (
-    status === 'locked'
+    status ===
+    'locked'
   ) {
     return 'Chưa mở khóa';
   }
 
   if (
-    status === 'passed'
+    status ===
+    'passed'
   ) {
     return 'Xem lại';
   }
 
   if (
-    status === 'studying'
+    status ===
+    'studying'
   ) {
     return 'Tiếp tục';
   }
@@ -3229,9 +3596,7 @@ function renderStudentInformationCard(
   profile
 ) {
   return `
-    <section
-      class="dashboard-side-card"
-    >
+    <section class="dashboard-side-card">
       <p class="dashboard-eyebrow">
         THÔNG TIN THỰC TẬP
       </p>
@@ -3240,9 +3605,7 @@ function renderStudentInformationCard(
         Hồ sơ sinh viên
       </h3>
 
-      <div
-        class="internship-information-list"
-      >
+      <div class="internship-information-list">
         <div>
           <span>
             Mã sinh viên
@@ -3291,6 +3654,7 @@ function renderStudentInformationCard(
             ${formatInternshipPeriod(
               profile
                 .internship_start,
+
               profile
                 .internship_end
             )}
@@ -3303,13 +3667,18 @@ function renderStudentInformationCard(
 
 function getGreetingText() {
   const hour =
-    new Date().getHours();
+    new Date()
+      .getHours();
 
-  if (hour < 11) {
+  if (
+    hour < 11
+  ) {
     return 'Chào buổi sáng';
   }
 
-  if (hour < 18) {
+  if (
+    hour < 18
+  ) {
     return 'Chào buổi chiều';
   }
 
@@ -3321,11 +3690,16 @@ function getFirstName(
 ) {
   const parts =
     String(
-      fullName || ''
+      fullName ||
+      ''
     )
       .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+      .split(
+        /\s+/
+      )
+      .filter(
+        Boolean
+      );
 
   return (
     parts[
@@ -3340,23 +3714,33 @@ function getInitials(
 ) {
   const parts =
     String(
-      fullName || ''
+      fullName ||
+      ''
     )
       .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+      .split(
+        /\s+/
+      )
+      .filter(
+        Boolean
+      );
 
   if (
-    parts.length === 0
+    parts.length ===
+    0
   ) {
     return 'SV';
   }
 
   if (
-    parts.length === 1
+    parts.length ===
+    1
   ) {
     return parts[0]
-      .slice(0, 2)
+      .slice(
+        0,
+        2
+      )
       .toUpperCase();
   }
 
@@ -3386,7 +3770,9 @@ function formatInternshipPeriod(
       }
 
       const date =
-        new Date(value);
+        new Date(
+          value
+        );
 
       if (
         Number.isNaN(
@@ -3400,7 +3786,9 @@ function formatInternshipPeriod(
         .DateTimeFormat(
           'vi-VN'
         )
-        .format(date);
+        .format(
+          date
+        );
     };
 
   return `${formatDate(
@@ -3419,24 +3807,27 @@ function getDefaultAiLessonNumber(
         Number(
           lesson.order_number
         ) <= 22 &&
-        lesson.progress.status ===
-        'studying'
+        lesson.progress
+          .status ===
+          'studying'
     ) ||
     lessons.find(
       (lesson) =>
         Number(
           lesson.order_number
         ) <= 22 &&
-        lesson.progress.status ===
-        'available'
+        lesson.progress
+          .status ===
+          'available'
     ) ||
     lessons.find(
       (lesson) =>
         Number(
           lesson.order_number
         ) <= 22 &&
-        lesson.progress.status !==
-        'locked'
+        lesson.progress
+          .status !==
+          'locked'
     );
 
   return current
@@ -3450,9 +3841,10 @@ async function copyTextToClipboard(
   text
 ) {
   try {
-    await navigator.clipboard.writeText(
-      text
-    );
+    await navigator.clipboard
+      .writeText(
+        text
+      );
   } catch (error) {
     console.warn(
       'Không thể sao chép:',
