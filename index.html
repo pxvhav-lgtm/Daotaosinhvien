@@ -28,7 +28,6 @@
     href="./Logo.png"
   >
 
-  <!-- Font Inter dùng chung -->
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
@@ -45,55 +44,50 @@
     rel="stylesheet"
   >
 
-  <!-- CSS nền tảng -->
   <link
     rel="stylesheet"
-    href="./style.css?v=20260720-100"
+    href="./style.css?v=20260720-110"
   >
 
-  <!-- CSS học video và tài liệu -->
   <link
     rel="stylesheet"
-    href="./video-gate.css?v=20260720-100"
+    href="./video-gate.css?v=20260720-110"
   >
 
-  <!-- CSS Dashboard sinh viên -->
   <link
     rel="stylesheet"
-    href="./dashboard-v2.css?v=20260720-100"
+    href="./dashboard-v2.css?v=20260720-110"
   >
 
-  <!-- CSS Dashboard quản trị -->
   <link
     rel="stylesheet"
-    href="./admin.css?v=20260720-100"
+    href="./admin.css?v=20260720-110"
   >
 
-  <!-- CSS nhập JSON từ NotebookLM -->
+  <!-- CSS quản lý và in kết quả -->
   <link
     rel="stylesheet"
-    href="./nblm-import.css?v=20260720-100"
+    href="./admin-results.css?v=20260720-110"
   >
 
-  <!-- CSS bài kiểm tra tổng kết -->
   <link
     rel="stylesheet"
-    href="./final-quiz.css?v=20260720-100"
+    href="./nblm-import.css?v=20260720-110"
   >
 
-  <!-- CSS Chatbox AI -->
   <link
     rel="stylesheet"
-    href="./lesson-chat.css?v=20260720-100"
+    href="./final-quiz.css?v=20260720-110"
   >
 
-  <!--
-    Luôn tải cuối cùng.
-    File này đồng bộ font trên toàn bộ website.
-  -->
   <link
     rel="stylesheet"
-    href="./font-system.css?v=20260720-100"
+    href="./lesson-chat.css?v=20260720-110"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./font-system.css?v=20260720-110"
   >
 </head>
 
@@ -110,38 +104,44 @@
     </main>
   </div>
 
-  <!-- Supabase phải tải trước app.js -->
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
   <script
-    src="./app.js?v=20260720-100"
+    src="./app.js?v=20260720-110"
   ></script>
 
   <script
-    src="./video-gate.js?v=20260720-100"
+    src="./video-gate.js?v=20260720-110"
   ></script>
 
   <script
-    src="./dashboard-v2.js?v=20260720-100"
+    src="./dashboard-v2.js?v=20260720-110"
   ></script>
 
   <script
-    src="./admin.js?v=20260720-100"
+    src="./admin.js?v=20260720-110"
+  ></script>
+
+  <!--
+    Phải tải sau admin.js.
+    File này chỉ hoạt động với tài khoản admin.
+  -->
+  <script
+    src="./admin-results.js?v=20260720-110"
   ></script>
 
   <script
-    src="./nblm-import.js?v=20260720-100"
+    src="./nblm-import.js?v=20260720-110"
   ></script>
 
   <script
-    src="./final-quiz.js?v=20260720-100"
+    src="./final-quiz.js?v=20260720-110"
   ></script>
 
-  <!-- Chatbox tải cuối -->
   <script
-    src="./lesson-chat.js?v=20260720-100"
+    src="./lesson-chat.js?v=20260720-110"
   ></script>
 
   <script>
