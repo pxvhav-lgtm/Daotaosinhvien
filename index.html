@@ -28,6 +28,10 @@
     href="./Logo.png"
   >
 
+  <!-- =====================================================
+       FONT INTER DÙNG CHUNG
+  ====================================================== -->
+
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
@@ -44,50 +48,75 @@
     rel="stylesheet"
   >
 
-  <link
-    rel="stylesheet"
-    href="./style.css?v=20260720-110"
-  >
+  <!-- =====================================================
+       CSS NỀN TẢNG
+  ====================================================== -->
 
   <link
     rel="stylesheet"
-    href="./video-gate.css?v=20260720-110"
+    href="./style.css?v=20260720-112"
   >
 
+  <!-- CSS học video và tài liệu -->
   <link
     rel="stylesheet"
-    href="./dashboard-v2.css?v=20260720-110"
+    href="./video-gate.css?v=20260720-112"
   >
 
+  <!-- CSS Dashboard sinh viên -->
   <link
     rel="stylesheet"
-    href="./admin.css?v=20260720-110"
+    href="./dashboard-v2.css?v=20260720-112"
   >
 
-  <!-- CSS quản lý và in kết quả -->
+  <!-- CSS Dashboard quản trị -->
   <link
     rel="stylesheet"
-    href="./admin-results.css?v=20260720-110"
+    href="./admin.css?v=20260720-112"
   >
 
+  <!-- CSS danh sách kết quả kiểm tra trong Admin -->
   <link
     rel="stylesheet"
-    href="./nblm-import.css?v=20260720-110"
+    href="./admin-results.css?v=20260720-112"
   >
 
+  <!--
+    CSS hiệu chỉnh bản in:
+    - Logo lớn hơn
+    - Tên công ty không xuống nhiều dòng
+    - Phiếu nằm gọn trên một trang A4
+  -->
   <link
     rel="stylesheet"
-    href="./final-quiz.css?v=20260720-110"
+    href="./admin-print-fix.css?v=20260720-112"
   >
 
+  <!-- CSS nhập JSON từ NotebookLM -->
   <link
     rel="stylesheet"
-    href="./lesson-chat.css?v=20260720-110"
+    href="./nblm-import.css?v=20260720-112"
   >
 
+  <!-- CSS bài kiểm tra tổng kết Bài 23 -->
   <link
     rel="stylesheet"
-    href="./font-system.css?v=20260720-110"
+    href="./final-quiz.css?v=20260720-112"
+  >
+
+  <!-- CSS Chatbox AI -->
+  <link
+    rel="stylesheet"
+    href="./lesson-chat.css?v=20260720-112"
+  >
+
+  <!--
+    File đồng bộ font toàn hệ thống.
+    Phải tải cuối cùng trong nhóm CSS chung.
+  -->
+  <link
+    rel="stylesheet"
+    href="./font-system.css?v=20260720-112"
   >
 </head>
 
@@ -104,45 +133,81 @@
     </main>
   </div>
 
+  <!-- =====================================================
+       THƯ VIỆN SUPABASE
+       Phải tải trước app.js
+  ====================================================== -->
+
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
-  <script
-    src="./app.js?v=20260720-110"
-  ></script>
+  <!-- =====================================================
+       JAVASCRIPT NỀN TẢNG
+  ====================================================== -->
 
   <script
-    src="./video-gate.js?v=20260720-110"
+    src="./app.js?v=20260720-112"
   ></script>
 
+  <!-- Chức năng xem video Google Drive -->
   <script
-    src="./dashboard-v2.js?v=20260720-110"
+    src="./video-gate.js?v=20260720-112"
   ></script>
 
+  <!-- Dashboard sinh viên -->
   <script
-    src="./admin.js?v=20260720-110"
+    src="./dashboard-v2.js?v=20260720-112"
+  ></script>
+
+  <!-- Dashboard quản trị -->
+  <script
+    src="./admin.js?v=20260720-112"
   ></script>
 
   <!--
+    Quản lý danh sách kết quả kiểm tra.
     Phải tải sau admin.js.
-    File này chỉ hoạt động với tài khoản admin.
   -->
   <script
-    src="./admin-results.js?v=20260720-110"
+    src="./admin-results.js?v=20260720-112"
   ></script>
 
+  <!--
+    Hiệu chỉnh tên file PDF gợi ý.
+    Phải tải sau admin-results.js.
+  -->
   <script
-    src="./nblm-import.js?v=20260720-110"
+    src="./admin-print-fix.js?v=20260720-112"
   ></script>
 
+  <!--
+    Nhập JSON từ NotebookLM.
+    Phải tải sau admin.js.
+  -->
   <script
-    src="./final-quiz.js?v=20260720-110"
+    src="./nblm-import.js?v=20260720-112"
   ></script>
 
+  <!--
+    Bài kiểm tra tổng kết Bài 23.
+    Phải tải sau các file nền tảng.
+  -->
   <script
-    src="./lesson-chat.js?v=20260720-110"
+    src="./final-quiz.js?v=20260720-112"
   ></script>
+
+  <!--
+    Chatbox hỏi đáp tài liệu.
+    Tải sau cùng trong nhóm chức năng.
+  -->
+  <script
+    src="./lesson-chat.js?v=20260720-112"
+  ></script>
+
+  <!-- =====================================================
+       KHỞI ĐỘNG HỆ THỐNG
+  ====================================================== -->
 
   <script>
     window.addEventListener(
@@ -154,7 +219,7 @@
             'function'
           ) {
             throw new Error(
-              'Không tìm thấy hàm init(). Vui lòng kiểm tra app.js.'
+              'Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.'
             );
           }
 
