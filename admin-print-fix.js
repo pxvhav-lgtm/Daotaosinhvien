@@ -1,26 +1,21 @@
 /*
  * =========================================================
- * HIỆU CHỈNH IN PHIẾU KẾT QUẢ
+ * XUẤT PHIẾU KẾT QUẢ THÀNH PDF
  * =========================================================
  *
  * Chức năng:
- * - Tạo tên file PDF gợi ý theo bài và sinh viên.
- * - Không thay đổi dữ liệu hoặc chức năng Admin hiện tại.
+ * - Tạo PDF trực tiếp, không mở Microsoft Print to PDF.
+ * - Tự động đặt tên file.
+ * - Giữ nút Ctrl + P hoặc in trình duyệt khi cần.
  *
- * File này phải tải sau admin-results.js.
+ * File này phải tải sau:
+ * - admin-results.js
  */
 
 (function initializeAdminPrintFix() {
-  let originalDocumentTitle =
-    document.title;
-
-  /*
-   * Xử lý trước listener window.print()
-   * trong admin-results.js.
-   */
   document.addEventListener(
     'click',
-    (event) => {
+    async (event) => {
       const printButton =
         event.target.closest(
           '#admin-print-button'
@@ -30,79 +25,361 @@
         return;
       }
 
-      originalDocumentTitle =
-        document.title;
+      event.preventDefault();
+      event.stopImmediatePropagation();
 
-      const suggestedFileName =
-        createAdminPrintSuggestedFileName();
-
-      document.title =
-        suggestedFileName;
-
-      /*
-       * Trường hợp trình duyệt không phát
-       * sự kiện afterprint ổn định.
-       */
-      window.setTimeout(
-        () => {
-          if (
-            document.title ===
-            suggestedFileName
-          ) {
-            document.title =
-              originalDocumentTitle;
-          }
-        },
-        30000
+      await exportAdminResultPdf(
+        printButton
       );
     },
     true
   );
-
-  /*
-   * Khôi phục tiêu đề website sau khi
-   * đóng cửa sổ in.
-   */
-  window.addEventListener(
-    'afterprint',
-    () => {
-      window.setTimeout(
-        () => {
-          document.title =
-            originalDocumentTitle;
-        },
-        300
-      );
-    }
-  );
 })();
 
 
-function createAdminPrintSuggestedFileName() {
+/* =========================================================
+   XUẤT PDF
+========================================================= */
+
+async function exportAdminResultPdf(
+  button
+) {
+  const documentElement =
+    document.querySelector(
+      '.admin-print-document'
+    );
+
+  if (!documentElement) {
+    window.alert(
+      'Không tìm thấy nội dung phiếu kết quả.'
+    );
+
+    return;
+  }
+
+  const oldText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    'Đang tạo PDF...';
+
+  try {
+    await ensureHtml2PdfLoaded();
+
+    await waitForAdminPrintImages(
+      documentElement
+    );
+
+    const fileName =
+      createAdminPrintPdfFileName();
+
+    const clonedDocument =
+      documentElement.cloneNode(
+        true
+      );
+
+    prepareAdminPrintClone(
+      clonedDocument
+    );
+
+    const temporaryContainer =
+      document.createElement(
+        'div'
+      );
+
+    temporaryContainer.className =
+      'admin-pdf-export-container';
+
+    temporaryContainer.appendChild(
+      clonedDocument
+    );
+
+    document.body.appendChild(
+      temporaryContainer
+    );
+
+    const options = {
+      margin: 0,
+
+      filename:
+        `${fileName}.pdf`,
+
+      image: {
+        type: 'jpeg',
+        quality: 0.98,
+      },
+
+      html2canvas: {
+        scale: 2,
+
+        useCORS: true,
+
+        allowTaint: false,
+
+        backgroundColor:
+          '#ffffff',
+
+        logging: false,
+
+        scrollX: 0,
+
+        scrollY: 0,
+
+        windowWidth:
+          794,
+      },
+
+      jsPDF: {
+        unit: 'mm',
+
+        format: 'a4',
+
+        orientation:
+          'portrait',
+
+        compress: true,
+      },
+
+      pagebreak: {
+        mode: [
+          'avoid-all',
+          'css',
+          'legacy',
+        ],
+      },
+    };
+
+    await window
+      .html2pdf()
+      .set(options)
+      .from(clonedDocument)
+      .save();
+
+    temporaryContainer.remove();
+  } catch (error) {
+    console.error(
+      'Lỗi tạo PDF:',
+      error
+    );
+
+    window.alert(
+      'Không thể tạo file PDF. Vui lòng kiểm tra kết nối mạng và thử lại.'
+    );
+  } finally {
+    button.disabled =
+      false;
+
+    button.textContent =
+      oldText;
+  }
+}
+
+
+/* =========================================================
+   TẢI THƯ VIỆN HTML2PDF
+========================================================= */
+
+function ensureHtml2PdfLoaded() {
+  if (
+    typeof window.html2pdf ===
+    'function'
+  ) {
+    return Promise.resolve();
+  }
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+      const existingScript =
+        document.querySelector(
+          '#html2pdf-library'
+        );
+
+      if (existingScript) {
+        existingScript.addEventListener(
+          'load',
+          resolve,
+          {
+            once: true,
+          }
+        );
+
+        existingScript.addEventListener(
+          'error',
+          reject,
+          {
+            once: true,
+          }
+        );
+
+        return;
+      }
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+      script.id =
+        'html2pdf-library';
+
+      script.src =
+        'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+
+      script.async =
+        true;
+
+      script.onload =
+        () => {
+          resolve();
+        };
+
+      script.onerror =
+        () => {
+          reject(
+            new Error(
+              'Không tải được thư viện html2pdf.'
+            )
+          );
+        };
+
+      document.head.appendChild(
+        script
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   CHỜ LOGO TẢI XONG
+========================================================= */
+
+async function waitForAdminPrintImages(
+  rootElement
+) {
+  const images =
+    Array.from(
+      rootElement.querySelectorAll(
+        'img'
+      )
+    );
+
+  await Promise.all(
+    images.map(
+      (image) => {
+        if (
+          image.complete &&
+          image.naturalWidth > 0
+        ) {
+          return Promise.resolve();
+        }
+
+        return new Promise(
+          (resolve) => {
+            image.addEventListener(
+              'load',
+              resolve,
+              {
+                once: true,
+              }
+            );
+
+            image.addEventListener(
+              'error',
+              resolve,
+              {
+                once: true,
+              }
+            );
+
+            window.setTimeout(
+              resolve,
+              5000
+            );
+          }
+        );
+      }
+    )
+  );
+}
+
+
+/* =========================================================
+   CHUẨN BỊ BẢN SAO DÙNG XUẤT PDF
+========================================================= */
+
+function prepareAdminPrintClone(
+  clonedDocument
+) {
+  clonedDocument.classList.add(
+    'admin-print-document-export'
+  );
+
+  clonedDocument.style.margin =
+    '0';
+
+  clonedDocument.style.boxShadow =
+    'none';
+
+  clonedDocument.style.transform =
+    'none';
+
+  clonedDocument.style.width =
+    '210mm';
+
+  clonedDocument.style.minHeight =
+    '297mm';
+
+  clonedDocument.style.background =
+    '#ffffff';
+
+  clonedDocument
+    .querySelectorAll(
+      'button, .no-print'
+    )
+    .forEach(
+      (element) => {
+        element.remove();
+      }
+    );
+}
+
+
+/* =========================================================
+   TẠO TÊN FILE
+========================================================= */
+
+function createAdminPrintPdfFileName() {
   const studentName =
     getAdminPrintStudentName();
 
-  const testTitle =
-    getAdminPrintTestTitle();
+  const testName =
+    getAdminPrintTestName();
 
   return sanitizeAdminPrintFileName(
-    `Kết quả kiểm tra ${testTitle} - ${studentName}`
+    `Kết quả kiểm tra ${testName} - ${studentName}`
   );
 }
 
 
 function getAdminPrintStudentName() {
-  const rows =
-    Array.from(
-      document.querySelectorAll(
-        '.admin-print-information-table tbody tr'
-      )
+  const tables =
+    document.querySelectorAll(
+      '.admin-print-information-table'
     );
 
-  for (const row of rows) {
+  for (
+    const table of tables
+  ) {
     const cells =
       Array.from(
-        row.querySelectorAll(
+        table.querySelectorAll(
           'th, td'
         )
       );
@@ -113,26 +390,21 @@ function getAdminPrintStudentName() {
       index += 1
     ) {
       const label =
-        String(
+        normalizeAdminPrintText(
           cells[index]
-            ?.textContent ||
-          ''
+            .textContent
         )
-          .replace(/\s+/g, ' ')
-          .trim()
           .toLowerCase();
 
       if (
-        label === 'họ và tên'
+        label ===
+        'họ và tên'
       ) {
         const value =
-          String(
+          normalizeAdminPrintText(
             cells[index + 1]
-              ?.textContent ||
-            ''
-          )
-            .replace(/\s+/g, ' ')
-            .trim();
+              ?.textContent
+          );
 
         if (value) {
           return value;
@@ -145,43 +417,48 @@ function getAdminPrintStudentName() {
 }
 
 
-function getAdminPrintTestTitle() {
-  const subtitleElement =
-    document.querySelector(
-      '.admin-print-title p'
-    );
-
+function getAdminPrintTestName() {
   const subtitle =
-    String(
-      subtitleElement
-        ?.textContent ||
-      ''
-    )
-      .replace(/\s+/g, ' ')
-      .trim();
+    normalizeAdminPrintText(
+      document.querySelector(
+        '.admin-print-title p'
+      )?.textContent
+    );
 
   if (!subtitle) {
     return 'bài kiểm tra';
   }
 
-  /*
-   * Bài cuối khóa.
-   */
+  const title =
+    normalizeAdminPrintText(
+      document.querySelector(
+        '.admin-print-title h1'
+      )?.textContent
+    ).toLowerCase();
+
   if (
-    subtitle
-      .toLowerCase()
-      .includes(
-        'đào tạo sinh viên thực tập'
-      )
+    title.includes(
+      'cuối khóa'
+    )
   ) {
     return 'cuối khóa';
   }
 
-  /*
-   * Ví dụ:
-   * Bài 6: Hệ thống chữa cháy bằng nước và CO2
-   */
   return subtitle;
+}
+
+
+function normalizeAdminPrintText(
+  value
+) {
+  return String(
+    value || ''
+  )
+    .replace(
+      /\s+/g,
+      ' '
+    )
+    .trim();
 }
 
 
@@ -191,10 +468,6 @@ function sanitizeAdminPrintFileName(
   return String(
     value || ''
   )
-    /*
-     * Các ký tự không được phép trong
-     * tên file Windows.
-     */
     .replace(
       /[\\/:*?"<>|]/g,
       '-'
@@ -202,6 +475,10 @@ function sanitizeAdminPrintFileName(
     .replace(
       /\s+/g,
       ' '
+    )
+    .replace(
+      /\s*-\s*/g,
+      ' - '
     )
     .replace(
       /-+/g,
