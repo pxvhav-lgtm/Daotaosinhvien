@@ -20,10 +20,14 @@
   box-sizing: border-box;
 
   width:
-    var(--admin-print-page-width);
+    var(
+      --admin-print-page-width
+    );
 
   min-height:
-    var(--admin-print-page-height);
+    var(
+      --admin-print-page-height
+    );
 
   margin: 0 auto;
 
@@ -56,35 +60,38 @@
 
 
 /* =========================================================
-   ĐẦU TRANG 3 CỘT TRÊN CÙNG MỘT HÀNG
+   ĐẦU TRANG 3 CỘT
 ========================================================= */
 
 /*
- * Ba cột:
- * 1. Logo
- * 2. Tên đơn vị
- * 3. Quốc hiệu - tiêu ngữ
+ * Cột 1: Logo
+ * Cột 2: Đơn vị
+ * Cột 3: Quốc hiệu
  */
 .admin-print-document-header {
   display: grid;
 
   grid-template-columns:
-    47mm
+    46mm
     61mm
-    minmax(0, 1fr);
+    minmax(
+      0,
+      1fr
+    );
 
   align-items: start;
 
-  column-gap: 5mm;
+  column-gap: 4mm;
 
   width: 100%;
+
+  min-width: 0;
 }
 
 
 /*
- * Bỏ cấu trúc grid lồng cũ.
- * Các phần tử con của khu vực tổ chức
- * được đưa trực tiếp vào grid đầu trang.
+ * Đưa logo và tên đơn vị thành hai ô
+ * trực tiếp trong grid đầu trang.
  */
 .print-header-organization {
   display: contents;
@@ -92,7 +99,7 @@
 
 
 /* =========================================================
-   CỘT 1: LOGO
+   CỘT LOGO
 ========================================================= */
 
 .print-company-logo {
@@ -102,22 +109,22 @@
 
   align-self: center;
 
-  width: 46mm;
+  width: 45mm;
 
   height: 19mm;
 
   margin:
-    2mm auto 0;
+    1.5mm auto 0;
 
   object-fit: contain;
 
   object-position:
-    center center;
+    center;
 }
 
 
 /* =========================================================
-   CỘT 2: TÊN ĐƠN VỊ
+   CỘT TÊN ĐƠN VỊ
 ========================================================= */
 
 .print-organization-lines {
@@ -127,21 +134,17 @@
 
   min-width: 0;
 
-  padding-top: 1.5mm;
+  padding-top: 1mm;
 
   color: #000000;
 
-  font-size: 10.5pt;
+  font-size: 10pt;
 
-  line-height: 1.45;
+  line-height: 1.4;
 
   text-align: center;
 }
 
-
-/*
- * Công ty luôn nằm trên đúng một dòng.
- */
 .print-organization-lines strong {
   display: block;
 
@@ -149,7 +152,7 @@
 
   color: #000000;
 
-  font-size: 10.5pt;
+  font-size: 10pt;
 
   font-weight: 700;
 
@@ -162,10 +165,6 @@
   text-underline-offset: 2px;
 }
 
-
-/*
- * Phân xưởng hoặc Tổng công ty.
- */
 .print-organization-lines div {
   display: block;
 
@@ -173,9 +172,7 @@
 
   color: #000000;
 
-  font-size: 10.5pt;
-
-  font-weight: 400;
+  font-size: 10pt;
 
   line-height: 1.35;
 
@@ -184,7 +181,7 @@
 
 
 /* =========================================================
-   CỘT 3: QUỐC HIỆU
+   CỘT QUỐC HIỆU
 ========================================================= */
 
 .print-header-national {
@@ -198,9 +195,9 @@
 
   color: #000000;
 
-  font-size: 10.2pt;
+  font-size: 9.8pt;
 
-  line-height: 1.45;
+  line-height: 1.4;
 
   text-align: center;
 }
@@ -212,7 +209,7 @@
 
   color: #000000;
 
-  font-size: 10.2pt;
+  font-size: 9.8pt;
 
   font-weight: 700;
 
@@ -230,7 +227,7 @@
 
   color: #000000;
 
-  font-size: 10.2pt;
+  font-size: 9.8pt;
 
   font-weight: 700;
 
@@ -248,7 +245,7 @@
 ========================================================= */
 
 .admin-print-title {
-  margin-top: 10mm;
+  margin-top: 9mm;
 
   text-align: center;
 }
@@ -258,7 +255,7 @@
 
   color: #000000;
 
-  font-size: 16pt;
+  font-size: 15.5pt;
 
   font-weight: 700;
 
@@ -269,11 +266,11 @@
 
 .admin-print-title p {
   margin:
-    2.5mm 0 0;
+    2.3mm 0 0;
 
   color: #000000;
 
-  font-size: 12.5pt;
+  font-size: 12pt;
 
   font-weight: 700;
 
@@ -286,7 +283,7 @@
 ========================================================= */
 
 .admin-print-section {
-  margin-top: 5mm;
+  margin-top: 4.8mm;
 
   break-inside: avoid;
 
@@ -295,11 +292,11 @@
 
 .admin-print-section h2 {
   margin:
-    0 0 2.3mm;
+    0 0 2.2mm;
 
   color: #000000;
 
-  font-size: 11.3pt;
+  font-size: 11pt;
 
   font-weight: 700;
 
@@ -316,20 +313,21 @@
 
   table-layout: fixed;
 
-  border-collapse: collapse;
+  border-collapse:
+    collapse;
 }
 
 .admin-print-information-table th,
 .admin-print-information-table td {
   padding:
-    1.8mm 2.3mm;
+    1.7mm 2.2mm;
 
   border:
     1px solid #000000;
 
   color: #000000;
 
-  font-size: 10pt;
+  font-size: 9.8pt;
 
   line-height: 1.25;
 
@@ -349,7 +347,11 @@
 
   font-weight: 400;
 
-  overflow-wrap: break-word;
+  overflow-wrap:
+    break-word;
+
+  word-break:
+    normal;
 }
 
 
@@ -363,7 +365,10 @@
   grid-template-columns:
     repeat(
       2,
-      minmax(0, 1fr)
+      minmax(
+        0,
+        1fr
+      )
     );
 
   width: 100%;
@@ -372,7 +377,8 @@
     1px solid #000000;
 }
 
-.admin-print-result-box > div {
+.admin-print-result-box >
+div {
   display: flex;
 
   align-items: center;
@@ -382,10 +388,10 @@
 
   gap: 5mm;
 
-  min-height: 14mm;
+  min-height: 13.5mm;
 
   padding:
-    2.7mm 4mm;
+    2.5mm 3.8mm;
 }
 
 .admin-print-result-box >
@@ -397,7 +403,7 @@ div + div {
 .admin-print-result-box span {
   color: #000000;
 
-  font-size: 10.2pt;
+  font-size: 10pt;
 
   font-weight: 700;
 }
@@ -405,7 +411,7 @@ div + div {
 .admin-print-result-box strong {
   color: #000000;
 
-  font-size: 14.5pt;
+  font-size: 14pt;
 
   font-weight: 700;
 }
@@ -430,10 +436,11 @@ div + div {
 
   color: #000000;
 
-  font-size: 10pt;
+  font-size: 9.8pt;
 }
 
-.admin-print-note > strong {
+.admin-print-note >
+strong {
   display: block;
 
   margin-bottom: 1.5mm;
@@ -442,7 +449,7 @@ div + div {
 }
 
 .admin-print-note-line {
-  height: 5.5mm;
+  height: 5.3mm;
 
   border-bottom:
     1px dotted #000000;
@@ -459,7 +466,10 @@ div + div {
   grid-template-columns:
     repeat(
       2,
-      minmax(0, 1fr)
+      minmax(
+        0,
+        1fr
+      )
     );
 
   gap: 12mm;
@@ -475,6 +485,11 @@ div + div {
   page-break-inside: avoid;
 }
 
+.admin-print-signatures >
+div {
+  min-width: 0;
+}
+
 .admin-print-signatures strong,
 .admin-print-signatures span {
   display: block;
@@ -485,7 +500,7 @@ div + div {
 
   color: #000000;
 
-  font-size: 10.5pt;
+  font-size: 10.2pt;
 
   font-weight: 700;
 
@@ -497,7 +512,7 @@ div + div {
 
   color: #000000;
 
-  font-size: 9.3pt;
+  font-size: 9.1pt;
 
   font-style: italic;
 
@@ -513,7 +528,7 @@ div + div {
 
   color: #000000;
 
-  font-size: 10.2pt;
+  font-size: 10pt;
 
   font-weight: 700;
 }
@@ -542,38 +557,91 @@ div + div {
 
   color: #000000;
 
-  font-size: 8.2pt;
+  font-size: 8pt;
 }
 
 
 /* =========================================================
-   CONTAINER XUẤT PDF
+   HOST TẠO PDF
 ========================================================= */
 
-.admin-pdf-export-container {
-  position: fixed;
+/*
+ * Không đặt left âm.
+ *
+ * Đặt host tại đúng tọa độ 0,0,
+ * phía sau giao diện bằng z-index âm.
+ */
+.admin-pdf-export-host {
+  position: absolute;
 
   top: 0;
 
-  left: -100000px;
+  left: 0;
 
-  width: 210mm;
+  width: 794px;
 
-  min-height: 297mm;
+  min-height: 1123px;
 
-  overflow: hidden;
+  margin: 0;
+
+  padding: 0;
+
+  overflow: visible;
+
+  pointer-events: none;
 
   background: #ffffff;
 
   z-index: -9999;
 }
 
+
+/*
+ * Bản sao xuất PDF dùng pixel cố định.
+ */
 .admin-print-document-export {
+  box-sizing: border-box !important;
+
+  width: 794px !important;
+
+  min-width: 794px !important;
+
+  max-width: 794px !important;
+
+  min-height: 1123px !important;
+
+  height: auto !important;
+
   margin: 0 !important;
+
+  padding:
+    34px 42px !important;
+
+  overflow: visible !important;
+
+  background: #ffffff !important;
 
   box-shadow: none !important;
 
   transform: none !important;
+}
+
+
+/*
+ * Bảo đảm toàn bộ nội dung bản sao
+ * không vượt khỏi khổ giấy.
+ */
+.admin-print-document-export
+.admin-print-document-header,
+.admin-print-document-export
+.admin-print-title,
+.admin-print-document-export
+.admin-print-section,
+.admin-print-document-export
+.admin-print-signatures,
+.admin-print-document-export
+.admin-print-footer {
+  max-width: 100%;
 }
 
 
@@ -609,7 +677,8 @@ div + div {
 
     padding: 0 !important;
 
-    background: #ffffff !important;
+    background:
+      #ffffff !important;
   }
 
   body * {
@@ -622,20 +691,26 @@ div + div {
   }
 
   .no-print {
-    display: none !important;
+    display:
+      none !important;
   }
 
   #app,
   .admin-print-preview-page {
-    width: 210mm !important;
+    width:
+      210mm !important;
 
-    min-height: 297mm !important;
+    min-height:
+      297mm !important;
 
-    margin: 0 !important;
+    margin:
+      0 !important;
 
-    padding: 0 !important;
+    padding:
+      0 !important;
 
-    background: #ffffff !important;
+    background:
+      #ffffff !important;
   }
 
   .admin-print-document {
@@ -656,7 +731,8 @@ div + div {
 
     box-shadow: none;
 
-    print-color-adjust: exact;
+    print-color-adjust:
+      exact;
 
     -webkit-print-color-adjust:
       exact;
