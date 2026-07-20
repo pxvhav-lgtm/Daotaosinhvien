@@ -1,0 +1,523 @@
+/* =========================================================
+   HIỆU CHỈNH PHIẾU KẾT QUẢ A4
+   File này phải tải sau admin-results.css
+========================================================= */
+
+/* =========================================================
+   KHỔ GIẤY
+========================================================= */
+
+.admin-print-document {
+  width: 210mm;
+
+  min-height: 297mm;
+
+  padding:
+    10mm 12mm 10mm;
+
+  font-size: 11.5pt;
+
+  line-height: 1.35;
+}
+
+
+/* =========================================================
+   ĐẦU TRANG
+========================================================= */
+
+/*
+ * Nội dung sử dụng hai vùng:
+ *
+ * Bên trái:
+ * Logo + tên đơn vị
+ *
+ * Bên phải:
+ * Quốc hiệu, tiêu ngữ
+ */
+.admin-print-document-header {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.25fr)
+    minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 7mm;
+}
+
+
+/*
+ * Khu vực logo và tên đơn vị.
+ */
+.print-header-organization {
+  display: grid;
+
+  grid-template-columns:
+    45mm
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 4mm;
+
+  min-width: 0;
+
+  text-align: center;
+}
+
+
+/*
+ * Logo được phóng lớn hơn.
+ */
+.print-company-logo {
+  display: block;
+
+  width: 45mm;
+
+  height: 20mm;
+
+  max-width: none;
+
+  max-height: none;
+
+  object-fit: contain;
+
+  object-position:
+    center center;
+
+  transform:
+    scale(1.16);
+
+  transform-origin:
+    center center;
+}
+
+
+/*
+ * Tên đơn vị không bị chia thành
+ * 3 hoặc 4 dòng như bản hiện tại.
+ */
+.print-organization-lines {
+  min-width: 0;
+
+  font-size: 9.5pt;
+
+  line-height: 1.35;
+
+  text-align: center;
+}
+
+
+/*
+ * Công ty nằm trên một dòng.
+ */
+.print-organization-lines strong {
+  display: block;
+
+  white-space: nowrap;
+
+  font-size: 9.5pt;
+
+  font-weight: 700;
+
+  text-decoration: underline;
+
+  text-underline-offset: 2px;
+}
+
+
+/*
+ * Phân xưởng hoặc Tổng công ty.
+ */
+.print-organization-lines div {
+  margin-top: 1.5mm;
+
+  white-space: nowrap;
+
+  font-size: 10pt;
+}
+
+
+/*
+ * Quốc hiệu và tiêu ngữ.
+ */
+.print-header-national {
+  min-width: 0;
+
+  padding-top: 1mm;
+
+  font-size: 10.5pt;
+
+  line-height: 1.4;
+
+  text-align: center;
+}
+
+.print-header-national strong {
+  display: block;
+
+  white-space: nowrap;
+
+  font-size: 10.5pt;
+
+  font-weight: 700;
+}
+
+.print-header-national div {
+  display: inline-block;
+
+  margin-top: 1mm;
+
+  padding-bottom: 0.5mm;
+
+  white-space: nowrap;
+
+  font-size: 10.5pt;
+
+  font-weight: 700;
+
+  border-bottom:
+    1px solid #000000;
+}
+
+
+/* =========================================================
+   TIÊU ĐỀ PHIẾU
+========================================================= */
+
+.admin-print-title {
+  margin-top: 8mm;
+
+  text-align: center;
+}
+
+.admin-print-title h1 {
+  margin: 0;
+
+  font-size: 16pt;
+
+  font-weight: 700;
+
+  line-height: 1.25;
+
+  white-space: nowrap;
+}
+
+.admin-print-title p {
+  margin:
+    2.5mm 0 0;
+
+  font-size: 12.5pt;
+
+  font-weight: 700;
+
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   CÁC PHẦN NỘI DUNG
+========================================================= */
+
+.admin-print-section {
+  margin-top: 5.5mm;
+
+  break-inside: avoid;
+
+  page-break-inside: avoid;
+}
+
+.admin-print-section h2 {
+  margin:
+    0 0 2.5mm;
+
+  font-size: 11.5pt;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   BẢNG THÔNG TIN
+========================================================= */
+
+.admin-print-information-table {
+  width: 100%;
+
+  table-layout: fixed;
+
+  border-collapse: collapse;
+}
+
+.admin-print-information-table th,
+.admin-print-information-table td {
+  padding:
+    2mm 2.5mm;
+
+  border:
+    1px solid #000000;
+
+  font-size: 10.5pt;
+
+  line-height: 1.3;
+
+  vertical-align: middle;
+}
+
+.admin-print-information-table th {
+  width: 20%;
+
+  font-weight: 700;
+
+  text-align: left;
+}
+
+.admin-print-information-table td {
+  width: 30%;
+
+  overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   KẾT QUẢ
+========================================================= */
+
+.admin-print-result-box {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  border:
+    1px solid #000000;
+}
+
+.admin-print-result-box > div {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 5mm;
+
+  min-height: 15mm;
+
+  padding:
+    3mm 4mm;
+}
+
+.admin-print-result-box >
+div + div {
+  border-left:
+    1px solid #000000;
+}
+
+.admin-print-result-box span {
+  font-size: 10.5pt;
+
+  font-weight: 700;
+}
+
+.admin-print-result-box strong {
+  font-size: 15pt;
+}
+
+
+/* =========================================================
+   NHẬN XÉT
+========================================================= */
+
+.admin-print-note {
+  margin-top: 4mm;
+
+  font-size: 10.5pt;
+}
+
+.admin-print-note > strong {
+  display: block;
+
+  margin-bottom: 2mm;
+}
+
+.admin-print-note-line {
+  height: 6mm;
+
+  border-bottom:
+    1px dotted #000000;
+}
+
+
+/* =========================================================
+   CHỮ KÝ
+========================================================= */
+
+.admin-print-signatures {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 12mm;
+
+  margin-top: 7mm;
+
+  break-inside: avoid;
+
+  page-break-inside: avoid;
+
+  text-align: center;
+}
+
+.admin-print-signatures strong,
+.admin-print-signatures span {
+  display: block;
+}
+
+.admin-print-signatures strong {
+  min-height: auto;
+
+  font-size: 10.5pt;
+
+  line-height: 1.35;
+}
+
+.admin-print-signatures span {
+  margin-top: 1mm;
+
+  font-size: 9.5pt;
+
+  font-style: italic;
+}
+
+.admin-print-signature-space {
+  height: 17mm;
+}
+
+.admin-print-signatures p {
+  margin: 0;
+
+  font-size: 10.5pt;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CHÂN TRANG
+========================================================= */
+
+.admin-print-footer {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 8mm;
+
+  margin-top: 6mm;
+
+  padding-top: 2mm;
+
+  border-top:
+    1px solid #000000;
+
+  font-size: 8.5pt;
+}
+
+
+/* =========================================================
+   MÀN HÌNH XEM TRƯỚC
+========================================================= */
+
+@media screen {
+  .admin-print-document {
+    min-height: auto;
+  }
+}
+
+
+/* =========================================================
+   IN PDF
+========================================================= */
+
+@page {
+  size: A4 portrait;
+
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+
+    height: 297mm;
+
+    min-height: 297mm;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    overflow: hidden;
+
+    background: #ffffff !important;
+  }
+
+  #app,
+  .admin-print-preview-page {
+    width: 210mm !important;
+
+    min-height: 297mm !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #ffffff !important;
+  }
+
+  .admin-print-document {
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 210mm;
+
+    min-height: 297mm;
+
+    margin: 0;
+
+    padding:
+      10mm 12mm 10mm;
+
+    box-shadow: none;
+
+    print-color-adjust: exact;
+
+    -webkit-print-color-adjust:
+      exact;
+  }
+
+  .admin-print-document-header,
+  .admin-print-title,
+  .admin-print-section,
+  .admin-print-signatures,
+  .admin-print-footer {
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+  }
+}
