@@ -2,68 +2,19 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hệ thống đào tạo sinh viên thực tập tại Nhà máy thủy điện A Vương">
+  <meta name="theme-color" content="#075f82">
+  <title>Đào tạo sinh viên thực tập | Nhà máy thủy điện A Vương</title>
+  <link rel="icon" type="image/png" href="./Logo.png">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="Hệ thống đào tạo sinh viên thực tập tại Nhà máy thủy điện A Vương"
-  >
-
-  <title>
-    Đào tạo sinh viên thực tập | Nhà máy thủy điện A Vương
-  </title>
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="./Logo.png"
-  >
-
-  <!-- CSS nền tảng -->
-  <link
-    rel="stylesheet"
-    href="./style.css?v=20260719-50"
-  >
-
-  <!-- CSS học video và tài liệu -->
-  <link
-    rel="stylesheet"
-    href="./video-gate.css?v=20260719-50"
-  >
-
-  <!-- CSS Dashboard sinh viên -->
-  <link
-    rel="stylesheet"
-    href="./dashboard-v2.css?v=20260719-50"
-  >
-
-  <!-- CSS Dashboard quản trị -->
-  <link
-    rel="stylesheet"
-    href="./admin.css?v=20260719-50"
-  >
-
-  <!-- CSS nhập JSON từ NotebookLM -->
-  <link
-    rel="stylesheet"
-    href="./nblm-import.css?v=20260719-50"
-  >
-
-  <!-- CSS bài kiểm tra tổng kết Bài 23 -->
-  <link
-    rel="stylesheet"
-    href="./final-quiz.css?v=20260719-50"
-  >
-
-  <!-- CSS khung chat hỏi đáp tài liệu -->
-  <link
-    rel="stylesheet"
-    href="./lesson-chat.css?v=20260719-50"
-  >
+  <link rel="stylesheet" href="./style.css?v=20260720-80">
+  <link rel="stylesheet" href="./video-gate.css?v=20260720-80">
+  <link rel="stylesheet" href="./dashboard-v2.css?v=20260720-80">
+  <link rel="stylesheet" href="./admin.css?v=20260720-80">
+  <link rel="stylesheet" href="./nblm-import.css?v=20260720-80">
+  <link rel="stylesheet" href="./final-quiz.css?v=20260720-80">
+  <link rel="stylesheet" href="./lesson-chat.css?v=20260720-80">
 </head>
 
 <body>
@@ -71,132 +22,65 @@
     <main class="loading-page">
       <div class="loading-box">
         <div class="spinner"></div>
-
-        <p>
-          Đang tải hệ thống...
-        </p>
+        <p>Đang tải hệ thống...</p>
       </div>
     </main>
   </div>
 
-  <!-- Thư viện Supabase phải tải trước -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./app.js?v=20260720-80"></script>
+  <script src="./video-gate.js?v=20260720-80"></script>
+  <script src="./dashboard-v2.js?v=20260720-80"></script>
+  <script src="./admin.js?v=20260720-80"></script>
+  <script src="./nblm-import.js?v=20260720-80"></script>
+  <script src="./final-quiz.js?v=20260720-80"></script>
+  <script src="./lesson-chat.js?v=20260720-80"></script>
 
-  <!-- Mã nguồn nền tảng -->
-  <script
-    src="./app.js?v=20260719-50"
-  ></script>
-
-  <!-- Chức năng xem video Google Drive -->
-  <script
-    src="./video-gate.js?v=20260719-50"
-  ></script>
-
-  <!-- Dashboard sinh viên -->
-  <script
-    src="./dashboard-v2.js?v=20260719-50"
-  ></script>
-
-  <!-- Dashboard quản trị -->
-  <script
-    src="./admin.js?v=20260719-50"
-  ></script>
-
-  <!-- Nhập JSON từ NotebookLM, phải tải sau admin.js -->
-  <script
-    src="./nblm-import.js?v=20260719-50"
-  ></script>
-
-  <!--
-    Bài kiểm tra tổng kết Bài 23.
-
-    File này phải tải sau:
-    - app.js
-    - video-gate.js
-    - dashboard-v2.js
-    - admin.js
-    - nblm-import.js
-  -->
-  <script
-    src="./final-quiz.js?v=20260719-50"
-  ></script>
-
-  <!--
-    Khung chat hỏi đáp tài liệu.
-
-    File này phải tải sau:
-    - app.js
-    - video-gate.js
-    - dashboard-v2.js
-    - admin.js
-    - final-quiz.js
-  -->
- <script src="./lesson-chat.js?v=20260719-72"></script>
-
-  <!-- Khởi động hệ thống sau khi mọi file đã tải -->
   <script>
-    window.addEventListener(
-      'DOMContentLoaded',
-      async () => {
-        try {
-          if (
-            typeof init !==
-            'function'
-          ) {
-            throw new Error(
-              'Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.'
-            );
-          }
-
-          await init();
-        } catch (error) {
-          console.error(
-            'Lỗi khởi động hệ thống:',
-            error
-          );
-
-          const appElement =
-            document.querySelector(
-              '#app'
-            );
-
-          if (!appElement) {
-            return;
-          }
-
-          appElement.innerHTML = `
-            <main class="message-page">
-              <section class="message-card">
-                <img
-                  class="company-logo message-logo"
-                  src="./Logo.png"
-                  alt="Logo Công ty Cổ phần Thủy điện A Vương"
-                >
-
-                <h1>
-                  Không thể khởi động hệ thống
-                </h1>
-
-                <p>
-                  Đã xảy ra lỗi khi tải dữ liệu.
-                  Vui lòng mở bảng Console để kiểm tra chi tiết.
-                </p>
-
-                <button
-                  class="primary-button"
-                  type="button"
-                  onclick="window.location.reload()"
-                >
-                  Tải lại trang
-                </button>
-              </section>
-            </main>
-          `;
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        if (typeof init !== 'function') {
+          throw new Error('Không tìm thấy hàm init(). Vui lòng kiểm tra file app.js.');
         }
+
+        await init();
+      } catch (error) {
+        console.error('Lỗi khởi động hệ thống:', error);
+
+        const appElement = document.querySelector('#app');
+
+        if (!appElement) {
+          return;
+        }
+
+        appElement.innerHTML = `
+          <main class="message-page">
+            <section class="message-card">
+              <img
+                class="company-logo message-logo"
+                src="./Logo.png"
+                alt="Logo Công ty Cổ phần Thủy điện A Vương"
+              >
+
+              <h1>Không thể khởi động hệ thống</h1>
+
+              <p>
+                Đã xảy ra lỗi khi tải dữ liệu.
+                Vui lòng mở bảng Console để kiểm tra chi tiết.
+              </p>
+
+              <button
+                class="primary-button"
+                type="button"
+                onclick="window.location.reload()"
+              >
+                Tải lại trang
+              </button>
+            </section>
+          </main>
+        `;
       }
-    );
+    });
   </script>
 </body>
 </html>
