@@ -1,0 +1,229 @@
+/* =========================================================
+   HỆ THỐNG FONT DÙNG CHUNG TOÀN WEBSITE
+========================================================= */
+
+:root {
+  --app-font:
+    "Inter",
+    sans-serif;
+}
+
+/*
+ * Font gốc của toàn trang.
+ */
+html {
+  font-family:
+    var(--app-font);
+
+  font-size: 16px;
+
+  text-rendering:
+    optimizeLegibility;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  -moz-osx-font-smoothing:
+    grayscale;
+}
+
+body {
+  font-family:
+    var(--app-font);
+
+  font-weight: 400;
+
+  line-height: 1.6;
+}
+
+/*
+ * Đồng bộ toàn bộ component HTML.
+ * !important được dùng có chủ đích vì file này
+ * được tải cuối cùng để ghi đè các font cũ.
+ */
+body,
+body *,
+button,
+input,
+textarea,
+select,
+option,
+label,
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td,
+a,
+p,
+span,
+small,
+strong,
+b,
+em,
+i,
+code,
+pre {
+  font-family:
+    var(--app-font) !important;
+}
+
+/* =========================================================
+   TIÊU ĐỀ
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+
+  color: inherit;
+
+  font-family:
+    var(--app-font) !important;
+
+  text-wrap: balance;
+}
+
+h1 {
+  font-weight: 800;
+
+  line-height: 1.14;
+
+  letter-spacing:
+    -0.035em;
+}
+
+h2 {
+  font-weight: 750;
+
+  line-height: 1.22;
+
+  letter-spacing:
+    -0.025em;
+}
+
+h3 {
+  font-weight: 700;
+
+  line-height: 1.3;
+
+  letter-spacing:
+    -0.018em;
+}
+
+h4,
+h5,
+h6 {
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  letter-spacing:
+    -0.012em;
+}
+
+/* =========================================================
+   NỘI DUNG
+========================================================= */
+
+p,
+li,
+label,
+input,
+textarea,
+select,
+option,
+td {
+  font-weight: 400;
+}
+
+strong,
+b,
+th {
+  font-weight: 700;
+}
+
+/* =========================================================
+   NÚT VÀ LIÊN KẾT
+========================================================= */
+
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a[class*="button"],
+[class*="-button"] {
+  font-family:
+    var(--app-font) !important;
+
+  font-weight: 700;
+
+  letter-spacing:
+    -0.005em;
+}
+
+/* =========================================================
+   NHÃN VIẾT HOA
+========================================================= */
+
+.eyebrow,
+.dashboard-eyebrow,
+.result-label,
+.document-label,
+.lesson-ai-chat__eyebrow,
+.quiz-dashboard-heading p,
+.standalone-ai-heading p {
+  font-weight: 800;
+
+  letter-spacing:
+    0.075em;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+input,
+textarea,
+select {
+  font-size: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-family:
+    var(--app-font) !important;
+
+  font-weight: 400;
+
+  opacity: 1;
+}
+
+/* =========================================================
+   KHẮC PHỤC FONT TRONG DASHBOARD
+========================================================= */
+
+.header-title h1,
+.dashboard-hero h1,
+.dashboard-view-header h1 {
+  font-weight: 800;
+}
+
+.dashboard-nav-item,
+.sidebar-brand,
+.sidebar-student-card,
+.dashboard-stat-card,
+.dashboard-panel,
+.dashboard-side-card,
+.training-module-card,
+.quiz-dashboard-card,
+.document-dashboard-card {
+  font-family:
+    var(--app-font) !important;
+}
