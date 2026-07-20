@@ -4,9 +4,10 @@
  * =========================================================
  *
  * Chức năng:
- * - Tạo PDF trực tiếp, không mở Microsoft Print to PDF.
+ * - Xuất PDF trực tiếp, không qua Microsoft Print to PDF.
  * - Tự động đặt tên file.
- * - Giữ nút Ctrl + P hoặc in trình duyệt khi cần.
+ * - Không bị cắt phần bên trái.
+ * - Luôn căn toàn bộ phiếu vào giữa một trang A4.
  *
  * File này phải tải sau:
  * - admin-results.js
@@ -25,6 +26,10 @@
         return;
       }
 
+      /*
+       * Ngăn listener window.print()
+       * cũ trong admin-results.js chạy.
+       */
       event.preventDefault();
       event.stopImmediatePropagation();
 
@@ -44,12 +49,12 @@
 async function exportAdminResultPdf(
   button
 ) {
-  const documentElement =
+  const sourceDocument =
     document.querySelector(
       '.admin-print-document'
     );
 
-  if (!documentElement) {
+  if (!sourceDocument) {
     window.alert(
       'Không tìm thấy nội dung phiếu kết quả.'
     );
@@ -57,27 +62,32 @@ async function exportAdminResultPdf(
     return;
   }
 
-  const oldText =
+  const originalButtonText =
     button.textContent;
 
-  button.disabled =
-    true;
+  button.disabled = true;
 
   button.textContent =
     'Đang tạo PDF...';
 
+  let exportHost = null;
+
   try {
-    await ensureHtml2PdfLoaded();
+    await ensureAdminPdfLibraries();
 
     await waitForAdminPrintImages(
-      documentElement
+      sourceDocument
     );
 
     const fileName =
       createAdminPrintPdfFileName();
 
+    /*
+     * Tạo bản sao để xuất PDF.
+     * Không làm thay đổi giao diện đang hiển thị.
+     */
     const clonedDocument =
-      documentElement.cloneNode(
+      sourceDocument.cloneNode(
         true
       );
 
@@ -85,80 +95,111 @@ async function exportAdminResultPdf(
       clonedDocument
     );
 
-    const temporaryContainer =
+    /*
+     * Không đặt left: -100000px.
+     *
+     * Bản sao được đặt tại tọa độ 0,0,
+     * nằm phía sau giao diện bằng z-index âm.
+     * Nhờ đó html2canvas không tính sai tọa độ.
+     */
+    exportHost =
       document.createElement(
         'div'
       );
 
-    temporaryContainer.className =
-      'admin-pdf-export-container';
+    exportHost.className =
+      'admin-pdf-export-host';
 
-    temporaryContainer.appendChild(
+    exportHost.appendChild(
       clonedDocument
     );
 
     document.body.appendChild(
-      temporaryContainer
+      exportHost
     );
 
-    const options = {
-      margin: 0,
+    /*
+     * Chờ trình duyệt hoàn thành bố cục
+     * trước khi tạo canvas.
+     */
+    await waitForAdminPdfLayout();
 
-      filename:
-        `${fileName}.pdf`,
+    const canvas =
+      await window.html2canvas(
+        clonedDocument,
+        {
+          scale: 2,
 
-      image: {
-        type: 'jpeg',
-        quality: 0.98,
-      },
+          useCORS: true,
 
-      html2canvas: {
-        scale: 2,
+          allowTaint: false,
 
-        useCORS: true,
+          backgroundColor:
+            '#ffffff',
 
-        allowTaint: false,
+          logging: false,
 
-        backgroundColor:
-          '#ffffff',
+          scrollX: 0,
 
-        logging: false,
+          scrollY: 0,
 
-        scrollX: 0,
+          width:
+            clonedDocument.scrollWidth,
 
-        scrollY: 0,
+          height:
+            clonedDocument.scrollHeight,
 
-        windowWidth:
-          794,
-      },
+          windowWidth:
+            clonedDocument.scrollWidth,
 
-      jsPDF: {
-        unit: 'mm',
+          windowHeight:
+            clonedDocument.scrollHeight,
 
-        format: 'a4',
+          onclone:
+            (
+              clonedPageDocument
+            ) => {
+              const exportedElement =
+                clonedPageDocument
+                  .querySelector(
+                    '.admin-print-document-export'
+                  );
 
-        orientation:
-          'portrait',
+              if (
+                exportedElement
+              ) {
+                exportedElement
+                  .style
+                  .transform =
+                  'none';
 
-        compress: true,
-      },
+                exportedElement
+                  .style
+                  .margin =
+                  '0';
 
-      pagebreak: {
-        mode: [
-          'avoid-all',
-          'css',
-          'legacy',
-        ],
-      },
-    };
+                exportedElement
+                  .style
+                  .boxShadow =
+                  'none';
+              }
+            },
+        }
+      );
 
-    await window
-      .html2pdf()
-      .set(options)
-      .from(clonedDocument)
-      .save();
+    if (
+      !canvas.width ||
+      !canvas.height
+    ) {
+      throw new Error(
+        'Canvas PDF không có kích thước hợp lệ.'
+      );
+    }
 
-    temporaryContainer.remove();
+    saveAdminCanvasAsPdf(
+      canvas,
+      fileName
+    );
   } catch (error) {
     console.error(
       'Lỗi tạo PDF:',
@@ -166,27 +207,177 @@ async function exportAdminResultPdf(
     );
 
     window.alert(
-      'Không thể tạo file PDF. Vui lòng kiểm tra kết nối mạng và thử lại.'
+      'Không thể tạo file PDF. Vui lòng tải lại trang và thử lại.'
     );
   } finally {
-    button.disabled =
-      false;
+    exportHost?.remove();
+
+    button.disabled = false;
 
     button.textContent =
-      oldText;
+      originalButtonText;
   }
 }
 
 
 /* =========================================================
-   TẢI THƯ VIỆN HTML2PDF
+   CHUYỂN CANVAS THÀNH PDF A4
 ========================================================= */
 
-function ensureHtml2PdfLoaded() {
-  if (
-    typeof window.html2pdf ===
-    'function'
-  ) {
+function saveAdminCanvasAsPdf(
+  canvas,
+  fileName
+) {
+  const {
+    jsPDF
+  } =
+    window.jspdf;
+
+  const pdf =
+    new jsPDF({
+      orientation:
+        'portrait',
+
+      unit:
+        'mm',
+
+      format:
+        'a4',
+
+      compress:
+        true,
+    });
+
+  const pageWidth =
+    pdf.internal.pageSize
+      .getWidth();
+
+  const pageHeight =
+    pdf.internal.pageSize
+      .getHeight();
+
+  /*
+   * Chừa lề nhỏ an toàn.
+   */
+  const marginX = 0;
+
+  const marginY = 0;
+
+  const availableWidth =
+    pageWidth -
+    marginX * 2;
+
+  const availableHeight =
+    pageHeight -
+    marginY * 2;
+
+  /*
+   * Tính tỷ lệ để toàn bộ phiếu vừa một trang.
+   *
+   * Không cắt ngang hoặc cắt dọc.
+   */
+  const widthScale =
+    availableWidth /
+    canvas.width;
+
+  const heightScale =
+    availableHeight /
+    canvas.height;
+
+  const scale =
+    Math.min(
+      widthScale,
+      heightScale
+    );
+
+  const imageWidth =
+    canvas.width *
+    scale;
+
+  const imageHeight =
+    canvas.height *
+    scale;
+
+  /*
+   * Căn giữa trang A4.
+   */
+  const imageX =
+    (
+      pageWidth -
+      imageWidth
+    ) / 2;
+
+  const imageY =
+    (
+      pageHeight -
+      imageHeight
+    ) / 2;
+
+  const imageData =
+    canvas.toDataURL(
+      'image/jpeg',
+      0.98
+    );
+
+  pdf.addImage(
+    imageData,
+    'JPEG',
+    imageX,
+    imageY,
+    imageWidth,
+    imageHeight,
+    undefined,
+    'FAST'
+  );
+
+  pdf.save(
+    `${fileName}.pdf`
+  );
+}
+
+
+/* =========================================================
+   TẢI THƯ VIỆN
+========================================================= */
+
+async function ensureAdminPdfLibraries() {
+  await loadAdminExternalScript({
+    id:
+      'admin-html2canvas-library',
+
+    src:
+      'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+
+    isReady:
+      () =>
+        typeof window
+          .html2canvas ===
+        'function',
+  });
+
+  await loadAdminExternalScript({
+    id:
+      'admin-jspdf-library',
+
+    src:
+      'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+
+    isReady:
+      () =>
+        Boolean(
+          window.jspdf
+            ?.jsPDF
+        ),
+  });
+}
+
+
+function loadAdminExternalScript({
+  id,
+  src,
+  isReady,
+}) {
+  if (isReady()) {
     return Promise.resolve();
   }
 
@@ -197,24 +388,58 @@ function ensureHtml2PdfLoaded() {
     ) => {
       const existingScript =
         document.querySelector(
-          '#html2pdf-library'
+          `#${id}`
         );
 
       if (existingScript) {
-        existingScript.addEventListener(
-          'load',
-          resolve,
-          {
-            once: true,
-          }
-        );
+        const checkReady =
+          () => {
+            if (isReady()) {
+              resolve();
+            } else {
+              reject(
+                new Error(
+                  `Thư viện ${id} tải chưa hoàn tất.`
+                )
+              );
+            }
+          };
 
-        existingScript.addEventListener(
-          'error',
-          reject,
-          {
-            once: true,
-          }
+        existingScript
+          .addEventListener(
+            'load',
+            checkReady,
+            {
+              once: true,
+            }
+          );
+
+        existingScript
+          .addEventListener(
+            'error',
+            () => {
+              reject(
+                new Error(
+                  `Không tải được thư viện ${id}.`
+                )
+              );
+            },
+            {
+              once: true,
+            }
+          );
+
+        /*
+         * Script có thể đã tải trước khi
+         * listener được gắn.
+         */
+        window.setTimeout(
+          () => {
+            if (isReady()) {
+              resolve();
+            }
+          },
+          100
         );
 
         return;
@@ -225,28 +450,48 @@ function ensureHtml2PdfLoaded() {
           'script'
         );
 
-      script.id =
-        'html2pdf-library';
+      script.id = id;
 
-      script.src =
-        'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.src = src;
 
-      script.async =
-        true;
+      script.async = true;
 
-      script.onload =
+      script.crossOrigin =
+        'anonymous';
+
+      script.addEventListener(
+        'load',
         () => {
-          resolve();
-        };
+          if (isReady()) {
+            resolve();
 
-      script.onerror =
+            return;
+          }
+
+          reject(
+            new Error(
+              `Thư viện ${id} không khởi tạo đúng.`
+            )
+          );
+        },
+        {
+          once: true,
+        }
+      );
+
+      script.addEventListener(
+        'error',
         () => {
           reject(
             new Error(
-              'Không tải được thư viện html2pdf.'
+              `Không tải được thư viện ${id}.`
             )
           );
-        };
+        },
+        {
+          once: true,
+        }
+      );
 
       document.head.appendChild(
         script
@@ -257,7 +502,73 @@ function ensureHtml2PdfLoaded() {
 
 
 /* =========================================================
-   CHỜ LOGO TẢI XONG
+   CHUẨN BỊ BẢN SAO
+========================================================= */
+
+function prepareAdminPrintClone(
+  clonedDocument
+) {
+  clonedDocument.classList.add(
+    'admin-print-document-export'
+  );
+
+  clonedDocument
+    .querySelectorAll(
+      '.no-print, button'
+    )
+    .forEach(
+      (element) => {
+        element.remove();
+      }
+    );
+
+  /*
+   * Dùng kích thước pixel cố định tương ứng A4
+   * ở mật độ 96 DPI:
+   *
+   * 210 mm ≈ 794 px
+   * 297 mm ≈ 1123 px
+   */
+  clonedDocument.style.width =
+    '794px';
+
+  clonedDocument.style.minHeight =
+    '1123px';
+
+  clonedDocument.style.height =
+    'auto';
+
+  clonedDocument.style.margin =
+    '0';
+
+  clonedDocument.style.padding =
+    '34px 42px';
+
+  clonedDocument.style.boxShadow =
+    'none';
+
+  clonedDocument.style.transform =
+    'none';
+
+  clonedDocument.style.position =
+    'relative';
+
+  clonedDocument.style.left =
+    '0';
+
+  clonedDocument.style.top =
+    '0';
+
+  clonedDocument.style.overflow =
+    'visible';
+
+  clonedDocument.style.background =
+    '#ffffff';
+}
+
+
+/* =========================================================
+   CHỜ HÌNH ẢNH
 ========================================================= */
 
 async function waitForAdminPrintImages(
@@ -282,9 +593,24 @@ async function waitForAdminPrintImages(
 
         return new Promise(
           (resolve) => {
+            let completed =
+              false;
+
+            const finish =
+              () => {
+                if (completed) {
+                  return;
+                }
+
+                completed =
+                  true;
+
+                resolve();
+              };
+
             image.addEventListener(
               'load',
-              resolve,
+              finish,
               {
                 once: true,
               }
@@ -292,14 +618,14 @@ async function waitForAdminPrintImages(
 
             image.addEventListener(
               'error',
-              resolve,
+              finish,
               {
                 once: true,
               }
             );
 
             window.setTimeout(
-              resolve,
+              finish,
               5000
             );
           }
@@ -311,48 +637,31 @@ async function waitForAdminPrintImages(
 
 
 /* =========================================================
-   CHUẨN BỊ BẢN SAO DÙNG XUẤT PDF
+   CHỜ TRÌNH DUYỆT DÀN TRANG
 ========================================================= */
 
-function prepareAdminPrintClone(
-  clonedDocument
-) {
-  clonedDocument.classList.add(
-    'admin-print-document-export'
+function waitForAdminPdfLayout() {
+  return new Promise(
+    (resolve) => {
+      window.requestAnimationFrame(
+        () => {
+          window.requestAnimationFrame(
+            () => {
+              window.setTimeout(
+                resolve,
+                100
+              );
+            }
+          );
+        }
+      );
+    }
   );
-
-  clonedDocument.style.margin =
-    '0';
-
-  clonedDocument.style.boxShadow =
-    'none';
-
-  clonedDocument.style.transform =
-    'none';
-
-  clonedDocument.style.width =
-    '210mm';
-
-  clonedDocument.style.minHeight =
-    '297mm';
-
-  clonedDocument.style.background =
-    '#ffffff';
-
-  clonedDocument
-    .querySelectorAll(
-      'button, .no-print'
-    )
-    .forEach(
-      (element) => {
-        element.remove();
-      }
-    );
 }
 
 
 /* =========================================================
-   TẠO TÊN FILE
+   TẠO TÊN FILE PDF
 ========================================================= */
 
 function createAdminPrintPdfFileName() {
@@ -392,9 +701,8 @@ function getAdminPrintStudentName() {
       const label =
         normalizeAdminPrintText(
           cells[index]
-            .textContent
-        )
-          .toLowerCase();
+            ?.textContent
+        ).toLowerCase();
 
       if (
         label ===
@@ -418,18 +726,7 @@ function getAdminPrintStudentName() {
 
 
 function getAdminPrintTestName() {
-  const subtitle =
-    normalizeAdminPrintText(
-      document.querySelector(
-        '.admin-print-title p'
-      )?.textContent
-    );
-
-  if (!subtitle) {
-    return 'bài kiểm tra';
-  }
-
-  const title =
+  const documentTitle =
     normalizeAdminPrintText(
       document.querySelector(
         '.admin-print-title h1'
@@ -437,14 +734,25 @@ function getAdminPrintTestName() {
     ).toLowerCase();
 
   if (
-    title.includes(
+    documentTitle.includes(
       'cuối khóa'
     )
   ) {
     return 'cuối khóa';
   }
 
-  return subtitle;
+  const subtitle =
+    normalizeAdminPrintText(
+      document.querySelector(
+        '.admin-print-title p'
+      )?.textContent
+    );
+
+  if (subtitle) {
+    return subtitle;
+  }
+
+  return 'bài kiểm tra';
 }
 
 
@@ -468,6 +776,9 @@ function sanitizeAdminPrintFileName(
   return String(
     value || ''
   )
+    /*
+     * Loại bỏ ký tự cấm trong tên file Windows.
+     */
     .replace(
       /[\\/:*?"<>|]/g,
       '-'
@@ -479,10 +790,6 @@ function sanitizeAdminPrintFileName(
     .replace(
       /\s*-\s*/g,
       ' - '
-    )
-    .replace(
-      /-+/g,
-      '-'
     )
     .trim()
     .slice(
