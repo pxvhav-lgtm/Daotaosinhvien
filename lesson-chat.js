@@ -1,9 +1,9 @@
 /**
- * Chatbox hỏi đáp tài liệu.
+ * Chatbox AI dùng cho:
+ * 1. Trang chi tiết bài học.
+ * 2. Tab Trợ lý AI độc lập.
  *
- * Hỗ trợ:
- * 1. Chatbox trong trang chi tiết bài học.
- * 2. Chatbox độc lập tại tab Trợ lý AI.
+ * Không chứa API key hoặc bí mật.
  */
 
 const LESSON_CHAT_APP_URL =
@@ -34,50 +34,87 @@ const CONFIGURED_CHAT_LESSONS = [
   22,
 ];
 
+const LESSON_CHAT_LOAD_TIMEOUT_MS =
+  15000;
+
+let lessonChatMutationTimer =
+  null;
+
 /* =========================================================
-   KHỞI TẠO CHATBOX TRONG TRANG BÀI HỌC
+   KHỞI TẠO
 ========================================================= */
 
 (function initializeLessonChat() {
+  wrapRenderLessonPage();
+
+  observeApplicationChanges();
+})();
+
+/* =========================================================
+   BỌC HÀM MỞ BÀI HỌC
+========================================================= */
+
+function wrapRenderLessonPage() {
   const originalRenderLessonPage =
     window.renderLessonPage;
 
   if (
-    typeof originalRenderLessonPage ===
+    typeof originalRenderLessonPage !==
     'function'
   ) {
-    window.renderLessonPage =
-      async function (...args) {
-        const result =
-          await originalRenderLessonPage
-            .apply(
-              this,
-              args
-            );
-
-        window.setTimeout(
-          () => {
-            injectLessonChat(
-              args
-            );
-          },
-          150
-        );
-
-        return result;
-      };
-
-    try {
-      renderLessonPage =
-        window.renderLessonPage;
-    } catch (error) {
-      console.warn(
-        'Không thể cập nhật renderLessonPage:',
-        error
-      );
-    }
+    return;
   }
 
+  if (
+    originalRenderLessonPage
+      .__lessonChatWrapped
+  ) {
+    return;
+  }
+
+  const wrappedRenderLessonPage =
+    async function (...args) {
+      const result =
+        await originalRenderLessonPage.apply(
+          this,
+          args
+        );
+
+      window.setTimeout(
+        () => {
+          injectLessonChatIntoLessonPage(
+            args
+          );
+        },
+        180
+      );
+
+      return result;
+    };
+
+  wrappedRenderLessonPage
+    .__lessonChatWrapped =
+    true;
+
+  window.renderLessonPage =
+    wrappedRenderLessonPage;
+
+  try {
+    renderLessonPage =
+      wrappedRenderLessonPage;
+  } catch (error) {
+    console.warn(
+      'Không thể đồng bộ biến renderLessonPage:',
+      error
+    );
+  }
+}
+
+/* =========================================================
+   THEO DÕI THAY ĐỔI TRANG
+========================================================= */
+
+function observeApplicationChanges() {
   const appElement =
     document.querySelector(
       '#app'
@@ -87,28 +124,25 @@ const CONFIGURED_CHAT_LESSONS = [
     return;
   }
 
-  let observerTimer =
-    null;
-
   const observer =
     new MutationObserver(
       () => {
         if (
-          observerTimer
+          lessonChatMutationTimer
         ) {
           window.clearTimeout(
-            observerTimer
+            lessonChatMutationTimer
           );
         }
 
-        observerTimer =
+        lessonChatMutationTimer =
           window.setTimeout(
             () => {
-              injectLessonChat(
+              injectLessonChatIntoLessonPage(
                 []
               );
             },
-            180
+            220
           );
       }
     );
@@ -120,13 +154,13 @@ const CONFIGURED_CHAT_LESSONS = [
       subtree: true,
     }
   );
-})();
+}
 
 /* =========================================================
-   CHATBOX TRONG TRANG BÀI HỌC
+   CHAT TRONG TRANG BÀI HỌC
 ========================================================= */
 
-function injectLessonChat(
+function injectLessonChatIntoLessonPage(
   renderArguments
 ) {
   const appElement =
@@ -143,19 +177,19 @@ function injectLessonChat(
       '.lesson-detail-card'
     );
 
-  if (
-    !lessonDetailCard
-  ) {
-    removeLessonChat();
+  if (!lessonDetailCard) {
+    removeEmbeddedLessonChat();
+
     return;
   }
 
   if (
-    !isLessonPageVisible(
+    isQuizOrResultPage(
       appElement
     )
   ) {
-    removeLessonChat();
+    removeEmbeddedLessonChat();
+
     return;
   }
 
@@ -165,39 +199,34 @@ function injectLessonChat(
       lessonDetailCard
     );
 
-  if (!lessonNumber) {
-    removeLessonChat();
-    return;
-  }
-
   if (
-    !CONFIGURED_CHAT_LESSONS.includes(
-      Number(
-        lessonNumber
-      )
+    !isConfiguredChatLesson(
+      lessonNumber
     )
   ) {
-    removeLessonChat();
+    removeEmbeddedLessonChat();
+
     return;
   }
 
-  const existingChat =
+  const currentSection =
     document.querySelector(
       '#lessonAiChatSection'
     );
 
   if (
-    existingChat &&
-    existingChat.dataset
-      .lesson ===
-      String(
+    currentSection &&
+    Number(
+      currentSection.dataset.lesson
+    ) ===
+      Number(
         lessonNumber
       )
   ) {
     return;
   }
 
-  removeLessonChat();
+  removeEmbeddedLessonChat();
 
   const section =
     document.createElement(
@@ -216,86 +245,427 @@ function injectLessonChat(
     );
 
   section.innerHTML =
-    renderAvailableChat(
+    createEmbeddedLessonChatMarkup(
       lessonNumber
     );
 
-  const target =
-    findLessonChatTarget(
-      appElement
-    );
+  const parent =
+    lessonDetailCard.parentElement ||
+    appElement;
 
-  target.appendChild(
+  parent.appendChild(
     section
   );
 
-  bindLessonChatEvents(
+  initializeEmbeddedLessonChat(
     section
   );
 }
 
-function isLessonPageVisible(
-  appElement
+function createEmbeddedLessonChatMarkup(
+  lessonNumber
 ) {
-  const lessonDetailCard =
-    appElement.querySelector(
-      '.lesson-detail-card'
+  const chatUrl =
+    buildLessonChatUrl(
+      lessonNumber
     );
 
-  if (
-    !lessonDetailCard
-  ) {
-    return false;
-  }
+  return `
+    <header class="lesson-ai-chat__header">
+      <div>
+        <p class="lesson-ai-chat__eyebrow">
+          TRỢ LÝ HỌC TẬP AI
+        </p>
 
-  const isQuizPage =
-    Boolean(
-      appElement.querySelector(
-        '.quiz-page'
-      )
-    ) ||
-    Boolean(
-      appElement.querySelector(
-        '#quiz-form'
-      )
-    ) ||
-    Boolean(
-      appElement.querySelector(
-        '#final-quiz-form'
-      )
+        <h2>
+          Hỏi đáp tài liệu Bài
+          ${escapeLessonChatHtml(
+            lessonNumber
+          )}
+        </h2>
+
+        <p>
+          Trợ lý chỉ trả lời dựa trên tài liệu
+          của bài học hiện tại.
+        </p>
+      </div>
+
+      <div class="lesson-ai-chat__actions">
+        <button
+          class="lesson-ai-chat__toggle"
+          type="button"
+          aria-expanded="true"
+        >
+          Thu gọn
+        </button>
+
+        <a
+          class="lesson-ai-chat__open"
+          href="${escapeLessonChatHtml(
+            chatUrl
+          )}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Mở cửa sổ riêng
+        </a>
+      </div>
+    </header>
+
+    <div class="lesson-ai-chat__body">
+      ${createChatLoadingMarkup()}
+
+      <iframe
+        class="lesson-ai-chat__iframe"
+        title="Trợ lý AI Bài ${escapeLessonChatHtml(
+          lessonNumber
+        )}"
+        src="${escapeLessonChatHtml(
+          chatUrl
+        )}"
+        loading="eager"
+        allow="clipboard-write"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+    </div>
+  `;
+}
+
+function initializeEmbeddedLessonChat(
+  section
+) {
+  const iframe =
+    section.querySelector(
+      '.lesson-ai-chat__iframe'
     );
 
-  const isResultPage =
-    Boolean(
-      appElement.querySelector(
-        '.result-page'
-      )
+  const loadingElement =
+    section.querySelector(
+      '.lesson-chat-loading'
     );
 
-  const isAdminPage =
-    Boolean(
-      appElement.querySelector(
-        '.admin-page'
-      )
+  const body =
+    section.querySelector(
+      '.lesson-ai-chat__body'
     );
 
-  const isLoginPage =
-    Boolean(
-      appElement.querySelector(
-        '.login-page'
-      )
+  const toggleButton =
+    section.querySelector(
+      '.lesson-ai-chat__toggle'
     );
 
-  return (
-    !isQuizPage &&
-    !isResultPage &&
-    !isAdminPage &&
-    !isLoginPage
+  initializeIframeLoading({
+    iframe,
+    loadingElement,
+    chatUrl:
+      iframe?.src || '',
+  });
+
+  toggleButton?.addEventListener(
+    'click',
+    () => {
+      const collapsed =
+        section.classList.toggle(
+          'is-collapsed'
+        );
+
+      if (body) {
+        body.hidden =
+          collapsed;
+      }
+
+      toggleButton.textContent =
+        collapsed
+          ? 'Mở chat'
+          : 'Thu gọn';
+
+      toggleButton.setAttribute(
+        'aria-expanded',
+        collapsed
+          ? 'false'
+          : 'true'
+      );
+    }
   );
 }
 
 /* =========================================================
-   XÁC ĐỊNH SỐ BÀI
+   CHAT ĐỘC LẬP TRONG TAB AI
+========================================================= */
+
+window.renderStandaloneLessonChat =
+  function (
+    lessonNumber,
+    lessonTitle,
+    container
+  ) {
+    if (!container) {
+      return;
+    }
+
+    const normalizedLessonNumber =
+      normalizeLessonNumber(
+        lessonNumber
+      );
+
+    if (
+      !isConfiguredChatLesson(
+        normalizedLessonNumber
+      )
+    ) {
+      container.innerHTML = `
+        <div class="standalone-chat-unavailable">
+          <strong>
+            Trợ lý AI chưa được cấu hình
+          </strong>
+
+          <p>
+            Bài học này chưa có kho tài liệu AI.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+    const chatUrl =
+      buildLessonChatUrl(
+        normalizedLessonNumber
+      );
+
+    container.innerHTML = `
+      <section
+        id="standaloneLessonChat"
+        class="standalone-lesson-chat"
+        data-lesson="${normalizedLessonNumber}"
+      >
+        <header
+          class="standalone-lesson-chat__status"
+        >
+          <div>
+            <span>
+              Bài
+              ${escapeLessonChatHtml(
+                normalizedLessonNumber
+              )}
+            </span>
+
+            <strong>
+              ${escapeLessonChatHtml(
+                lessonTitle || ''
+              )}
+            </strong>
+          </div>
+
+          <a
+            href="${escapeLessonChatHtml(
+              chatUrl
+            )}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Mở cửa sổ riêng
+          </a>
+        </header>
+
+        <div
+          class="standalone-lesson-chat__body"
+        >
+          ${createChatLoadingMarkup()}
+
+          <iframe
+            class="standalone-lesson-chat__iframe"
+            title="Trợ lý AI Bài ${escapeLessonChatHtml(
+              normalizedLessonNumber
+            )}"
+            src="${escapeLessonChatHtml(
+              chatUrl
+            )}"
+            loading="eager"
+            allow="clipboard-write"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+      </section>
+    `;
+
+    const iframe =
+      container.querySelector(
+        '.standalone-lesson-chat__iframe'
+      );
+
+    const loadingElement =
+      container.querySelector(
+        '.lesson-chat-loading'
+      );
+
+    initializeIframeLoading({
+      iframe,
+      loadingElement,
+      chatUrl,
+    });
+  };
+
+window.removeStandaloneLessonChat =
+  function () {
+    document
+      .querySelectorAll(
+        '#standaloneLessonChat'
+      )
+      .forEach(
+        (element) => {
+          element.remove();
+        }
+      );
+  };
+
+/* =========================================================
+   QUẢN LÝ LOADING IFRAME
+========================================================= */
+
+function initializeIframeLoading({
+  iframe,
+  loadingElement,
+  chatUrl,
+}) {
+  if (
+    !iframe ||
+    !loadingElement
+  ) {
+    return;
+  }
+
+  let completed =
+    false;
+
+  let timeoutId =
+    null;
+
+  const completeLoading =
+    () => {
+      if (completed) {
+        return;
+      }
+
+      completed =
+        true;
+
+      if (timeoutId) {
+        window.clearTimeout(
+          timeoutId
+        );
+      }
+
+      loadingElement.hidden =
+        true;
+
+      iframe.classList.add(
+        'is-loaded'
+      );
+    };
+
+  iframe.addEventListener(
+    'load',
+    () => {
+      /*
+       * Sự kiện load chỉ xác nhận iframe đã tải
+       * một tài liệu. Khi Apps Script cho phép nhúng,
+       * iframe sẽ hiển thị bình thường.
+       */
+      completeLoading();
+    },
+    {
+      once: true,
+    }
+  );
+
+  iframe.addEventListener(
+    'error',
+    () => {
+      showChatLoadError(
+        loadingElement,
+        chatUrl
+      );
+    },
+    {
+      once: true,
+    }
+  );
+
+  timeoutId =
+    window.setTimeout(
+      () => {
+        if (completed) {
+          return;
+        }
+
+        showChatLoadError(
+          loadingElement,
+          chatUrl
+        );
+      },
+      LESSON_CHAT_LOAD_TIMEOUT_MS
+    );
+}
+
+function createChatLoadingMarkup() {
+  return `
+    <div class="lesson-chat-loading">
+      <div class="lesson-chat-loading__spinner"></div>
+
+      <strong>
+        Đang tải Trợ lý AI...
+      </strong>
+
+      <span>
+        Vui lòng chờ trong giây lát.
+      </span>
+    </div>
+  `;
+}
+
+function showChatLoadError(
+  loadingElement,
+  chatUrl
+) {
+  if (!loadingElement) {
+    return;
+  }
+
+  loadingElement.hidden =
+    false;
+
+  loadingElement.innerHTML = `
+    <div class="lesson-chat-load-error">
+      <div class="lesson-chat-load-error__icon">
+        !
+      </div>
+
+      <strong>
+        Không thể hiển thị Trợ lý AI trong trang
+      </strong>
+
+      <p>
+        Web App chưa cho phép nhúng iframe,
+        chưa được triển khai phiên bản mới
+        hoặc quyền truy cập chưa phù hợp.
+      </p>
+
+      <a
+        href="${escapeLessonChatHtml(
+          chatUrl
+        )}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Mở cửa sổ riêng
+      </a>
+    </div>
+  `;
+}
+
+/* =========================================================
+   XÁC ĐỊNH BÀI HỌC
 ========================================================= */
 
 function detectLessonNumber(
@@ -307,13 +677,11 @@ function detectLessonNumber(
       renderArguments
     );
 
-  if (
-    fromArguments
-  ) {
+  if (fromArguments) {
     return fromArguments;
   }
 
-  const globals = [
+  const candidates = [
     window.currentLesson,
     window.selectedLesson,
     window.activeLesson,
@@ -321,65 +689,53 @@ function detectLessonNumber(
   ];
 
   for (
-    const value of globals
+    const candidate of candidates
   ) {
-    const detected =
+    const result =
       findLessonNumberInValue(
-        value
+        candidate
       );
 
-    if (
-      detected
-    ) {
-      return detected;
+    if (result) {
+      return result;
     }
   }
 
-  const lessonOrderElement =
+  const orderElement =
     lessonDetailCard.querySelector(
       '.lesson-order'
     );
 
-  if (
-    lessonOrderElement
-  ) {
-    const match =
-      String(
-        lessonOrderElement
-          .textContent ||
-        ''
-      ).match(
-        /\bBài\s*(\d+)\b/i
-      );
-
-    if (
-      match
-    ) {
-      return normalizeLessonNumber(
-        match[1]
-      );
-    }
-  }
-
-  const pageText =
+  const orderMatch =
     String(
-      lessonDetailCard
-        .innerText ||
+      orderElement?.textContent ||
       ''
-    );
-
-  const match =
-    pageText.match(
+    ).match(
       /\bBài\s*(\d+)\b/i
     );
 
-  if (!match) {
-    return null;
+  if (orderMatch) {
+    return normalizeLessonNumber(
+      orderMatch[1]
+    );
   }
 
-  return normalizeLessonNumber(
-    match[1]
-  );
+  const cardText =
+    String(
+      lessonDetailCard.innerText ||
+      ''
+    );
+
+  const cardMatch =
+    cardText.match(
+      /\bBài\s*(\d+)\b/i
+    );
+
+  return cardMatch
+    ? normalizeLessonNumber(
+        cardMatch[1]
+      )
+    : null;
 }
 
 function findLessonNumberInValue(
@@ -394,18 +750,7 @@ function findLessonNumberInValue(
     return null;
   }
 
-  if (
-    typeof value ===
-      'number' ||
-    typeof value ===
-      'string'
-  ) {
-    return null;
-  }
-
-  if (
-    Array.isArray(value)
-  ) {
+  if (Array.isArray(value)) {
     for (
       const item of value
     ) {
@@ -415,9 +760,7 @@ function findLessonNumberInValue(
           depth + 1
         );
 
-      if (
-        result
-      ) {
+      if (result) {
         return result;
       }
     }
@@ -443,21 +786,17 @@ function findLessonNumberInValue(
     const key of directKeys
   ) {
     if (
-      Object.prototype
-        .hasOwnProperty
-        .call(
-          value,
-          key
-        )
+      Object.prototype.hasOwnProperty.call(
+        value,
+        key
+      )
     ) {
       const normalized =
         normalizeLessonNumber(
           value[key]
         );
 
-      if (
-        normalized
-      ) {
+      if (normalized) {
         return normalized;
       }
     }
@@ -474,12 +813,10 @@ function findLessonNumberInValue(
     const key of nestedKeys
   ) {
     if (
-      Object.prototype
-        .hasOwnProperty
-        .call(
-          value,
-          key
-        )
+      Object.prototype.hasOwnProperty.call(
+        value,
+        key
+      )
     ) {
       const result =
         findLessonNumberInValue(
@@ -487,9 +824,7 @@ function findLessonNumberInValue(
           depth + 1
         );
 
-      if (
-        result
-      ) {
+      if (result) {
         return result;
       }
     }
@@ -498,12 +833,57 @@ function findLessonNumberInValue(
   return null;
 }
 
+/* =========================================================
+   HÀM HỖ TRỢ
+========================================================= */
+
+function isQuizOrResultPage(
+  appElement
+) {
+  return Boolean(
+    appElement.querySelector(
+      '.quiz-page'
+    ) ||
+    appElement.querySelector(
+      '#quiz-form'
+    ) ||
+    appElement.querySelector(
+      '#final-quiz-form'
+    ) ||
+    appElement.querySelector(
+      '.result-page'
+    ) ||
+    appElement.querySelector(
+      '.admin-page'
+    ) ||
+    appElement.querySelector(
+      '.login-page'
+    )
+  );
+}
+
+function isConfiguredChatLesson(
+  lessonNumber
+) {
+  const normalized =
+    normalizeLessonNumber(
+      lessonNumber
+    );
+
+  return (
+    normalized !== null &&
+    CONFIGURED_CHAT_LESSONS.includes(
+      normalized
+    )
+  );
+}
+
 function normalizeLessonNumber(
   value
 ) {
   const digits =
     String(
-      value || ''
+      value ?? ''
     ).replace(
       /[^0-9]/g,
       ''
@@ -531,326 +911,6 @@ function normalizeLessonNumber(
   return parsed;
 }
 
-/* =========================================================
-   GIAO DIỆN CHAT TRONG BÀI
-========================================================= */
-
-function renderAvailableChat(
-  lessonNumber
-) {
-  const chatUrl =
-    buildLessonChatUrl(
-      lessonNumber
-    );
-
-  return `
-    <div class="lesson-ai-chat__header">
-      <div>
-        <p class="lesson-ai-chat__eyebrow">
-          TRỢ LÝ HỌC TẬP AI
-        </p>
-
-        <h2>
-          Hỏi đáp tài liệu Bài
-          ${escapeLessonChatHtml(
-            lessonNumber
-          )}
-        </h2>
-
-        <p>
-          Trợ lý chỉ trả lời dựa trên tài liệu
-          của bài học hiện tại.
-        </p>
-      </div>
-
-      <div class="lesson-ai-chat__actions">
-        <button
-          type="button"
-          class="lesson-ai-chat__toggle"
-          aria-expanded="true"
-        >
-          Thu gọn
-        </button>
-
-        <a
-          class="lesson-ai-chat__open"
-          href="${escapeLessonChatHtml(
-            chatUrl
-          )}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Mở cửa sổ riêng
-        </a>
-      </div>
-    </div>
-
-    <div class="lesson-ai-chat__body">
-      <div class="lesson-ai-chat__loading">
-        Đang tải trợ lý hỏi đáp...
-      </div>
-
-      <iframe
-        class="lesson-ai-chat__iframe"
-        title="Hỏi đáp tài liệu Bài ${escapeLessonChatHtml(
-          lessonNumber
-        )}"
-        src="${escapeLessonChatHtml(
-          chatUrl
-        )}"
-        loading="lazy"
-        allow="clipboard-write"
-        referrerpolicy="strict-origin-when-cross-origin"
-      ></iframe>
-    </div>
-  `;
-}
-
-function findLessonChatTarget(
-  appElement
-) {
-  const lessonDetailCard =
-    appElement.querySelector(
-      '.lesson-detail-card'
-    );
-
-  if (
-    lessonDetailCard &&
-    lessonDetailCard
-      .parentElement
-  ) {
-    return lessonDetailCard
-      .parentElement;
-  }
-
-  return (
-    appElement.querySelector(
-      'main'
-    ) ||
-    appElement
-  );
-}
-
-/* =========================================================
-   CHATBOX ĐỘC LẬP TRONG TAB AI
-========================================================= */
-
-window.renderStandaloneLessonChat =
-  function (
-    lessonNumber,
-    lessonTitle,
-    container
-  ) {
-    if (
-      !container
-    ) {
-      return;
-    }
-
-    const normalizedLesson =
-      normalizeLessonNumber(
-        lessonNumber
-      );
-
-    if (
-      !normalizedLesson ||
-      !CONFIGURED_CHAT_LESSONS
-        .includes(
-          normalizedLesson
-        )
-    ) {
-      container.innerHTML = `
-        <div class="standalone-chat-unavailable">
-          Trợ lý AI chưa được cấu hình
-          cho bài học này.
-        </div>
-      `;
-
-      return;
-    }
-
-    const chatUrl =
-      buildLessonChatUrl(
-        normalizedLesson
-      );
-
-    container.innerHTML = `
-      <section
-        id="standaloneLessonChat"
-        class="standalone-lesson-chat"
-        data-lesson="${normalizedLesson}"
-      >
-        <div
-          class="standalone-lesson-chat__status"
-        >
-          <div>
-            <span>
-              Bài ${escapeLessonChatHtml(
-                normalizedLesson
-              )}
-            </span>
-
-            <strong>
-              ${escapeLessonChatHtml(
-                lessonTitle ||
-                ''
-              )}
-            </strong>
-          </div>
-
-          <a
-            href="${escapeLessonChatHtml(
-              chatUrl
-            )}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Mở cửa sổ riêng
-          </a>
-        </div>
-
-        <div
-          class="standalone-lesson-chat__body"
-        >
-          <div
-            class="standalone-lesson-chat__loading"
-          >
-            Đang tải Trợ lý AI...
-          </div>
-
-          <iframe
-            class="standalone-lesson-chat__iframe"
-            title="Trợ lý AI Bài ${escapeLessonChatHtml(
-              normalizedLesson
-            )}"
-            src="${escapeLessonChatHtml(
-              chatUrl
-            )}"
-            loading="lazy"
-            allow="clipboard-write"
-            referrerpolicy="strict-origin-when-cross-origin"
-          ></iframe>
-        </div>
-      </section>
-    `;
-
-    const iframe =
-      container.querySelector(
-        '.standalone-lesson-chat__iframe'
-      );
-
-    const loading =
-      container.querySelector(
-        '.standalone-lesson-chat__loading'
-      );
-
-    iframe?.addEventListener(
-      'load',
-      () => {
-        if (
-          loading
-        ) {
-          loading.hidden =
-            true;
-        }
-
-        iframe.classList.add(
-          'is-loaded'
-        );
-      }
-    );
-  };
-
-window.removeStandaloneLessonChat =
-  function () {
-    document
-      .querySelectorAll(
-        '#standaloneLessonChat'
-      )
-      .forEach(
-        (element) => {
-          element.remove();
-        }
-      );
-  };
-
-/* =========================================================
-   SỰ KIỆN
-========================================================= */
-
-function bindLessonChatEvents(
-  section
-) {
-  const iframe =
-    section.querySelector(
-      '.lesson-ai-chat__iframe'
-    );
-
-  const loading =
-    section.querySelector(
-      '.lesson-ai-chat__loading'
-    );
-
-  const body =
-    section.querySelector(
-      '.lesson-ai-chat__body'
-    );
-
-  const toggleButton =
-    section.querySelector(
-      '.lesson-ai-chat__toggle'
-    );
-
-  iframe?.addEventListener(
-    'load',
-    () => {
-      if (
-        loading
-      ) {
-        loading.hidden =
-          true;
-      }
-
-      iframe.classList.add(
-        'is-loaded'
-      );
-    }
-  );
-
-  toggleButton?.addEventListener(
-    'click',
-    () => {
-      const collapsed =
-        section.classList.toggle(
-          'is-collapsed'
-        );
-
-      if (
-        body
-      ) {
-        body.hidden =
-          collapsed;
-      }
-
-      toggleButton.textContent =
-        collapsed
-          ? 'Mở chat'
-          : 'Thu gọn';
-
-      toggleButton.setAttribute(
-        'aria-expanded',
-        collapsed
-          ? 'false'
-          : 'true'
-      );
-    }
-  );
-}
-
-/* =========================================================
-   URL VÀ XÓA CHAT
-========================================================= */
-
 function buildLessonChatUrl(
   lessonNumber
 ) {
@@ -872,7 +932,7 @@ function buildLessonChatUrl(
   );
 }
 
-function removeLessonChat() {
+function removeEmbeddedLessonChat() {
   document
     .querySelectorAll(
       '#lessonAiChatSection'
@@ -882,17 +942,6 @@ function removeLessonChat() {
         element.remove();
       }
     );
-}
-
-function removeStandaloneLessonChat() {
-  if (
-    typeof window
-      .removeStandaloneLessonChat ===
-    'function'
-  ) {
-    window
-      .removeStandaloneLessonChat();
-  }
 }
 
 function escapeLessonChatHtml(
