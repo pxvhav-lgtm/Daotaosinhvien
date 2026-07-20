@@ -1,5 +1,49 @@
 /* =========================================================
-   CHATBOX AI TRONG TRANG BÀI HỌC
+   CHATBOX AI
+   Dùng chung cho:
+   - Chatbox trong nội dung bài học
+   - Chatbox độc lập trong Tab Trợ lý AI
+========================================================= */
+
+:root {
+  /*
+   * Chiều cao khung Chatbox trên máy tính.
+   *
+   * - Không thấp hơn 820px
+   * - Tự tăng theo chiều cao màn hình
+   * - Không vượt quá 1100px
+   */
+  --lesson-chat-frame-height:
+    clamp(
+      820px,
+      calc(100vh - 145px),
+      1100px
+    );
+
+  --lesson-chat-primary:
+    #087fa8;
+
+  --lesson-chat-primary-dark:
+    #075f82;
+
+  --lesson-chat-primary-soft:
+    #eaf7fb;
+
+  --lesson-chat-text:
+    #18233a;
+
+  --lesson-chat-muted:
+    #667085;
+
+  --lesson-chat-border:
+    #c8e0e9;
+
+  --lesson-chat-background:
+    #ffffff;
+}
+
+/* =========================================================
+   CHATBOX TRONG TRANG CHI TIẾT BÀI HỌC
 ========================================================= */
 
 .lesson-ai-chat {
@@ -10,11 +54,13 @@
   margin-top: 24px;
 
   border:
-    1px solid #c8e0e9;
+    1px solid
+    var(--lesson-chat-border);
 
   border-radius: 22px;
 
-  background: #ffffff;
+  background:
+    var(--lesson-chat-background);
 
   box-shadow:
     0 16px 38px
@@ -26,8 +72,7 @@
 
   align-items: flex-start;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   gap: 24px;
 
@@ -44,22 +89,29 @@
     );
 }
 
-.lesson-ai-chat__eyebrow {
-  margin: 0 0 6px;
+.lesson-ai-chat__header > div:first-child {
+  min-width: 0;
+}
 
-  color: #087ca6;
+.lesson-ai-chat__eyebrow {
+  margin:
+    0 0 6px;
+
+  color:
+    var(--lesson-chat-primary);
 
   font-size: 11px;
+
   font-weight: 800;
 
-  letter-spacing:
-    0.08em;
+  letter-spacing: 0.08em;
 }
 
 .lesson-ai-chat__header h2 {
   margin: 0;
 
-  color: #18233a;
+  color:
+    var(--lesson-chat-text);
 
   font-size:
     clamp(
@@ -71,12 +123,17 @@
   font-weight: 750;
 
   line-height: 1.25;
+
+  letter-spacing:
+    -0.025em;
 }
 
 .lesson-ai-chat__header p:last-child {
-  margin: 8px 0 0;
+  margin:
+    8px 0 0;
 
-  color: #667085;
+  color:
+    var(--lesson-chat-muted);
 
   font-size: 14px;
 
@@ -88,10 +145,11 @@
 
   flex-wrap: wrap;
 
-  justify-content:
-    flex-end;
+  justify-content: flex-end;
 
   gap: 9px;
+
+  flex-shrink: 0;
 }
 
 .lesson-ai-chat__toggle,
@@ -104,50 +162,84 @@
 
   min-height: 42px;
 
-  padding: 8px 14px;
+  padding:
+    8px 14px;
 
   border:
     1px solid #a9d2e1;
 
   border-radius: 11px;
 
-  color: #075f82;
+  color:
+    var(--lesson-chat-primary-dark);
 
   background: #ffffff;
 
   font-size: 12px;
+
   font-weight: 700;
 
   text-decoration: none;
 
   cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.lesson-ai-chat__toggle:hover,
+.lesson-ai-chat__open:hover {
+  transform:
+    translateY(-1px);
 }
 
 .lesson-ai-chat__open {
+  border-color:
+    var(--lesson-chat-primary);
+
   color: #ffffff;
 
-  border-color: #087ca6;
-
-  background: #087ca6;
+  background:
+    var(--lesson-chat-primary);
 }
 
+.lesson-ai-chat__open:hover {
+  background:
+    var(--lesson-chat-primary-dark);
+}
+
+/*
+ * Khung iframe trong bài học.
+ */
 .lesson-ai-chat__body {
   position: relative;
 
-  min-height: 620px;
+  width: 100%;
 
-  background: #ffffff;
+  height:
+    var(--lesson-chat-frame-height);
+
+  min-height: 820px;
+
+  background:
+    var(--lesson-chat-background);
 }
 
 .lesson-ai-chat__iframe {
   display: block;
 
   width: 100%;
-  min-height: 620px;
+
+  height: 100%;
+
+  min-height: 820px;
 
   border: 0;
 
-  background: #ffffff;
+  background:
+    var(--lesson-chat-background);
 
   opacity: 0;
 
@@ -164,15 +256,37 @@
 }
 
 /* =========================================================
-   TAB AI ĐỘC LẬP
+   CHATBOX ĐỘC LẬP TRONG TAB TRỢ LÝ AI
 ========================================================= */
+
+/*
+ * Ghi đè chiều cao 640px trước đây
+ * trong dashboard-v2.css.
+ */
+.standalone-ai-chat-container {
+  width: 100%;
+
+  min-height:
+    var(--lesson-chat-frame-height);
+
+  background:
+    var(--lesson-chat-background);
+}
 
 .standalone-lesson-chat {
   overflow: hidden;
 
+  display: flex;
+
+  flex-direction: column;
+
   width: 100%;
 
-  background: #ffffff;
+  min-height:
+    var(--lesson-chat-frame-height);
+
+  background:
+    var(--lesson-chat-background);
 }
 
 .standalone-lesson-chat__status {
@@ -180,17 +294,24 @@
 
   align-items: center;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   gap: 18px;
 
-  padding: 14px 20px;
+  flex: 0 0 auto;
+
+  padding:
+    14px 20px;
 
   border-bottom:
     1px solid #dce8ee;
 
-  background: #eaf7fb;
+  background:
+    var(--lesson-chat-primary-soft);
+}
+
+.standalone-lesson-chat__status > div {
+  min-width: 0;
 }
 
 .standalone-lesson-chat__status span,
@@ -199,47 +320,85 @@
 }
 
 .standalone-lesson-chat__status span {
-  color: #087ca6;
+  color:
+    var(--lesson-chat-primary);
 
   font-size: 11px;
+
   font-weight: 800;
+
+  letter-spacing: 0.03em;
 }
 
 .standalone-lesson-chat__status strong {
+  overflow: hidden;
+
   margin-top: 3px;
 
-  color: #18233a;
+  color:
+    var(--lesson-chat-text);
 
   font-size: 13px;
+
   font-weight: 700;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .standalone-lesson-chat__status a {
-  color: #075f82;
+  flex-shrink: 0;
+
+  color:
+    var(--lesson-chat-primary-dark);
 
   font-size: 12px;
+
   font-weight: 700;
 
   text-decoration: none;
 }
 
+.standalone-lesson-chat__status a:hover {
+  text-decoration: underline;
+}
+
+/*
+ * Đây là phần quan trọng nhất.
+ *
+ * Phần body chiếm toàn bộ chiều cao còn lại,
+ * nhờ đó khu vực trả lời bên trong iframe rộng hơn.
+ */
 .standalone-lesson-chat__body {
   position: relative;
 
-  min-height: 620px;
+  flex: 1 1 auto;
 
-  background: #ffffff;
+  width: 100%;
+
+  height:
+    var(--lesson-chat-frame-height);
+
+  min-height: 820px;
+
+  background:
+    var(--lesson-chat-background);
 }
 
 .standalone-lesson-chat__iframe {
   display: block;
 
   width: 100%;
-  min-height: 620px;
+
+  height: 100%;
+
+  min-height: 820px;
 
   border: 0;
 
-  background: #ffffff;
+  background:
+    var(--lesson-chat-background);
 
   opacity: 0;
 
@@ -257,6 +416,7 @@
 
 .lesson-chat-loading {
   position: absolute;
+
   inset: 0;
 
   display: flex;
@@ -271,9 +431,11 @@
 
   padding: 30px;
 
-  color: #667085;
+  color:
+    var(--lesson-chat-muted);
 
-  background: #ffffff;
+  background:
+    var(--lesson-chat-background);
 
   text-align: center;
 
@@ -288,24 +450,27 @@
   color: #344054;
 
   font-size: 15px;
+
   font-weight: 700;
 }
 
 .lesson-chat-loading span {
-  color: #667085;
+  color:
+    var(--lesson-chat-muted);
 
   font-size: 13px;
 }
 
 .lesson-chat-loading__spinner {
   width: 36px;
+
   height: 36px;
 
   border:
     4px solid #dcecf2;
 
   border-top-color:
-    #087ca6;
+    var(--lesson-chat-primary);
 
   border-radius: 50%;
 
@@ -339,7 +504,8 @@
 
   border-radius: 18px;
 
-  color: #18233a;
+  color:
+    var(--lesson-chat-text);
 
   background: #ffffff;
 
@@ -354,6 +520,7 @@
   display: grid;
 
   width: 50px;
+
   height: 50px;
 
   margin:
@@ -366,6 +533,7 @@
   background: #e9902f;
 
   font-size: 25px;
+
   font-weight: 800;
 
   place-items: center;
@@ -374,9 +542,11 @@
 .lesson-chat-load-error strong {
   display: block;
 
-  color: #18233a;
+  color:
+    var(--lesson-chat-text);
 
   font-size: 17px;
+
   font-weight: 750;
 }
 
@@ -384,7 +554,8 @@
   margin:
     10px 0 18px;
 
-  color: #667085;
+  color:
+    var(--lesson-chat-muted);
 
   font-size: 13px;
 
@@ -400,18 +571,26 @@
 
   min-height: 42px;
 
-  padding: 8px 16px;
+  padding:
+    8px 16px;
 
   border-radius: 11px;
 
   color: #ffffff;
 
-  background: #087ca6;
+  background:
+    var(--lesson-chat-primary);
 
   font-size: 13px;
+
   font-weight: 700;
 
   text-decoration: none;
+}
+
+.lesson-chat-load-error a:hover {
+  background:
+    var(--lesson-chat-primary-dark);
 }
 
 .standalone-chat-unavailable {
@@ -422,7 +601,8 @@
 
   border-radius: 16px;
 
-  color: #667085;
+  color:
+    var(--lesson-chat-muted);
 
   background: #ffffff;
 
@@ -434,7 +614,8 @@
 
   margin-bottom: 6px;
 
-  color: #18233a;
+  color:
+    var(--lesson-chat-text);
 
   font-size: 17px;
 }
@@ -444,10 +625,128 @@
 }
 
 /* =========================================================
-   RESPONSIVE
+   TỐI ƯU TAB TRỢ LÝ AI
 ========================================================= */
 
-@media (max-width: 760px) {
+/*
+ * Cho cột Chatbox kéo dài đầy đủ.
+ */
+.standalone-ai-main {
+  min-width: 0;
+
+  min-height:
+    calc(
+      var(--lesson-chat-frame-height) +
+      140px
+    );
+}
+
+/*
+ * Không để phần danh sách bài làm co khung chat.
+ */
+.standalone-ai-layout {
+  align-items: start;
+}
+
+/*
+ * Giữ danh sách bài cố định khi cuộn trang.
+ */
+.standalone-ai-lessons {
+  max-height:
+    calc(100vh - 150px);
+
+  overflow: hidden;
+}
+
+.standalone-ai-lesson-list {
+  max-height:
+    calc(100vh - 260px);
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #9cbecb
+    transparent;
+}
+
+.standalone-ai-lesson-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.standalone-ai-lesson-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.standalone-ai-lesson-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background: #9cbecb;
+}
+
+/* =========================================================
+   MÀN HÌNH LAPTOP THẤP
+========================================================= */
+
+@media (
+  min-width: 761px
+) and (
+  max-height: 850px
+) {
+  :root {
+    --lesson-chat-frame-height:
+      820px;
+  }
+
+  .standalone-ai-lessons {
+    max-height: 720px;
+  }
+
+  .standalone-ai-lesson-list {
+    max-height: 610px;
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (
+  max-width: 950px
+) {
+  :root {
+    --lesson-chat-frame-height:
+      850px;
+  }
+
+  .standalone-ai-lessons {
+    position: static;
+
+    max-height: none;
+  }
+
+  .standalone-ai-lesson-list {
+    max-height: 330px;
+  }
+
+  .standalone-ai-main {
+    min-height: auto;
+  }
+}
+
+/* =========================================================
+   ĐIỆN THOẠI
+========================================================= */
+
+@media (
+  max-width: 760px
+) {
+  :root {
+    --lesson-chat-frame-height:
+      880px;
+  }
+
   .lesson-ai-chat__header {
     flex-direction: column;
 
@@ -467,14 +766,24 @@
 
   .lesson-ai-chat__body,
   .lesson-ai-chat__iframe,
+  .standalone-ai-chat-container,
+  .standalone-lesson-chat,
   .standalone-lesson-chat__body,
   .standalone-lesson-chat__iframe {
-    min-height: 680px;
+    min-height: 880px;
   }
 
   .standalone-lesson-chat__status {
     align-items: flex-start;
 
     flex-direction: column;
+  }
+
+  .standalone-lesson-chat__status strong {
+    white-space: normal;
+  }
+
+  .standalone-ai-lesson-list {
+    max-height: 300px;
   }
 }
