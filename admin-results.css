@@ -1,0 +1,1134 @@
+/* =========================================================
+   NÚT KẾT QUẢ TRÊN HEADER ADMIN
+========================================================= */
+
+.admin-results-header-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+/* =========================================================
+   TRANG DANH SÁCH KẾT QUẢ
+========================================================= */
+
+.admin-results-page {
+  width:
+    min(
+      1540px,
+      calc(100% - 36px)
+    );
+
+  margin:
+    28px auto 60px;
+}
+
+.admin-results-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+}
+
+.admin-results-summary-card {
+  padding: 22px;
+
+  border:
+    1px solid #dce6ed;
+
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 28px
+    rgba(17, 41, 65, 0.06);
+}
+
+.admin-results-summary-card span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.admin-results-summary-card strong {
+  display: block;
+
+  color: #08749d;
+
+  font-size: 32px;
+}
+
+.admin-results-summary-card p {
+  margin:
+    8px 0 0;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.admin-results-summary-card.success
+strong {
+  color: #067647;
+}
+
+.admin-results-summary-card.danger
+strong {
+  color: #b42318;
+}
+
+
+/* =========================================================
+   KHUNG KẾT QUẢ
+========================================================= */
+
+.admin-results-panel {
+  margin-top: 20px;
+
+  padding: 26px;
+
+  border:
+    1px solid #dce6ed;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 30px
+    rgba(17, 41, 65, 0.06);
+}
+
+.admin-results-panel-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  padding-bottom: 22px;
+
+  border-bottom:
+    1px solid #e7edf1;
+}
+
+.admin-results-eyebrow {
+  margin:
+    0 0 6px;
+
+  color: #08749d;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing:
+    0.06em;
+}
+
+.admin-results-panel-header h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 26px;
+}
+
+.admin-results-panel-header
+p:last-child {
+  margin:
+    8px 0 0;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   BỘ LỌC
+========================================================= */
+
+.admin-results-toolbar {
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 1fr)
+    260px
+    190px;
+
+  gap: 12px;
+
+  margin:
+    22px 0;
+}
+
+.admin-results-search {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  min-height: 46px;
+
+  padding:
+    0 14px;
+
+  border:
+    1px solid #cbd8e1;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+.admin-results-search:focus-within {
+  border-color: #087ca6;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(8, 124, 166, 0.11);
+}
+
+.admin-results-search span {
+  color: #08749d;
+
+  font-size: 19px;
+}
+
+.admin-results-search input {
+  width: 100%;
+
+  min-width: 0;
+
+  border: 0;
+
+  outline: 0;
+
+  color: #172033;
+
+  background: transparent;
+}
+
+.admin-results-select {
+  min-height: 46px;
+
+  padding:
+    0 12px;
+
+  border:
+    1px solid #cbd8e1;
+
+  border-radius: 10px;
+
+  color: #172033;
+
+  background: #ffffff;
+
+  outline: 0;
+}
+
+.admin-results-select:focus {
+  border-color: #087ca6;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(8, 124, 166, 0.11);
+}
+
+
+/* =========================================================
+   BẢNG KẾT QUẢ
+========================================================= */
+
+.admin-results-table-container {
+  min-height: 300px;
+}
+
+.admin-results-table-scroll {
+  overflow-x: auto;
+
+  border:
+    1px solid #dce6ed;
+
+  border-radius: 13px;
+}
+
+.admin-results-table {
+  width: 100%;
+
+  min-width: 1100px;
+
+  border-collapse: collapse;
+
+  background: #ffffff;
+}
+
+.admin-results-table th,
+.admin-results-table td {
+  padding:
+    14px 15px;
+
+  border-bottom:
+    1px solid #edf1f4;
+
+  text-align: left;
+
+  vertical-align: middle;
+}
+
+.admin-results-table th {
+  color: #475467;
+
+  background: #f7fafb;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+.admin-results-table td {
+  color: #172033;
+
+  font-size: 13px;
+}
+
+.admin-results-table tbody
+tr:hover {
+  background: #fbfdfe;
+}
+
+.admin-results-table tbody
+tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-result-student {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+.admin-result-avatar {
+  display: grid;
+
+  width: 42px;
+
+  height: 42px;
+
+  flex:
+    0 0 42px;
+
+  border-radius: 12px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0a8bb8,
+      #075f82
+    );
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.admin-result-student strong,
+.admin-result-student span,
+.admin-result-lesson span,
+.admin-result-lesson strong {
+  display: block;
+}
+
+.admin-result-student strong {
+  color: #172033;
+
+  font-size: 13px;
+}
+
+.admin-result-student span {
+  margin-top: 3px;
+
+  color: #667085;
+
+  font-size: 11px;
+}
+
+.admin-result-lesson span {
+  color: #08749d;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+}
+
+.admin-result-lesson strong {
+  margin-top: 4px;
+
+  max-width: 300px;
+
+  color: #172033;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+}
+
+.admin-result-score {
+  color: #08749d;
+
+  font-size: 17px;
+}
+
+.admin-result-subtext {
+  margin-left: 2px;
+
+  color: #98a2b3;
+
+  font-size: 11px;
+}
+
+.admin-result-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 82px;
+
+  padding:
+    6px 10px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+.admin-result-status.passed {
+  color: #067647;
+
+  background: #ecfdf3;
+}
+
+.admin-result-status.failed {
+  color: #b42318;
+
+  background: #fef3f2;
+}
+
+.admin-result-date {
+  color: #475467;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.admin-result-preview-button {
+  min-height: 38px;
+
+  padding:
+    7px 12px;
+
+  border:
+    1px solid #087ca6;
+
+  border-radius: 9px;
+
+  color: #075f82;
+
+  background: #ffffff;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.admin-result-preview-button:hover {
+  color: #ffffff;
+
+  background: #087ca6;
+}
+
+.admin-results-empty-state {
+  display: grid;
+
+  min-height: 320px;
+
+  align-content: center;
+
+  justify-items: center;
+
+  padding: 40px;
+
+  border:
+    1px dashed #cbd8e1;
+
+  border-radius: 14px;
+
+  color: #667085;
+
+  text-align: center;
+}
+
+.admin-results-empty-state > div {
+  display: grid;
+
+  width: 62px;
+
+  height: 62px;
+
+  margin-bottom: 14px;
+
+  border-radius: 17px;
+
+  color: #08749d;
+
+  background: #eaf7fc;
+
+  font-size: 27px;
+
+  place-items: center;
+}
+
+.admin-results-empty-state h3 {
+  margin: 0;
+
+  color: #172033;
+}
+
+.admin-results-empty-state p {
+  margin:
+    8px 0 0;
+}
+
+
+/* =========================================================
+   TRANG XEM TRƯỚC
+========================================================= */
+
+.admin-print-preview-active {
+  background: #dfe5e9;
+}
+
+.admin-print-preview-page {
+  min-height: 100vh;
+
+  padding:
+    24px 20px 60px;
+
+  background: #dfe5e9;
+}
+
+.admin-print-toolbar {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  width:
+    min(
+      210mm,
+      calc(100% - 20px)
+    );
+
+  margin:
+    0 auto 18px;
+
+  padding:
+    14px 18px;
+
+  border-radius: 13px;
+
+  color: #ffffff;
+
+  background: #172033;
+
+  box-shadow:
+    0 12px 30px
+    rgba(17, 24, 39, 0.18);
+}
+
+.admin-print-toolbar strong,
+.admin-print-toolbar span {
+  display: block;
+}
+
+.admin-print-toolbar strong {
+  font-size: 15px;
+}
+
+.admin-print-toolbar span {
+  margin-top: 3px;
+
+  color: #d0d5dd;
+
+  font-size: 11px;
+}
+
+.admin-print-toolbar-actions {
+  display: flex;
+
+  gap: 9px;
+}
+
+
+/* =========================================================
+   GIẤY A4
+========================================================= */
+
+.admin-print-document {
+  box-sizing: border-box;
+
+  width: 210mm;
+
+  min-height: 297mm;
+
+  margin: 0 auto;
+
+  padding:
+    15mm 15mm 17mm;
+
+  color: #000000;
+
+  background: #ffffff;
+
+  font-family:
+    "Times New Roman",
+    Times,
+    serif !important;
+
+  font-size: 13pt;
+
+  line-height: 1.45;
+
+  box-shadow:
+    0 18px 42px
+    rgba(17, 24, 39, 0.18);
+}
+
+.admin-print-document,
+.admin-print-document * {
+  font-family:
+    "Times New Roman",
+    Times,
+    serif !important;
+}
+
+
+/* =========================================================
+   ĐẦU TRANG
+========================================================= */
+
+.admin-print-document-header {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1.15fr;
+
+  gap: 12mm;
+
+  align-items: start;
+}
+
+.print-header-organization {
+  display: grid;
+
+  grid-template-columns:
+    41mm
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 3mm;
+
+  text-align: center;
+}
+
+.print-company-logo {
+  display: block;
+
+  width: 40mm;
+
+  max-height: 19mm;
+
+  object-fit: contain;
+}
+
+.print-organization-lines {
+  font-size: 11.5pt;
+
+  line-height: 1.45;
+
+  text-align: center;
+}
+
+.print-organization-lines strong {
+  display: block;
+
+  text-decoration: underline;
+
+  text-underline-offset: 3px;
+}
+
+.print-header-national {
+  font-size: 11.5pt;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.print-header-national strong {
+  display: block;
+}
+
+.print-header-national div {
+  display: inline-block;
+
+  font-weight: 700;
+
+  border-bottom:
+    1px solid #000000;
+}
+
+
+/* =========================================================
+   TIÊU ĐỀ
+========================================================= */
+
+.admin-print-title {
+  margin-top: 13mm;
+
+  text-align: center;
+}
+
+.admin-print-title h1 {
+  margin: 0;
+
+  font-size: 18pt;
+
+  font-weight: 700;
+
+  line-height: 1.35;
+}
+
+.admin-print-title p {
+  margin:
+    3mm 0 0;
+
+  font-size: 14pt;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   NỘI DUNG
+========================================================= */
+
+.admin-print-section {
+  margin-top: 9mm;
+
+  break-inside: avoid;
+
+  page-break-inside: avoid;
+}
+
+.admin-print-section h2 {
+  margin:
+    0 0 3mm;
+
+  font-size: 13pt;
+
+  font-weight: 700;
+}
+
+.admin-print-information-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.admin-print-information-table th,
+.admin-print-information-table td {
+  padding:
+    2.5mm 3mm;
+
+  border:
+    1px solid #000000;
+
+  vertical-align: middle;
+}
+
+.admin-print-information-table th {
+  width: 21%;
+
+  font-weight: 700;
+
+  text-align: left;
+}
+
+.admin-print-information-table td {
+  width: 29%;
+}
+
+.admin-print-result-box {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  border:
+    1px solid #000000;
+}
+
+.admin-print-result-box > div {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 8mm;
+
+  min-height: 20mm;
+
+  padding:
+    4mm 5mm;
+}
+
+.admin-print-result-box >
+div + div {
+  border-left:
+    1px solid #000000;
+}
+
+.admin-print-result-box span {
+  font-weight: 700;
+}
+
+.admin-print-result-box strong {
+  font-size: 18pt;
+}
+
+.print-result-passed {
+  color: #006b36;
+}
+
+.print-result-failed {
+  color: #b42318;
+}
+
+.admin-print-note {
+  margin-top: 6mm;
+}
+
+.admin-print-note > strong {
+  display: block;
+
+  margin-bottom: 4mm;
+}
+
+.admin-print-note-line {
+  height: 9mm;
+
+  border-bottom:
+    1px dotted #000000;
+}
+
+
+/* =========================================================
+   CHỮ KÝ
+========================================================= */
+
+.admin-print-signatures {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 15mm;
+
+  margin-top: 13mm;
+
+  break-inside: avoid;
+
+  page-break-inside: avoid;
+
+  text-align: center;
+}
+
+.admin-print-signatures strong,
+.admin-print-signatures span {
+  display: block;
+}
+
+.admin-print-signatures strong {
+  min-height: 12mm;
+
+  font-size: 12.5pt;
+}
+
+.admin-print-signatures span {
+  margin-top: 1mm;
+
+  font-size: 11pt;
+
+  font-style: italic;
+}
+
+.admin-print-signature-space {
+  height: 27mm;
+}
+
+.admin-print-signatures p {
+  margin: 0;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CHÂN TRANG
+========================================================= */
+
+.admin-print-footer {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 10mm;
+
+  margin-top: 13mm;
+
+  padding-top: 3mm;
+
+  border-top:
+    1px solid #000000;
+
+  font-size: 9.5pt;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .admin-results-summary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .admin-results-toolbar {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .admin-results-search {
+    grid-column:
+      1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-results-page {
+    width:
+      calc(100% - 20px);
+  }
+
+  .admin-results-main-header {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .admin-results-main-header
+  .admin-account {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .admin-results-main-header
+  .admin-account > div {
+    text-align: left;
+  }
+
+  .admin-results-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-results-panel {
+    padding: 18px;
+  }
+
+  .admin-results-panel-header {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .admin-results-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-results-search {
+    grid-column: auto;
+  }
+
+  .admin-print-preview-page {
+    overflow-x: auto;
+
+    padding:
+      14px 8px 40px;
+  }
+
+  .admin-print-toolbar {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    min-width: 760px;
+  }
+
+  .admin-print-document {
+    transform-origin:
+      top left;
+  }
+}
+
+
+/* =========================================================
+   IN / LƯU PDF
+========================================================= */
+
+@page {
+  size: A4 portrait;
+
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+
+    min-height: 297mm;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #ffffff !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .admin-print-document,
+  .admin-print-document * {
+    visibility: visible;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  #app,
+  .admin-print-preview-page {
+    width: 210mm !important;
+
+    min-height: 297mm !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #ffffff !important;
+  }
+
+  .admin-print-document {
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 210mm;
+
+    min-height: 297mm;
+
+    margin: 0;
+
+    padding:
+      15mm 15mm 17mm;
+
+    box-shadow: none;
+
+    print-color-adjust: exact;
+
+    -webkit-print-color-adjust:
+      exact;
+  }
+
+  .admin-print-section,
+  .admin-print-signatures {
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+  }
+}
