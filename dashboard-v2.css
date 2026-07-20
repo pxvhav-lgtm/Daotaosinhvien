@@ -1,151 +1,763 @@
 /* =========================================================
-   DASHBOARD LỘ TRÌNH ĐÀO TẠO
+   DASHBOARD ĐÀO TẠO SỐ - PHIÊN BẢN HIỆN ĐẠI
 ========================================================= */
 
-.training-dashboard {
-  width:
-    min(
-      1420px,
-      calc(100% - 40px)
-    );
+:root {
+  --dashboard-primary: #087ca6;
+  --dashboard-primary-dark: #075f82;
+  --dashboard-primary-soft: #e8f6fb;
 
-  margin: 36px auto 60px;
+  --dashboard-green: #12a66a;
+  --dashboard-green-soft: #eafaf2;
+
+  --dashboard-orange: #e9902f;
+  --dashboard-orange-soft: #fff4e7;
+
+  --dashboard-blue: #3b75d9;
+  --dashboard-blue-soft: #edf3ff;
+
+  --dashboard-text: #18233a;
+  --dashboard-muted: #667085;
+  --dashboard-border: #dce7ee;
+  --dashboard-background: #f2f6f9;
+  --dashboard-surface: #ffffff;
+
+  --dashboard-shadow:
+    0 18px 48px
+    rgba(23, 52, 75, 0.09);
 }
 
-.section-label {
-  margin: 0 0 7px;
+html {
+  scroll-behavior: smooth;
+}
 
-  color: #08749d;
-  font-family:
-    Inter,
-    Arial,
-    Helvetica,
-    sans-serif;
+.digital-dashboard {
+  position: relative;
 
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  display: grid;
+  grid-template-columns:
+    270px minmax(0, 1fr);
+
+  min-height: calc(100vh - 80px);
+
+  background:
+    radial-gradient(
+      circle at 85% 5%,
+      rgba(8, 124, 166, 0.09),
+      transparent 28%
+    ),
+    var(--dashboard-background);
 }
 
 /* =========================================================
-   THÔNG TIN SINH VIÊN
+   SIDEBAR
 ========================================================= */
 
-.student-welcome-card {
-  padding: 30px;
+.dashboard-sidebar {
+  position: sticky;
+  top: 0;
 
-  border: 1px solid #dce7ee;
+  display: flex;
+  flex-direction: column;
+
+  height: 100vh;
+  padding: 24px 18px;
+
+  border-right:
+    1px solid var(--dashboard-border);
+
+  background:
+    rgba(255, 255, 255, 0.96);
+
+  backdrop-filter: blur(16px);
+
+  z-index: 30;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px;
+  margin-bottom: 28px;
+
+  border: 1px solid #e5edf2;
   border-radius: 18px;
 
   background:
     linear-gradient(
       135deg,
-      #ffffff 0%,
-      #f1f9fc 100%
+      #ffffff,
+      #f2f9fc
+    );
+}
+
+.sidebar-brand img {
+  width: 48px;
+  height: 48px;
+
+  object-fit: contain;
+}
+
+.sidebar-brand strong,
+.sidebar-brand span {
+  display: block;
+}
+
+.sidebar-brand strong {
+  color: var(--dashboard-text);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-brand span {
+  margin-top: 3px;
+
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-navigation {
+  display: grid;
+  gap: 7px;
+}
+
+.dashboard-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  width: 100%;
+  min-height: 48px;
+
+  padding: 10px 13px;
+
+  border: 0;
+  border-radius: 13px;
+
+  color: #526076;
+  background: transparent;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.dashboard-nav-item:hover,
+.dashboard-nav-item.active {
+  color: var(--dashboard-primary-dark);
+  background:
+    var(--dashboard-primary-soft);
+}
+
+.dashboard-nav-item:hover {
+  transform: translateX(3px);
+}
+
+.dashboard-nav-icon {
+  display: grid;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 9px;
+
+  color: var(--dashboard-primary);
+  background: #ffffff;
+
+  font-size: 15px;
+
+  place-items: center;
+}
+
+.sidebar-course-progress {
+  margin-top: auto;
+  padding: 20px;
+
+  border-radius: 18px;
+
+  color: #ffffff;
+  background:
+    linear-gradient(
+      145deg,
+      #087ca6,
+      #075f82
     );
 
   box-shadow:
-    0 12px 34px
-    rgba(17, 41, 65, 0.08);
+    0 16px 34px
+    rgba(8, 124, 166, 0.22);
 }
 
-.welcome-main h2 {
-  margin: 0;
-  font-size: 30px;
-}
-
-.welcome-main > p:last-child {
-  margin: 10px 0 0;
-  color: #667085;
-}
-
-.student-information-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 15px;
-  margin-top: 25px;
-}
-
-.student-information-grid > div {
-  padding: 16px;
-
-  border: 1px solid #e1e9ef;
-  border-radius: 11px;
-
-  background: rgba(
-    255,
-    255,
-    255,
-    0.85
-  );
-}
-
-.student-information-grid span {
+.sidebar-course-progress span,
+.sidebar-course-progress strong,
+.sidebar-course-progress small {
   display: block;
-  margin-bottom: 6px;
+}
 
-  color: #667085;
+.sidebar-course-progress span {
+  color: #d7eef6;
   font-size: 13px;
 }
 
+.sidebar-course-progress strong {
+  margin-top: 7px;
+  font-size: 24px;
+}
+
+.sidebar-progress-track {
+  overflow: hidden;
+
+  height: 8px;
+  margin: 15px 0 9px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.22);
+}
+
+.sidebar-progress-value {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #7ae2b2,
+      #c8ffe3
+    );
+}
+
+.sidebar-course-progress small {
+  color: #d9f2fa;
+}
+
+.sidebar-student-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-top: 16px;
+  padding: 13px;
+
+  border: 1px solid #e5edf2;
+  border-radius: 15px;
+
+  background: #ffffff;
+}
+
+.sidebar-avatar {
+  display: grid;
+
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  border-radius: 13px;
+
+  color: #ffffff;
+  background:
+    linear-gradient(
+      145deg,
+      #0f92bc,
+      #075f82
+    );
+
+  font-size: 14px;
+  font-weight: 800;
+
+  place-items: center;
+}
+
+.sidebar-student-card strong,
+.sidebar-student-card span {
+  display: block;
+}
+
+.sidebar-student-card strong {
+  overflow: hidden;
+
+  max-width: 150px;
+
+  color: var(--dashboard-text);
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-student-card span {
+  margin-top: 3px;
+
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
 /* =========================================================
-   TỔNG QUAN TIẾN ĐỘ
+   NÚT MENU MOBILE
 ========================================================= */
 
-.progress-overview-card {
-  margin-top: 22px;
-  padding: 28px;
+.dashboard-menu-toggle {
+  position: fixed;
+  left: 16px;
+  bottom: 18px;
 
-  border: 1px solid #dce7ee;
-  border-radius: 18px;
+  display: none;
+
+  width: 52px;
+  height: 52px;
+
+  border: 0;
+  border-radius: 16px;
+
+  color: #ffffff;
+  background:
+    var(--dashboard-primary);
+
+  font-size: 22px;
+
+  box-shadow:
+    0 14px 30px
+    rgba(8, 124, 166, 0.25);
+
+  cursor: pointer;
+  z-index: 60;
+}
+
+.dashboard-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+
+  visibility: hidden;
+
+  background:
+    rgba(13, 28, 44, 0.48);
+
+  opacity: 0;
+
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+
+  z-index: 45;
+}
+
+.dashboard-sidebar-overlay.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* =========================================================
+   NỘI DUNG CHÍNH
+========================================================= */
+
+.dashboard-main-content {
+  min-width: 0;
+
+  padding: 34px clamp(20px, 3vw, 48px)
+    60px;
+}
+
+.dashboard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+
+  min-height: 210px;
+  padding: 34px;
+
+  border:
+    1px solid rgba(
+      255,
+      255,
+      255,
+      0.65
+    );
+
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      125deg,
+      #ffffff 0%,
+      #eff9fc 55%,
+      #dff3f8 100%
+    );
+
+  box-shadow:
+    var(--dashboard-shadow);
+}
+
+.dashboard-eyebrow {
+  margin: 0 0 8px;
+
+  color: var(--dashboard-primary);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-hero h1 {
+  margin: 0;
+
+  color: var(--dashboard-text);
+  font-size:
+    clamp(31px, 4vw, 48px);
+  line-height: 1.1;
+}
+
+.dashboard-hero-copy > p:not(
+  .dashboard-eyebrow
+) {
+  max-width: 760px;
+  margin: 14px 0 0;
+
+  color: var(--dashboard-muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.dashboard-current-module {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 20px;
+  padding: 8px 12px;
+
+  border-radius: 999px;
 
   background: #ffffff;
 
   box-shadow:
-    0 12px 34px
-    rgba(17, 41, 65, 0.07);
+    0 7px 18px
+    rgba(20, 57, 82, 0.07);
 }
 
-.progress-overview-heading {
+.dashboard-current-module span {
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.dashboard-current-module strong {
+  color: var(--dashboard-primary-dark);
+  font-size: 13px;
+}
+
+.dashboard-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dashboard-primary-action,
+.dashboard-outline-button,
+.dashboard-ai-button {
+  min-height: 46px;
+
+  padding: 11px 18px;
+
+  border-radius: 13px;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.dashboard-primary-action,
+.dashboard-ai-button {
+  border:
+    1px solid var(--dashboard-primary);
+
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0a8bb8,
+      #075f82
+    );
+
+  box-shadow:
+    0 12px 24px
+    rgba(8, 124, 166, 0.2);
+}
+
+.dashboard-outline-button {
+  border:
+    1px solid #abd5e4;
+
+  color: var(--dashboard-primary-dark);
+  background: #ffffff;
+}
+
+.dashboard-primary-action:hover,
+.dashboard-outline-button:hover,
+.dashboard-ai-button:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   THẺ THỐNG KÊ
+========================================================= */
+
+.dashboard-statistics {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 17px;
+  margin-top: 22px;
+}
+
+.dashboard-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-height: 110px;
+  padding: 20px;
+
+  border:
+    1px solid var(--dashboard-border);
+
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 30px
+    rgba(23, 52, 75, 0.06);
+}
+
+.dashboard-stat-icon {
+  display: grid;
+
+  width: 48px;
+  height: 48px;
+
+  flex: 0 0 48px;
+
+  border-radius: 14px;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  place-items: center;
+}
+
+.dashboard-stat-card.blue
+.dashboard-stat-icon {
+  color: var(--dashboard-blue);
+  background:
+    var(--dashboard-blue-soft);
+}
+
+.dashboard-stat-card.green
+.dashboard-stat-icon {
+  color: var(--dashboard-green);
+  background:
+    var(--dashboard-green-soft);
+}
+
+.dashboard-stat-card.cyan
+.dashboard-stat-icon {
+  color: var(--dashboard-primary);
+  background:
+    var(--dashboard-primary-soft);
+}
+
+.dashboard-stat-card.orange
+.dashboard-stat-icon {
+  color: var(--dashboard-orange);
+  background:
+    var(--dashboard-orange-soft);
+}
+
+.dashboard-stat-card strong,
+.dashboard-stat-card span {
+  display: block;
+}
+
+.dashboard-stat-card strong {
+  color: var(--dashboard-text);
+  font-size: 27px;
+}
+
+.dashboard-stat-card span {
+  margin-top: 4px;
+
+  color: var(--dashboard-muted);
+  font-size: 13px;
+}
+
+/* =========================================================
+   LƯỚI NỘI DUNG
+========================================================= */
+
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) 330px;
+
+  align-items: start;
+  gap: 22px;
+
+  margin-top: 22px;
+}
+
+.dashboard-primary-column,
+.dashboard-secondary-column {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.dashboard-panel,
+.dashboard-side-card {
+  border:
+    1px solid var(--dashboard-border);
+
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 13px 34px
+    rgba(23, 52, 75, 0.065);
+}
+
+.dashboard-panel {
+  padding: 28px;
+}
+
+.dashboard-side-card {
+  padding: 22px;
+}
+
+.dashboard-panel-heading,
+.dashboard-side-card-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
 }
 
-.progress-overview-heading h2 {
+.dashboard-panel-heading h2,
+.dashboard-side-card h3 {
   margin: 0;
+
+  color: var(--dashboard-text);
 }
 
-.progress-circle {
+.dashboard-panel-heading h2 {
+  font-size: 25px;
+}
+
+.dashboard-panel-heading > div > p:last-child {
+  margin: 8px 0 0;
+
+  color: var(--dashboard-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   VÒNG TIẾN ĐỘ
+========================================================= */
+
+.modern-progress-ring {
+  --progress: 0;
+
+  position: relative;
+
   display: grid;
 
-  width: 76px;
-  height: 76px;
+  width: 104px;
+  height: 104px;
 
-  border: 8px solid #dff3fa;
+  flex: 0 0 104px;
+
   border-radius: 50%;
 
-  color: #08749d;
-  background: #ffffff;
-
-  font-size: 19px;
+  background:
+    conic-gradient(
+      var(--dashboard-primary)
+      calc(var(--progress) * 1%),
+      #e6eef3 0
+    );
 
   place-items: center;
+}
+
+.modern-progress-ring::before {
+  position: absolute;
+  inset: 9px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  content: '';
+}
+
+.modern-progress-ring > div {
+  position: relative;
+
+  text-align: center;
+  z-index: 1;
+}
+
+.modern-progress-ring strong,
+.modern-progress-ring span {
+  display: block;
+}
+
+.modern-progress-ring strong {
+  color: var(--dashboard-primary-dark);
+  font-size: 22px;
+}
+
+.modern-progress-ring span {
+  margin-top: 2px;
+
+  color: var(--dashboard-muted);
+  font-size: 10px;
 }
 
 .main-progress-track {
   overflow: hidden;
 
-  width: 100%;
-  height: 13px;
-
-  margin-top: 22px;
+  height: 12px;
+  margin-top: 24px;
 
   border-radius: 999px;
-  background: #e9eef2;
+
+  background: #e9eff3;
 }
 
 .main-progress-value {
@@ -157,58 +769,46 @@
     linear-gradient(
       90deg,
       #087ca6,
-      #13a3c7
+      #1cb4cf
     );
 
   transition: width 0.4s ease;
 }
 
-.progress-statistics {
-  display: grid;
-  grid-template-columns:
-    repeat(4, 1fr);
+.progress-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 
-  gap: 14px;
-  margin-top: 22px;
-}
+  margin-top: 14px;
 
-.progress-statistics > div {
-  padding: 15px;
-
-  border-radius: 11px;
-  background: #f7f9fb;
-}
-
-.progress-statistics span {
-  display: block;
-  margin-bottom: 6px;
-
-  color: #667085;
+  color: var(--dashboard-muted);
   font-size: 13px;
 }
 
-.progress-statistics strong {
-  color: #172033;
-  font-size: 18px;
+.progress-footer strong {
+  color: var(--dashboard-text);
 }
 
 /* =========================================================
    BÀI TIẾP THEO
 ========================================================= */
 
-.next-lesson-card {
+.next-lesson-card,
+.course-completed-card {
   display: grid;
   grid-template-columns:
-    72px 1fr auto;
+    76px minmax(0, 1fr) auto;
 
   align-items: center;
   gap: 22px;
 
-  margin-top: 22px;
-  padding: 26px;
+  padding: 25px;
 
-  border: 1px solid #9ddced;
-  border-radius: 18px;
+  border:
+    1px solid #9ddced;
+
+  border-radius: 22px;
 
   background:
     linear-gradient(
@@ -218,35 +818,69 @@
     );
 
   box-shadow:
-    0 12px 34px
+    0 14px 34px
     rgba(8, 124, 166, 0.1);
 }
 
-.next-lesson-number {
+.next-lesson-number,
+.course-completed-icon {
   display: grid;
 
-  width: 66px;
-  height: 66px;
+  width: 68px;
+  height: 68px;
 
-  border-radius: 17px;
+  border-radius: 18px;
 
   color: #ffffff;
-  background: #087ca6;
+  background:
+    linear-gradient(
+      145deg,
+      #0a8bb8,
+      #075f82
+    );
 
-  font-size: 25px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
 
   place-items: center;
 }
 
-.next-lesson-content h2 {
+.next-lesson-content h2,
+.course-completed-card h2 {
   margin: 0;
-  font-size: 23px;
+
+  color: var(--dashboard-text);
+  font-size: 22px;
 }
 
-.next-lesson-content > p:last-child {
-  margin: 8px 0 0;
-  color: #667085;
+.next-lesson-content > p:last-of-type,
+.course-completed-card p:last-child {
+  margin: 7px 0 0;
+
+  color: var(--dashboard-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.next-lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 12px;
+}
+
+.next-lesson-meta span {
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  color: var(--dashboard-primary-dark);
+  background:
+    var(--dashboard-primary-soft);
+
+  font-size: 11px;
+  font-weight: 800;
 }
 
 /* =========================================================
@@ -254,34 +888,28 @@
 ========================================================= */
 
 .training-roadmap-section {
-  margin-top: 28px;
-  padding: 30px;
-
-  border: 1px solid #dce7ee;
-  border-radius: 18px;
-
-  background: #ffffff;
-
-  box-shadow:
-    0 12px 34px
-    rgba(17, 41, 65, 0.07);
+  scroll-margin-top: 20px;
 }
 
 .section-heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 25px;
+  gap: 24px;
 }
 
 .section-heading h2 {
   margin: 0;
-  font-size: 28px;
+
+  color: var(--dashboard-text);
+  font-size: 27px;
 }
 
 .section-heading > div:first-child > p:last-child {
   margin: 9px 0 0;
-  color: #667085;
+
+  color: var(--dashboard-muted);
+  line-height: 1.55;
 }
 
 .roadmap-legend {
@@ -293,10 +921,11 @@
 
 .legend-item {
   padding: 7px 11px;
+
   border-radius: 999px;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .legend-item.passed {
@@ -314,50 +943,68 @@
   background: #f0f2f5;
 }
 
-/* =========================================================
-   CHUYÊN ĐỀ
-========================================================= */
-
 .module-list {
   display: grid;
-  gap: 20px;
-  margin-top: 28px;
+  gap: 18px;
+
+  margin-top: 26px;
 }
 
 .training-module-card {
   overflow: hidden;
 
-  border: 1px solid #dce6ed;
-  border-radius: 15px;
+  border:
+    1px solid #dce6ed;
+
+  border-radius: 18px;
 
   background: #ffffff;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.training-module-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 30px
+    rgba(25, 57, 79, 0.07);
 }
 
 .module-header {
   display: grid;
   grid-template-columns:
-    58px 1fr auto;
+    56px minmax(0, 1fr) auto;
 
   align-items: center;
   gap: 17px;
 
-  padding: 20px 22px;
-  background: #f7fafc;
+  padding: 20px 21px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbfc,
+      #f2f8fa
+    );
 }
 
 .module-index {
   display: grid;
 
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
 
   border-radius: 14px;
 
-  color: #08749d;
-  background: #dff3fa;
+  color: var(--dashboard-primary);
+  background:
+    var(--dashboard-primary-soft);
 
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 900;
 
   place-items: center;
 }
@@ -365,35 +1012,41 @@
 .module-title > p {
   margin: 0;
 
-  color: #08749d;
-  font-size: 12px;
-  font-weight: 800;
+  color: var(--dashboard-primary);
+  font-size: 11px;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
 .module-title h3 {
   margin: 4px 0;
-  font-size: 20px;
+
+  color: var(--dashboard-text);
+  font-size: 19px;
 }
 
 .module-title span {
-  color: #667085;
-  font-size: 14px;
+  color: var(--dashboard-muted);
+  font-size: 13px;
 }
 
 .module-progress-summary {
   text-align: right;
 }
 
-.module-progress-summary strong {
+.module-progress-summary strong,
+.module-progress-summary span {
   display: block;
-  color: #08749d;
-  font-size: 19px;
+}
+
+.module-progress-summary strong {
+  color: var(--dashboard-primary);
+  font-size: 18px;
 }
 
 .module-progress-summary span {
-  color: #667085;
-  font-size: 12px;
+  color: var(--dashboard-muted);
+  font-size: 11px;
 }
 
 .module-progress-track {
@@ -403,28 +1056,42 @@
 
 .module-progress-value {
   height: 100%;
-  background: #12a4c7;
+
+  background:
+    linear-gradient(
+      90deg,
+      #087ca6,
+      #14aac9
+    );
 }
+
+/* =========================================================
+   BÀI HỌC
+========================================================= */
 
 .module-lessons {
   display: grid;
 }
 
-/* =========================================================
-   TỪNG BÀI
-========================================================= */
-
 .roadmap-lesson-item {
   display: grid;
   grid-template-columns:
-    38px 65px 1fr 150px;
+    38px 60px minmax(0, 1fr) 145px;
 
   align-items: center;
-  gap: 14px;
+  gap: 13px;
 
-  padding: 18px 22px;
+  padding: 17px 20px;
 
-  border-top: 1px solid #edf1f4;
+  border-top:
+    1px solid #edf1f4;
+
+  transition:
+    background 0.2s ease;
+}
+
+.roadmap-lesson-item:hover {
+  background: #fbfdfe;
 }
 
 .roadmap-lesson-item:first-child {
@@ -444,8 +1111,8 @@
 
   border-radius: 50%;
 
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 900;
 
   place-items: center;
 }
@@ -453,7 +1120,7 @@
 .roadmap-lesson-item.passed
 .roadmap-status-icon {
   color: #ffffff;
-  background: #12b76a;
+  background: var(--dashboard-green);
 }
 
 .roadmap-lesson-item.available
@@ -461,7 +1128,7 @@
 .roadmap-lesson-item.studying
 .roadmap-status-icon {
   color: #ffffff;
-  background: #087ca6;
+  background: var(--dashboard-primary);
 }
 
 .roadmap-lesson-item.locked
@@ -471,37 +1138,41 @@
 }
 
 .roadmap-lesson-number {
-  color: #667085;
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .roadmap-lesson-information h4 {
   margin: 0;
-  font-size: 16px;
+
+  color: var(--dashboard-text);
+  font-size: 15px;
 }
 
 .roadmap-lesson-information > p {
-  margin: 6px 0 0;
+  margin: 5px 0 0;
 
-  color: #667085;
-  font-size: 13px;
+  color: var(--dashboard-muted);
+  font-size: 12px;
   line-height: 1.45;
 }
 
 .lesson-resource-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 9px;
+  gap: 5px;
+
+  margin-top: 8px;
 }
 
 .resource-tag {
-  padding: 5px 8px;
+  padding: 4px 7px;
+
   border-radius: 999px;
 
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .resource-tag.video {
@@ -512,6 +1183,11 @@
 .resource-tag.pdf {
   color: #b42318;
   background: #fef3f2;
+}
+
+.resource-tag.ai {
+  color: #6840c6;
+  background: #f2edff;
 }
 
 .resource-tag.score {
@@ -527,12 +1203,12 @@
 .roadmap-lesson-action {
   display: grid;
   justify-items: end;
-  gap: 8px;
+  gap: 7px;
 }
 
 .roadmap-status-text {
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .roadmap-status-text.passed {
@@ -549,25 +1225,39 @@
 }
 
 .dashboard-lesson-button {
-  min-width: 130px;
-  min-height: 40px;
+  min-width: 125px;
+  min-height: 39px;
 
-  padding: 9px 13px;
+  padding: 9px 12px;
 
-  border: 1px solid #087ca6;
-  border-radius: 9px;
+  border:
+    1px solid var(--dashboard-primary);
 
-  color: #08749d;
+  border-radius: 10px;
+
+  color: var(--dashboard-primary-dark);
   background: #ffffff;
 
-  font-weight: 700;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .dashboard-lesson-button:hover:not(
   :disabled
 ) {
   color: #ffffff;
-  background: #087ca6;
+  background:
+    var(--dashboard-primary);
+
+  transform: translateY(-1px);
 }
 
 .dashboard-lesson-button:disabled {
@@ -580,78 +1270,294 @@
 }
 
 /* =========================================================
+   CỘT PHỤ
+========================================================= */
+
+.dashboard-secondary-column {
+  position: sticky;
+  top: 20px;
+}
+
+.dashboard-side-card-heading h3 {
+  font-size: 18px;
+}
+
+.side-card-badge {
+  display: grid;
+
+  width: 52px;
+  height: 52px;
+
+  border-radius: 16px;
+
+  color: var(--dashboard-primary-dark);
+  background:
+    var(--dashboard-primary-soft);
+
+  font-size: 14px;
+  font-weight: 900;
+
+  place-items: center;
+}
+
+.learning-summary-list,
+.internship-information-list {
+  display: grid;
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.learning-summary-list > div,
+.internship-information-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+
+  padding: 12px 13px;
+
+  border-radius: 12px;
+
+  background: #f7fafc;
+}
+
+.learning-summary-list span,
+.internship-information-list span {
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.learning-summary-list strong,
+.internship-information-list strong {
+  color: var(--dashboard-text);
+  font-size: 12px;
+  text-align: right;
+}
+
+.ai-promotion-card {
+  overflow: hidden;
+
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 255, 255, 0.24),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #0d8eb8,
+      #075f82
+    );
+}
+
+.ai-promotion-card
+.dashboard-eyebrow {
+  color: #bfeaf7;
+}
+
+.ai-promotion-card h3 {
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.ai-promotion-card p:not(
+  .dashboard-eyebrow
+) {
+  color: #d7eff6;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ai-card-icon {
+  display: grid;
+
+  width: 54px;
+  height: 54px;
+
+  margin-bottom: 16px;
+
+  border:
+    1px solid rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  border-radius: 17px;
+
+  background:
+    rgba(255, 255, 255, 0.14);
+
+  font-size: 24px;
+
+  place-items: center;
+}
+
+.dashboard-ai-button {
+  width: 100%;
+  margin-top: 12px;
+
+  border-color:
+    rgba(255, 255, 255, 0.65);
+
+  background:
+    rgba(255, 255, 255, 0.14);
+
+  box-shadow: none;
+}
+
+/* =========================================================
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 950px) {
-  .progress-statistics {
+@media (max-width: 1180px) {
+  .digital-dashboard {
     grid-template-columns:
-      repeat(2, 1fr);
+      230px minmax(0, 1fr);
   }
 
-  .roadmap-lesson-item {
+  .dashboard-content-grid {
     grid-template-columns:
-      38px 55px 1fr;
+      minmax(0, 1fr);
   }
 
-  .roadmap-lesson-action {
-    grid-column: 3;
-    justify-items: start;
+  .dashboard-secondary-column {
+    position: static;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 700px) {
-  .training-dashboard {
-    width:
-      min(
-        100% - 24px,
-        1420px
-      );
-
-    margin-top: 18px;
+@media (max-width: 950px) {
+  .digital-dashboard {
+    display: block;
   }
 
-  .student-information-grid,
-  .progress-statistics {
+  .dashboard-menu-toggle {
+    display: grid;
+    place-items: center;
+  }
+
+  .dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 270px;
+
+    transform: translateX(-105%);
+
+    transition: transform 0.24s ease;
+
+    z-index: 50;
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-statistics {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-secondary-column {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-main-content {
+    padding:
+      18px 12px 88px;
+  }
+
+  .dashboard-hero {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 24px;
+  }
+
+  .dashboard-hero h1 {
+    font-size: 31px;
+  }
+
+  .dashboard-hero-actions {
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .dashboard-primary-action,
+  .dashboard-outline-button {
+    flex: 1;
+  }
+
+  .dashboard-statistics {
     grid-template-columns: 1fr;
   }
 
-  .progress-overview-heading,
+  .dashboard-stat-card {
+    min-height: 92px;
+  }
+
+  .dashboard-panel,
+  .dashboard-side-card {
+    padding: 20px;
+  }
+
+  .dashboard-panel-heading,
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .modern-progress-ring {
+    width: 88px;
+    height: 88px;
+
+    flex-basis: 88px;
+  }
+
+  .progress-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .next-lesson-card,
+  .course-completed-card {
+    grid-template-columns:
+      58px minmax(0, 1fr);
+
+    padding: 20px;
+  }
+
+  .next-lesson-number,
+  .course-completed-icon {
+    width: 54px;
+    height: 54px;
+
+    border-radius: 15px;
+  }
+
+  .next-lesson-card
+  .dashboard-primary-action {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .roadmap-legend {
     justify-content: flex-start;
   }
 
-  .next-lesson-card {
-    grid-template-columns:
-      56px 1fr;
-  }
-
-  .next-lesson-number {
-    width: 52px;
-    height: 52px;
-    font-size: 20px;
-  }
-
-  .next-lesson-card
-  .dashboard-lesson-button {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .training-roadmap-section,
-  .student-welcome-card,
-  .progress-overview-card {
-    padding: 20px;
-  }
-
   .module-header {
     grid-template-columns:
-      48px 1fr;
+      48px minmax(0, 1fr);
   }
 
   .module-index {
@@ -666,15 +1572,12 @@
 
   .roadmap-lesson-item {
     grid-template-columns:
-      35px 1fr;
+      35px minmax(0, 1fr);
 
     padding: 16px;
   }
 
-  .roadmap-lesson-number {
-    grid-column: 2;
-  }
-
+  .roadmap-lesson-number,
   .roadmap-lesson-information,
   .roadmap-lesson-action {
     grid-column: 2;
