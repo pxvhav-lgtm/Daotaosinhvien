@@ -7,7 +7,7 @@
  */
 
 const LESSON_CHAT_APP_URL =
-  'https://script.google.com/macros/s/AKfycbwJrBuDX7ChFZllSH3-1RRR1BKchGDcoQ3rVSPgP1aWbr9rUg5ByyVXpibehHzba4T0/exec';
+  'https://script.google.com/macros/s/AKfycbyPgL2LlOr6RZnofqrOmE1r2j-I3K1JwfeyTOdIwP_EkMm3pysti8RjvrLNVPXqUECB/exec';
 
 const CONFIGURED_CHAT_LESSONS = [
   1,
